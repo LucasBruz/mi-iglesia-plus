@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Iglesia+ | Conecta tu Comunidad de Fe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary:#FF6B5B;--dark:#1a1a1a;--gray:#666;--border:#e0e0e0;--white:#fff}
+    body{font-family:'Poppins',sans-serif;color:var(--dark);background:#fafafa;line-height:1.6}
+    nav{background:var(--white);padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+    .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.3rem}
+    .logo img{height:45px;width:auto;display:block;border-radius:8px}
+    .logo-text{color:var(--dark)}
+    .logo-text span{color:var(--primary)}
+    .nav-buttons{display:flex;gap:1rem}
+    .btn{padding:.7rem 1.5rem;border:0;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .3s;display:inline-block;text-decoration:none;text-align:center}
+    .btn-secondary{background:#f0f0f0;color:var(--dark);border:1px solid var(--border)}
+    .btn-primary{background:var(--primary);color:var(--white)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,91,.3)}
+    .hero{background:linear-gradient(135deg,#f5e6e8 0%,#fde8e8 100%);padding:5rem 2rem;text-align:center}
+    .hero-content{max-width:800px;margin:0 auto}
+    .logo-circle{width:280px;height:280px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:center}
+    .logo-circle img{width:100%;height:100%;object-fit:contain;border-radius:20px}
+    h1{font-size:3.5rem;font-weight:800;margin-bottom:1rem;line-height:1.2}
+    h1 span{color:var(--primary)}
+    .hero p{font-size:1.1rem;color:var(--gray);margin-bottom:2rem;line-height:1.8}
+    .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    .features{padding:4rem 2rem;background:var(--white)}
+    .container{max-width:1200px;margin:0 auto}
+    .section-title{text-align:center;font-size:2.5rem;font-weight:800;margin-bottom:3rem}
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
+    .feature-card{background:var(--white);padding:2rem;border-radius:12px;border:1px solid var(--border);transition:all .3s;text-align:center}
+    .feature-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
+    .feature-icon{font-size:2.5rem;margin-bottom:1rem}
+    .feature-card h3{font-size:1.3rem;margin-bottom:1rem;color:var(--dark)}
+    .feature-card p{color:var(--gray);font-size:.95rem;line-height:1.6}
+    .cta{background:linear-gradient(135deg,var(--primary) 0%,#e63946 100%);color:var(--white);padding:4rem 2rem;text-align:center}
+    .cta h2{font-size:2.5rem;margin-bottom:1rem}
+    .cta p{font-size:1.1rem;margin-bottom:2rem;opacity:.95}
+    footer{background:var(--dark);color:rgba(255,255,255,.7);padding:2rem;text-align:center;font-size:.9rem}
+    .footer-founder{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:2rem}
+    .founder-photo{width:80px;height:80px;flex-shrink:0;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.1)}
+    .founder-photo img{width:100%;height:100%;object-fit:cover}
+    .founder-info{text-align:left}
+    .founder-info h4{margin:0;color:white;font-size:1.1rem}
+    .founder-info p{margin:.3rem 0 0 0;color:rgba(255,255,255,.7);font-size:.9rem}
+    .founder-info .btn{margin-top:.8rem;padding:.5rem 1.2rem;font-size:.85rem}
+    .search-section{padding:4rem 2rem;background:var(--white)}
+    .search-box{display:flex;gap:1rem;max-width:600px;margin:0 auto 3rem;flex-wrap:wrap;justify-content:center}
+    .search-input{flex:1;min-width:250px;padding:1rem;border:2px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:1rem;transition:border-color .3s}
+    .search-input:focus{outline:none;border-color:var(--primary)}
+    .search-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:0 auto}
+    .church-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all .3s;cursor:pointer}
+    .church-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
+    .church-card h3{color:var(--primary);margin-bottom:1rem;font-size:1.3rem}
+    .church-info{color:var(--gray);font-size:.95rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+    .church-info strong{color:var(--dark)}
+    .church-button{width:100%;margin-top:1rem;padding:.8rem}
+    .no-results{text-align:center;color:var(--gray);padding:2rem;grid-column:1 / -1;font-size:1.1rem}
+    @media(max-width:768px){h1{font-size:2rem}.section-title{font-size:1.8rem}.logo-circle{width:200px;height:200px}.footer-founder{flex-direction:column;text-align:center}.founder-info{text-align:center}.nav-buttons{gap:.5rem}.btn{padding:.5rem 1rem;font-size:.9rem}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a class="logo" href="#home">
+        <img src="assets/logo.jpg" alt="Mi Iglesia+">
+        <span class="logo-text">Mi <span>Iglesia+</span></span>
+      </a>
+      <div class="nav-buttons">
+        <a class="btn btn-secondary" href="login.html">Ingresar</a>
+        <a class="btn btn-primary" href="registro.html">Comenzar Gratis</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="logo-circle">
+        <img src="assets/logo.jpg" alt="Mi Iglesia+">
+      </div>
+      <h1>Conecta tu comunidad de <span>fe</span> como nunca antes</h1>
+      <p>La plataforma moderna que necesitaba tu iglesia. Gestiona eventos, comparte prédicas, recibe ofrendas y mantén unida tu congregación en un solo lugar.</p>
+      <div class="hero-buttons">
+        <a class="btn btn-primary" href="#buscar">Ver Iglesias</a>
+        <a class="btn btn-secondary" href="registro.html">Ver Demo (registrar)</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Todo lo que tu iglesia necesita</h2>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">📅</div><h3>Eventos</h3><p>Organiza cultos, reuniones y actividades especiales con un calendario compartido.</p></div>
+        <div class="feature-card"><div class="feature-icon">🎙️</div><h3>Prédicas</h3><p>Comparte sermones en video y audio. Tus miembros pueden verlas cuando quieran.</p></div>
+        <div class="feature-card"><div class="feature-icon">❤️</div><h3>Peticiones de Oración</h3><p>Espacio donde la congregación comparte necesidades y arma grupos de oración.</p></div>
+        <div class="feature-card"><div class="feature-icon">🌐</div><h3>Multi-Iglesia</h3><p>Cada iglesia tiene su propio espacio. Los miembros pueden conectarse a múltiples congregaciones.</p></div>
+        <div class="feature-card"><div class="feature-icon">👥</div><h3>Roles y Permisos</h3><p>Gestiona administradores, líderes y miembros con diferentes niveles de acceso.</p></div>
+        <div class="feature-card"><div class="feature-icon">⚙️</div><h3>Panel Admin</h3><p>Controla todo desde un dashboard intuitivo y fácil de usar.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <h2>¿Listo para conectar tu iglesia?</h2>
+      <p>Unite a iglesias que ya están transformando la forma en que se conectan con sus comunidades.</p>
+      <a class="btn btn-primary" style="background:white;color:var(--primary)" href="registro.html">Comenzar Ahora</a>
+    </div>
+  </section>
+
+  <section class="search-section" id="buscar">
+    <div class="container">
+      <h2 class="section-title">Encuentra Tu Iglesia</h2>
+      <p style="text-align:center;color:var(--gray);margin-bottom:2rem;font-size:1.1rem;">Busca y conecta con tu congregación</p>
+      <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="Busca por nombre de iglesia, ciudad o pastor...">
+        <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
+      </div>
+      <div id="resultados" class="search-results"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-founder">
+      <div class="founder-photo"><img src="assets/lucas-bruz.jpg" alt="Lucas Bruz"></div>
+      <div class="founder-info">
+        <h4>Lucas Bruz</h4>
+        <p>Fundador de Mi Iglesia+</p>
+        <a class="btn btn-primary" href="#home">Sobre Nosotros</a>
+      </div>
+    </div>
+    <p>&copy; 2026 Mi Iglesia+. Conectando comunidades de fe.</p>
+  </footer>
+
+  <script type="module">
+    import { db } from './js/firebase-init.js';
+    import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    let iglesias = [];
+
+    async function cargarIglesias(){
+      try{
+        const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
+        const snap = await getDocs(q);
+        iglesias = snap.docs.map(d => d.data());
+        mostrarTodasLasIglesias();
+      }catch(e){
+        console.error(e);
+        const resultados = document.getElementById('resultados');
+        resultados.innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verifica la configuración de Firebase.</div>';
+      }
+    }
+
+    window.buscarIglesias = function(){
+      const busqueda = document.getElementById('searchInput').value.toLowerCase();
+      const resultados = document.getElementById('resultados');
+      resultados.innerHTML = '';
+      const lista = !busqueda ? iglesias : iglesias.filter(i =>
+        (i.nombre||'').toLowerCase().includes(busqueda) ||
+        (i.ciudad||'').toLowerCase().includes(busqueda) ||
+        (i.pastor||'').toLowerCase().includes(busqueda)
+      );
+      if (lista.length === 0){
+        resultados.innerHTML = '<div class="no-results">No se encontraron iglesias.</div>';
+        return;
+      }
+      lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
+    }
+
+    window.mostrarTodasLasIglesias = function(){
+      const resultados = document.getElementById('resultados');
+      resultados.innerHTML = '';
+      iglesias.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
+    }
+
+    window.crearTarjetaIglesia = function(iglesia){
+      return `
+        <div class="church-card">
+          <h3>⛪ ${iglesia.nombre}</h3>
+          <div class="church-info"><strong>Ubicación:</strong> ${iglesia.ciudad||'-'}</div>
+          <div class="church-info"><strong>Pastor:</strong> ${iglesia.pastor||'-'}</div>
+          <div class="church-info"><strong>Miembros:</strong> ${iglesia.miembros ?? '-'}</div>
+          <div class="church-info"><strong>Teléfono:</strong> ${iglesia.telefono||'-'}</div>
+          <div class="church-info"><strong>Email:</strong> ${iglesia.emailContacto||'-'}</div>
+          <a class="btn btn-primary church-button" href="login.html">Conectar</a>
+        </div>
+      `;
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarIglesias);
+    document.getElementById('searchInput').addEventListener('keypress', function(e){ if(e.key==='Enter') buscarIglesias(); });
+  </script>
+</body>
+</html>

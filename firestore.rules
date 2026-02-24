@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /roles/{uid} {
+      allow read: if request.auth != null && (
+        request.auth.uid == uid || isSuperAdmin(request.auth.uid)
+      );
+      allow create, update, delete: if isSuperAdmin(request.auth.uid);
+      function isSuperAdmin(userId) {
+        return exists(/databases/$(database)/documents/roles/$(userId)) &&
+               get(/databases/$(database)/documents/roles/$(userId)).data.role == "superadmin";
+      }
+    }
+
+    match /iglesias/{churchId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.auth.token.email_verified == true
+                    && request.auth.uid == churchId
+                    && request.resource.data.adminUid == request.auth.uid
+                    && request.resource.data.estado == "pendiente";
+      allow update: if request.auth != null && (
+          (request.auth.uid == resource.data.adminUid
+            && request.auth.token.email_verified == true
+            && request.resource.data.estado == resource.data.estado)
+          || isSuperAdmin(request.auth.uid)
+        );
+      allow delete: if request.auth != null && isSuperAdmin(request.auth.uid);
+    }
+
+    function isSuperAdmin(userId) {
+      return exists(/databases/$(database)/documents/roles/$(userId)) &&
+             get(/databases/$(database)/documents/roles/$(userId)).data.role == "superadmin";
+    }
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SuperAdmin | Mi Iglesia+</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0}
+    .wrap{max-width:1000px;margin:40px auto;background:#fff;padding:24px;border:1px solid #eee;border-radius:12px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid #eee;padding:10px;text-align:left}
+    .tags{font-size:.85rem;color:#666}
+    button{padding:8px 10px;border:0;border-radius:8px;background:#FF6B5B;color:#fff;font-weight:700;cursor:pointer}
+    .btn-gray{background:#1a1a1a}
+    .row{display:flex;gap:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Panel SuperAdmin</h1>
+    <p>Revisá, aprobá o baneá iglesias.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Ciudad</th>
+          <th>Pastor</th>
+          <th>Admin UID</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <p id="msg" class="tags"></p>
+  </div>
+  <script type="module" src="./js/admin.js"></script>
+</body>
+</html>
