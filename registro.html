@@ -6,10 +6,11 @@
   <title>Registrar Iglesia | Mi Iglesia+</title>
 
   <!-- Tipografía -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
 
   <style>
     :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
+    *{ box-sizing:border-box }
     body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
     .wrap{max-width:520px;margin:40px auto;background:#fff;padding:24px;border:1px solid #eee;border-radius:12px}
     h1{margin:0 0 6px 0}
@@ -21,12 +22,12 @@
     .section-title{margin-top:18px;font-weight:800}
 
     /* ===== Parche anti-overlay (solo para registro) ===== */
-    .wrap { position: relative; z-index: 5; } /* formulario por encima */
+    .wrap { position: relative; z-index: 9999; } /* formulario por encima */
     input, button, select, textarea { pointer-events: auto !important; }
-    /* Si hubiera capas globales/pseudo-elementos, que no bloqueen clics aquí */
+    /* Si hubiera capas/pseudo-elementos globales, que no bloqueen clics aquí */
     .overlay, .page-cover, .hero::after, .cta::after, nav::after { pointer-events: none !important; }
     /* Botón visible y clickeable */
-    #btnRegister{ position:relative; z-index:10; cursor:pointer; }
+    #btnRegister{ position:relative; z-index:10000; cursor:pointer; }
     /* Por si alguna clase global deshabilitó eventos */
     .page-guard { pointer-events: auto !important; }
 
@@ -57,35 +58,48 @@
   </div>
 
   <!-- ===================== -->
-  <!--  AUTH INLINE (MVP)   -->
+  <!--  AUTH INLINE (FINAL)  -->
   <!-- ===================== -->
   <script type="module">
-    /* Firebase core (usa tu firebase-init actual en /js/firebase-init.js) */
-    import { app, auth, db } from '/js/firebase-init.js';
+    /* 1) Importar SDKs desde CDN (sin archivo externo) */
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import {
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      GoogleAuthProvider,
-      signInWithPopup,
-      sendEmailVerification,
-      sendPasswordResetEmail,
-      signOut,
-      onAuthStateChanged
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      GoogleAuthProvider, signInWithPopup, sendEmailVerification,
+      sendPasswordResetEmail, signOut, onAuthStateChanged
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
     import {
-      doc, setDoc, serverTimestamp, getDoc
+      getFirestore, doc, setDoc, serverTimestamp, getDoc
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
+    /* 2) Tu configuración real de Firebase (inline) */
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0j5yJQ2kU4_xrU1sDPB3XU3lWupX-A",
+      authDomain: "miglesia-plus.firebaseapp.com",
+      projectId: "miglesia-plus",
+      storageBucket: "miglesia-plus.firebasestorage.app",
+      messagingSenderId: "407690856167",
+      appId: "1:407690856167:web:5b421440b7ab7c9789aa702",
+      measurementId: "G-VEPJFQGQB"
+    };
+
+    /* 3) Inicializar app, auth y db (ya no se importa /js/firebase-init.js) */
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    /* Utilidad para capturar elementos */
     const $ = (id) => document.getElementById(id);
 
+    /* -------- Registro -------- */
     async function registerChurchAdmin(){
-      const email = $('email').value.trim();
+      const email    = $('email').value.trim();
       const password = $('password').value.trim();
-      const nombre = $('nombre').value.trim();
-      const ciudad = $('ciudad').value.trim();
-      const pastor = $('pastor').value.trim();
+      const nombre   = $('nombre').value.trim();
+      const ciudad   = $('ciudad').value.trim();
+      const pastor   = $('pastor').value.trim();
       const telefono = $('telefono').value.trim();
-      const msg = $('msg');
+      const msg      = $('msg');
 
       if (!email || !password || !nombre || !ciudad){
         msg.textContent = 'Completá email, contraseña, nombre y ciudad.';
@@ -118,10 +132,11 @@
       }
     }
 
+    /* -------- (Restante del flujo; opcional para esta página) -------- */
     async function login(){
-      const email = $('email').value.trim();
+      const email    = $('email').value.trim();
       const password = $('password').value.trim();
-      const msg = $('msg');
+      const msg      = $('msg');
 
       try {
         msg.textContent = 'Ingresando...';
@@ -209,7 +224,7 @@
 
     async function resetPassword(){
       const email = $('email').value.trim();
-      const msg = $('msg');
+      const msg   = $('msg');
       if (!email){ msg.textContent = 'Ingresá tu email para enviar el reseteo.'; return; }
       try{
         await sendPasswordResetEmail(auth, email);
@@ -238,7 +253,7 @@
       if (msg) msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
     }
 
-    // Export no es necesario en inline, pero lo dejamos por compatibilidad
+    // (Export no es necesario en inline)
     export { onAuthStateChanged };
   </script>
 </body>
