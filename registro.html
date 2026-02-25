@@ -73,15 +73,29 @@
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
     /* 2) Tu configuración real de Firebase (inline) */
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0j5yJQ2kU4_xrU1sDPB3XU3lWupX-A",
-      authDomain: "miglesia-plus.firebaseapp.com",
-      projectId: "miglesia-plus",
-      storageBucket: "miglesia-plus.firebasestorage.app",
-      messagingSenderId: "407690856167",
-      appId: "1:407690856167:web:5b421440b7ab7c9789aa702",
-      measurementId: "G-VEPJFQGQB"
-    };
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+    authDomain: "miiglesia-plus.firebaseapp.com",
+    projectId: "miiglesia-plus",
+    storageBucket: "miiglesia-plus.firebasestorage.app",
+    messagingSenderId: "407699856167",
+    appId: "1:407699856167:web:5d421d407ab7c9789aa702",
+    measurementId: "G-VEPJFQGCQB"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 
     /* 3) Inicializar app, auth y db (ya no se importa /js/firebase-init.js) */
     const app  = initializeApp(firebaseConfig);
