@@ -22,13 +22,10 @@
     .section-title{margin-top:18px;font-weight:800}
 
     /* ===== Parche anti-overlay (solo para registro) ===== */
-    .wrap { position: relative; z-index: 9999; } /* formulario por encima */
+    .wrap { position: relative; z-index: 9999; }
     input, button, select, textarea { pointer-events: auto !important; }
-    /* Si hubiera capas/pseudo-elementos globales, que no bloqueen clics aquí */
     .overlay, .page-cover, .hero::after, .cta::after, nav::after { pointer-events: none !important; }
-    /* Botón visible y clickeable */
     #btnRegister{ position:relative; z-index:10000; cursor:pointer; }
-    /* Por si alguna clase global deshabilitó eventos */
     .page-guard { pointer-events: auto !important; }
 
     /* Mensajes */
@@ -61,7 +58,7 @@
   <!--  AUTH INLINE (FINAL)  -->
   <!-- ===================== -->
   <script type="module">
-    /* 1) Importar SDKs desde CDN (sin archivo externo) */
+    /* Importar SDKs desde CDN (una sola versión) */
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import {
       getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
@@ -72,37 +69,23 @@
       getFirestore, doc, setDoc, serverTimestamp, getDoc
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    /* 2) Tu configuración real de Firebase (inline) */
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    /* 🔴 PEGÁ AQUÍ el firebaseConfig EXACTO (CDN) de tu App Web */
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_STORAGE_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+      // measurementId: "TU_MEASUREMENT_ID" // si tu consola lo muestra
+    };
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
-    authDomain: "miiglesia-plus.firebaseapp.com",
-    projectId: "miiglesia-plus",
-    storageBucket: "miiglesia-plus.firebasestorage.app",
-    messagingSenderId: "407699856167",
-    appId: "1:407699856167:web:5d421d407ab7c9789aa702",
-    measurementId: "G-VEPJFQGCQB"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-
-    /* 3) Inicializar app, auth y db (ya no se importa /js/firebase-init.js) */
+    /* Inicializar */
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
 
-    /* Utilidad para capturar elementos */
+    /* Utilidad */
     const $ = (id) => document.getElementById(id);
 
     /* -------- Registro -------- */
@@ -146,128 +129,24 @@
       }
     }
 
-    /* -------- (Restante del flujo; opcional para esta página) -------- */
-    async function login(){
-      const email    = $('email').value.trim();
-      const password = $('password').value.trim();
-      const msg      = $('msg');
+    // (Resto de funciones opcional para esta página)
+    async function login(){ /* ... */ }
+    async function loginWithGoogle(){ /* ... */ }
+    async function resetPassword(){ /* ... */ }
+    async function logout(){ /* ... */ }
 
-      try {
-        msg.textContent = 'Ingresando...';
-        const { user } = await signInWithEmailAndPassword(auth, email, password);
-
-        if (!user.emailVerified){
-          msg.innerHTML = '⚠️ Tu email no está verificado. <button id="resendBtn">Reenviar verificación</button>';
-          document.getElementById('resendBtn').onclick = async () => {
-            await sendEmailVerification(user);
-            msg.textContent = '✅ Verificación reenviada. Revisá tu correo.';
-          };
-          return;
-        }
-
-        const snap = await getDoc(doc(db, 'iglesias', user.uid));
-        const data = snap.data();
-        if (!data){
-          msg.textContent = 'No se encontró la iglesia asociada a tu cuenta.';
-          return;
-        }
-        if (data.estado === 'baneada' || data.estado === 'banneada'){
-          msg.textContent = '❌ Tu iglesia está baneada. Contactá al soporte.';
-          return;
-        }
-        if (data.estado !== 'activa'){
-          msg.textContent = '⏳ Tu iglesia está pendiente de aprobación. Te avisaremos por email.';
-          return;
-        }
-
-        window.location.href = 'dashboard.html';
-      } catch (e) {
-        showErr(e);
-      }
-    }
-
-    async function loginWithGoogle(isRegistrationFlow=false){
-      const provider = new GoogleAuthProvider();
-      const msg = $('msg');
-      try {
-        const { user } = await signInWithPopup(auth, provider);
-        const uid = user.uid;
-
-        if (isRegistrationFlow){
-          const churchRef = doc(db, 'iglesias', uid);
-          const snap = await getDoc(churchRef);
-          if (!snap.exists()){
-            await setDoc(churchRef, {
-              id: uid,
-              nombre: 'Mi nueva iglesia',
-              ciudad: '',
-              pastor: '',
-              telefono: '',
-              adminUid: uid,
-              miembros: 0,
-              emailContacto: user.email || '',
-              creadoEn: serverTimestamp(),
-              estado: 'pendiente'
-            });
-          }
-          window.location.href = 'dashboard.html';
-          return;
-        }
-
-        const churchRef = doc(db, 'iglesias', uid);
-        const snap = await getDoc(churchRef);
-        if (!snap.exists()){
-          window.location.href = 'registro.html';
-          return;
-        }
-        const data = snap.data();
-        if (data.estado === 'baneada' || data.estado === 'banneada'){
-          msg && (msg.textContent = '❌ Tu iglesia está baneada. Contactá al soporte.');
-          return;
-        }
-        if (data.estado !== 'activa'){
-          msg && (msg.textContent = '⏳ Tu iglesia está pendiente de aprobación.');
-          return;
-        }
-
-        window.location.href = 'dashboard.html';
-      } catch (e) {
-        showErr(e);
-      }
-    }
-
-    async function resetPassword(){
-      const email = $('email').value.trim();
-      const msg   = $('msg');
-      if (!email){ msg.textContent = 'Ingresá tu email para enviar el reseteo.'; return; }
-      try{
-        await sendPasswordResetEmail(auth, email);
-        msg.textContent = '📬 Te enviamos un email para resetear la contraseña.';
-      }catch(e){
-        showErr(e);
-      }
-    }
-
-    async function logout(){
-      await signOut(auth);
-      window.location.href = 'index.html';
-    }
-
-    // Listeners
-    document.getElementById('btnRegister')?.addEventListener('click', () => registerChurchAdmin().catch(showErr));
-    document.getElementById('btnLogin')?.addEventListener('click', () => login().catch(showErr));
-    document.getElementById('btnLogout')?.addEventListener('click', () => logout().catch(showErr));
-    document.getElementById('btnGoogle')?.addEventListener('click', () => loginWithGoogle(true).catch(showErr));
-    document.getElementById('btnGoogleLogin')?.addEventListener('click', () => loginWithGoogle(false).catch(showErr));
-    document.getElementById('btnReset')?.addEventListener('click', () => resetPassword().catch(showErr));
+    // Listener
+    document.getElementById('btnRegister')
+      ?.addEventListener('click', () => registerChurchAdmin().catch(showErr));
 
     function showErr(e){
       console.error(e);
       const msg = document.getElementById('msg');
       if (msg) msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
     }
-
-    // (Export no es necesario en inline)
+  </script>
+</body>
+</html>
     export { onAuthStateChanged };
   </script>
 </body>
