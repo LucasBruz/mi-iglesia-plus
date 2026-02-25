@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Registrar Iglesia | Mi Iglesia+</title>
 
-  <!-- Tipografía (igual que tu sitio) -->
+  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
@@ -19,9 +19,8 @@
     button:disabled{opacity:.6;cursor:not-allowed}
     a{color:var(--primary);text-decoration:none}
     .section-title{margin-top:18px;font-weight:800}
-    /* >>> Evitar que cualquier overlay accidental bloquee clics en esta página <<< */
-    .page-guard { pointer-events:none; }
-    /* Aseguramos clics en el botón */
+    /* Evitar overlays que bloqueen clics */
+    .page-guard { pointer-events:auto; }
     #btnRegister{ position:relative; z-index:10; }
     /* Mensajes */
     #msg{ margin-top:10px; color:#444; font-size:.92rem; min-height:1.2em; }
@@ -42,20 +41,198 @@
     <input id="pastor" placeholder="Pastor / Líder" />
     <input id="telefono" placeholder="Teléfono" />
 
-    <!-- >>> type='button' para evitar submit nativo del navegador <<< -->
+    <!-- type="button" para evitar submit nativo -->
     <button id="btnRegister" type="button">Crear cuenta y registrar iglesia</button>
     <p id="msg"></p>
 
     <p class="small" style="margin-top:12px">¿Ya tenés cuenta? <a href="login.html">Ingresar</a></p>
   </div>
 
-  <!-- Cargar el script AL FINAL para asegurar que el botón exista -->
-  <script type="module" src="./js/auth.js"></script>
-
-  <!-- Parche de emergencia: si por algún motivo el listener no se adjuntó aún,
-       volvemos a adjuntarlo después de que todo cargue.  -->
+  <!-- ===================== -->
+  <!--  AUTH INLINE (MVP)   -->
+  <!-- ===================== -->
   <script type="module">
-    import './js/auth.js';
-    // No hacemos nada aquí, solo garantizamos que el módulo cargue tras el DOM.
+    /* Firebase core (usa tu firebase-init actual en /js/firebase-init.js) */
+    import { app, auth, db } from '/js/firebase-init.js';
+    import {
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      GoogleAuthProvider,
+      signInWithPopup,
+      sendEmailVerification,
+      sendPasswordResetEmail,
+      signOut,
+      onAuthStateChanged
+    } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    import {
+      doc, setDoc, serverTimestamp, getDoc
+    } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    const $ = (id) => document.getElementById(id);
+
+    async function registerChurchAdmin(){
+      const email = $('email').value.trim();
+      const password = $('password').value.trim();
+      const nombre = $('nombre').value.trim();
+      const ciudad = $('ciudad').value.trim();
+      const pastor = $('pastor').value.trim();
+      const telefono = $('telefono').value.trim();
+      const msg = $('msg');
+
+      if (!email || !password || !nombre || !ciudad){
+        msg.textContent = 'Completá email, contraseña, nombre y ciudad.';
+        return;
+      }
+
+      try {
+        msg.textContent = 'Creando cuenta...';
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const churchId = cred.user.uid;
+
+        await setDoc(doc(db, 'iglesias', churchId), {
+          id: churchId,
+          nombre,
+          ciudad,
+          pastor: pastor || '',
+          telefono: telefono || '',
+          adminUid: cred.user.uid,
+          miembros: 0,
+          emailContacto: email,
+          creadoEn: serverTimestamp(),
+          estado: 'pendiente'
+        });
+
+        await sendEmailVerification(cred.user);
+        msg.textContent = '✅ Cuenta creada. Te enviamos un email de verificación. Revisá tu inbox/spam.';
+        await signOut(auth);
+      } catch (e) {
+        showErr(e);
+      }
+    }
+
+    async function login(){
+      const email = $('email').value.trim();
+      const password = $('password').value.trim();
+      const msg = $('msg');
+
+      try {
+        msg.textContent = 'Ingresando...';
+        const { user } = await signInWithEmailAndPassword(auth, email, password);
+
+        if (!user.emailVerified){
+          msg.innerHTML = '⚠️ Tu email no está verificado. <button id="resendBtn">Reenviar verificación</button>';
+          document.getElementById('resendBtn').onclick = async () => {
+            await sendEmailVerification(user);
+            msg.textContent = '✅ Verificación reenviada. Revisá tu correo.';
+          };
+          return;
+        }
+
+        const snap = await getDoc(doc(db, 'iglesias', user.uid));
+        const data = snap.data();
+        if (!data){
+          msg.textContent = 'No se encontró la iglesia asociada a tu cuenta.';
+          return;
+        }
+        if (data.estado === 'baneada' || data.estado === 'banneada'){
+          msg.textContent = '❌ Tu iglesia está baneada. Contactá al soporte.';
+          return;
+        }
+        if (data.estado !== 'activa'){
+          msg.textContent = '⏳ Tu iglesia está pendiente de aprobación. Te avisaremos por email.';
+          return;
+        }
+
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        showErr(e);
+      }
+    }
+
+    async function loginWithGoogle(isRegistrationFlow=false){
+      const provider = new GoogleAuthProvider();
+      const msg = $('msg');
+      try {
+        const { user } = await signInWithPopup(auth, provider);
+        const uid = user.uid;
+
+        if (isRegistrationFlow){
+          const churchRef = doc(db, 'iglesias', uid);
+          const snap = await getDoc(churchRef);
+          if (!snap.exists()){
+            await setDoc(churchRef, {
+              id: uid,
+              nombre: 'Mi nueva iglesia',
+              ciudad: '',
+              pastor: '',
+              telefono: '',
+              adminUid: uid,
+              miembros: 0,
+              emailContacto: user.email || '',
+              creadoEn: serverTimestamp(),
+              estado: 'pendiente'
+            });
+          }
+          window.location.href = 'dashboard.html';
+          return;
+        }
+
+        const churchRef = doc(db, 'iglesias', uid);
+        const snap = await getDoc(churchRef);
+        if (!snap.exists()){
+          window.location.href = 'registro.html';
+          return;
+        }
+        const data = snap.data();
+        if (data.estado === 'baneada' || data.estado === 'banneada'){
+          msg && (msg.textContent = '❌ Tu iglesia está baneada. Contactá al soporte.');
+          return;
+        }
+        if (data.estado !== 'activa'){
+          msg && (msg.textContent = '⏳ Tu iglesia está pendiente de aprobación.');
+          return;
+        }
+
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        showErr(e);
+      }
+    }
+
+    async function resetPassword(){
+      const email = $('email').value.trim();
+      const msg = $('msg');
+      if (!email){ msg.textContent = 'Ingresá tu email para enviar el reseteo.'; return; }
+      try{
+        await sendPasswordResetEmail(auth, email);
+        msg.textContent = '📬 Te enviamos un email para resetear la contraseña.';
+      }catch(e){
+        showErr(e);
+      }
+    }
+
+    async function logout(){
+      await signOut(auth);
+      window.location.href = 'index.html';
+    }
+
+    // Listeners
+    document.getElementById('btnRegister')?.addEventListener('click', () => registerChurchAdmin().catch(showErr));
+    document.getElementById('btnLogin')?.addEventListener('click', () => login().catch(showErr));
+    document.getElementById('btnLogout')?.addEventListener('click', () => logout().catch(showErr));
+    document.getElementById('btnGoogle')?.addEventListener('click', () => loginWithGoogle(true).catch(showErr));
+    document.getElementById('btnGoogleLogin')?.addEventListener('click', () => loginWithGoogle(false).catch(showErr));
+    document.getElementById('btnReset')?.addEventListener('click', () => resetPassword().catch(showErr));
+
+    function showErr(e){
+      console.error(e);
+      const msg = document.getElementById('msg');
+      if (msg) msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
+    }
+
+    // Export no es necesario en inline, pero lo dejamos por compatibilidad
+    export { onAuthStateChanged };
   </script>
 </body>
+</html>
+``
