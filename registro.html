@@ -4,34 +4,58 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Registrar Iglesia | Mi Iglesia+</title>
+
+  <!-- Tipografía (igual que tu sitio) -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
   <style>
-    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0}
+    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
+    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
     .wrap{max-width:520px;margin:40px auto;background:#fff;padding:24px;border:1px solid #eee;border-radius:12px}
-    input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px}
-    button{width:100%;padding:12px;border:0;border-radius:8px;background:#FF6B5B;color:#fff;font-weight:700;cursor:pointer}
-    .small{color:#666;font-size:.9rem}
-    a{color:#FF6B5B}
-    .btn-google{background:#fff;color:#1a1a1a;border:1px solid #ddd}
+    h1{margin:0 0 6px 0}
+    .small{color:#666;font-size:.92rem;margin:0 0 18px 0}
+    input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
+    button{width:100%;padding:12px;border:0;border-radius:8px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    a{color:var(--primary);text-decoration:none}
+    .section-title{margin-top:18px;font-weight:800}
+    /* >>> Evitar que cualquier overlay accidental bloquee clics en esta página <<< */
+    .page-guard { pointer-events:none; }
+    /* Aseguramos clics en el botón */
+    #btnRegister{ position:relative; z-index:10; }
+    /* Mensajes */
+    #msg{ margin-top:10px; color:#444; font-size:.92rem; min-height:1.2em; }
   </style>
 </head>
-<body>
+<body class="page-guard">
   <div class="wrap">
     <h1>Registrar Iglesia</h1>
     <p class="small">Creá la cuenta del admin y registrá tu iglesia. Te pediremos verificar el email.</p>
-    <h3>Cuenta del Admin</h3>
-    <input id="email" type="email" placeholder="Email del admin" />
-    <input id="password" type="password" placeholder="Contraseña (mín. 6)" />
-    <h3>Datos de la Iglesia</h3>
+
+    <h3 class="section-title">Cuenta del Admin</h3>
+    <input id="email" type="email" placeholder="Email del admin" autocomplete="email" />
+    <input id="password" type="password" placeholder="Contraseña (mín. 6)" autocomplete="new-password" />
+
+    <h3 class="section-title">Datos de la Iglesia</h3>
     <input id="nombre" placeholder="Nombre de la iglesia" />
     <input id="ciudad" placeholder="Ciudad" />
-    <input id="pastor" placeholder="Pastor" />
+    <input id="pastor" placeholder="Pastor / Líder" />
     <input id="telefono" placeholder="Teléfono" />
-    <button id="btnRegister">Crear cuenta y registrar iglesia</button>
-    <button id="btnGoogle" class="btn-google" style="margin-top:10px">Continuar con Google</button>
+
+    <!-- >>> type='button' para evitar submit nativo del navegador <<< -->
+    <button id="btnRegister" type="button">Crear cuenta y registrar iglesia</button>
+    <p id="msg"></p>
+
     <p class="small" style="margin-top:12px">¿Ya tenés cuenta? <a href="login.html">Ingresar</a></p>
-    <p id="msg" class="small"></p>
   </div>
+
+  <!-- Cargar el script AL FINAL para asegurar que el botón exista -->
   <script type="module" src="./js/auth.js"></script>
+
+  <!-- Parche de emergencia: si por algún motivo el listener no se adjuntó aún,
+       volvemos a adjuntarlo después de que todo cargue.  -->
+  <script type="module">
+    import './js/auth.js';
+    // No hacemos nada aquí, solo garantizamos que el módulo cargue tras el DOM.
+  </script>
 </body>
-</html>
