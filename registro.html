@@ -69,20 +69,22 @@
       getFirestore, doc, setDoc, serverTimestamp, getDoc
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    /* 🔴 PEGÁ AQUÍ el firebaseConfig EXACTO (CDN) de tu App Web */
-   const firebaseConfig = {
-    apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
-    authDomain: "miiglesia-plus.firebaseapp.com",
-    projectId: "miiglesia-plus",
-    storageBucket: "miiglesia-plus.firebasestorage.app",
-    messagingSenderId: "407699856167",
-    appId: "1:407699856167:web:5d421d407ab7c9789aa702",
-    measurementId: "G-VEPJFQGCQB"
-  };
+    /* 🔵 Tu configuración real (tal como la enviaste) */
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702",
+      measurementId: "G-VEPJFQGCQB"
+    };
+
     /* Inicializar */
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
+    console.info("Firebase config OK. apiKey usada:", app.options?.apiKey);
 
     /* Utilidad */
     const $ = (id) => document.getElementById(id);
@@ -128,13 +130,7 @@
       }
     }
 
-    // (Resto de funciones opcional para esta página)
-    async function login(){ /* ... */ }
-    async function loginWithGoogle(){ /* ... */ }
-    async function resetPassword(){ /* ... */ }
-    async function logout(){ /* ... */ }
-
-    // Listener
+    // Listeners (lo esencial en esta página)
     document.getElementById('btnRegister')
       ?.addEventListener('click', () => registerChurchAdmin().catch(showErr));
 
@@ -143,10 +139,6 @@
       const msg = document.getElementById('msg');
       if (msg) msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
     }
-  </script>
-</body>
-</html>
-    export { onAuthStateChanged };
   </script>
 </body>
 </html>
