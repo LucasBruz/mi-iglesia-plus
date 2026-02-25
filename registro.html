@@ -19,9 +19,17 @@
     button:disabled{opacity:.6;cursor:not-allowed}
     a{color:var(--primary);text-decoration:none}
     .section-title{margin-top:18px;font-weight:800}
-    /* Evitar overlays que bloqueen clics */
-    .page-guard { pointer-events:auto; }
-    #btnRegister{ position:relative; z-index:10; }
+
+    /* ===== Parche anti-overlay (solo para registro) ===== */
+    .wrap { position: relative; z-index: 5; } /* formulario por encima */
+    input, button, select, textarea { pointer-events: auto !important; }
+    /* Si hubiera capas globales/pseudo-elementos, que no bloqueen clics aquí */
+    .overlay, .page-cover, .hero::after, .cta::after, nav::after { pointer-events: none !important; }
+    /* Botón visible y clickeable */
+    #btnRegister{ position:relative; z-index:10; cursor:pointer; }
+    /* Por si alguna clase global deshabilitó eventos */
+    .page-guard { pointer-events: auto !important; }
+
     /* Mensajes */
     #msg{ margin-top:10px; color:#444; font-size:.92rem; min-height:1.2em; }
   </style>
@@ -235,4 +243,3 @@
   </script>
 </body>
 </html>
-``
