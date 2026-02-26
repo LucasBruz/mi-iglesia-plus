@@ -1,0 +1,190 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel de Iglesia | Mi Iglesia+</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
+    *{ box-sizing:border-box }
+    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
+    .container{max-width:760px;margin:32px auto;padding:0 16px}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:22px}
+    h1{margin:0 0 6px 0;font-size:28px}
+    p.lead{color:#666;margin:0 0 16px 0}
+    label{display:block;margin-top:10px;margin-bottom:6px;font-weight:600}
+    input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .row > div{flex:1 1 260px}
+    .actions{display:flex;gap:12px;margin-top:16px}
+    button{flex:1 0 200px;padding:12px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    button.secondary{background:#111}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    #status{margin-top:6px;color:#444}
+    #msg{margin-top:10px;color:#444;min-height:1.2em}
+    .muted{color:#888;font-size:.9rem}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <h1>Panel de Iglesia</h1>
+          <p class="lead">Editá los datos de tu iglesia (requiere cuenta verificada y estado activo).</p>
+          <div class="muted">Sesión: <span id="emailLbl">—</span></div>
+          <div id="status" class="muted"></div>
+        </div>
+        <div>
+          <button id="btnLogout" class="secondary" title="Salir de la cuenta">Salir</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="nombre">Nombre</label>
+          <input id="nombre" placeholder="Nombre de la iglesia" />
+        </div>
+        <div>
+          <label for="ciudad">Ciudad</label>
+          <input id="ciudad" placeholder="Ciudad" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="pastor">Pastor / Líder</label>
+          <input id="pastor" placeholder="Pastor / Líder" />
+        </div>
+        <div>
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" placeholder="Teléfono" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="miembros">Miembros (número)</label>
+          <input id="miembros" placeholder="0" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnSave" type="button">Guardar cambios</button>
+      </div>
+
+      <p id="msg"></p>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase SDK desde CDN (una sola versión)
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    // 🔵 Config de tu proyecto (la que me pasaste)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702",
+      measurementId: "G-VEPJFQGCQB"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const $ = (id) => document.getElementById(id);
+
+    let currentUid = null;
+    let churchRef = null;
+    let churchData = null;
+
+    function disableForm(disabled) {
+      ['nombre','ciudad','pastor','telefono','miembros','btnSave'].forEach(id => {
+        const el = $(id); if (el) el.disabled = disabled;
+      });
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      const status = $('status');
+      if (!user) { window.location.href = 'login.html'; return; }
+      currentUid = user.uid;
+      $('emailLbl').textContent = user.email || '';
+
+      try {
+        churchRef = doc(db, 'iglesias', currentUid);
+        const snap = await getDoc(churchRef);
+        if (!snap.exists()) {
+          $('msg').textContent = 'No se encontró tu iglesia. Registrá primero.';
+          disableForm(true);
+          return;
+        }
+        churchData = snap.data();
+
+        // precargar campos
+        $('nombre').value   = churchData.nombre   ?? '';
+        $('ciudad').value   = churchData.ciudad   ?? '';
+        $('pastor').value   = churchData.pastor   ?? '';
+        $('telefono').value = churchData.telefono ?? '';
+        $('miembros').value = (churchData.miembros ?? '').toString();
+
+        if (churchData.estado !== 'activa') {
+          status.textContent = '⏳ Tu iglesia está PENDIENTE. Pedí a un admin que la apruebe.';
+          $('btnSave').disabled = true;
+        } else if (!user.emailVerified) {
+          status.innerHTML = '⚠️ Verificá tu email para poder guardar cambios. ' +
+            '<button id="btnResend" style="margin-left:6px;">Reenviar verificación</button>';
+          $('btnSave').disabled = true;
+          document.getElementById('btnResend').onclick = async () => {
+            await sendEmailVerification(user);
+            status.textContent = '📧 Verificación reenviada. Revisá tu correo.';
+          };
+        } else {
+          status.textContent = '✅ Estado: ACTIVA';
+          $('btnSave').disabled = false;
+        }
+      } catch (e) {
+        console.error(e);
+        $('msg').textContent = '❌ ' + (e?.message || 'Error cargando datos');
+        disableForm(true);
+      }
+    });
+
+    $('btnSave').addEventListener('click', async () => {
+      const msg = $('msg');
+      try {
+        msg.textContent = 'Guardando...';
+        const payload = {
+          nombre:   $('nombre').value.trim(),
+          ciudad:   $('ciudad').value.trim(),
+          pastor:   $('pastor').value.trim(),
+          telefono: $('telefono').value.trim()
+        };
+        const miembrosTxt = $('miembros').value.trim();
+        if (miembrosTxt !== '') {
+          const n = Number(miembrosTxt);
+          if (!Number.isNaN(n)) payload.miembros = n;
+        }
+        await updateDoc(churchRef, payload);
+        msg.textContent = '✅ Cambios guardados.';
+      } catch (e) {
+        console.error(e);
+        $('msg').textContent = '❌ ' + (e?.message || 'No se pudo guardar.');
+      }
+    });
+
+    $('btnLogout').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
