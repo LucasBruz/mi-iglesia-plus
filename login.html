@@ -4,29 +4,145 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ingresar | Mi Iglesia+</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+
   <style>
-    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0}
+    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
+    *{ box-sizing:border-box }
+    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
     .wrap{max-width:520px;margin:40px auto;background:#fff;padding:24px;border:1px solid #eee;border-radius:12px}
-    input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px}
-    button{width:100%;padding:12px;border:0;border-radius:8px;background:#FF6B5B;color:#fff;font-weight:700;cursor:pointer}
-    .small{color:#666;font-size:.9rem}
-    a{color:#FF6B5B}
-    .btn-google{background:#fff;color:#1a1a1a;border:1px solid #ddd}
-    .btn-secondary{background:#1a1a1a}
+    h1{margin:0 0 16px 0}
+    .small{color:#666;font-size:.92rem;margin-top:12px}
+    input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
+    button{width:100%;padding:12px;border:0;border-radius:8px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    .btn-secondary{background:#fff;color:#333;border:1px solid #ddd}
+    .btn-dark{background:#111;color:#fff}
+    #msg{ margin-top:10px; color:#444; font-size:.92rem; min-height:1.2em; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Ingresar</h1>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Contraseña" />
-    <button id="btnLogin">Ingresar</button>
-    <button id="btnGoogleLogin" class="btn-google" style="margin-top:10px">Ingresar con Google</button>
-    <button id="btnReset" class="btn-secondary" style="margin-top:10px">Resetear contraseña</button>
-    <p id="msg" class="small"></p>
-    <p class="small" style="margin-top:12px">¿No tenés cuenta? <a href="registro.html">Registrar Iglesia</a></p>
+
+    <input id="email" type="email" placeholder="Email" autocomplete="email" />
+    <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
+
+    <button id="btnLogin" type="button">Ingresar</button>
+    <button id="btnGoogleLogin" type="button" class="btn-secondary">Ingresar con Google</button>
+    <button id="btnReset" type="button" class="btn-dark">Resetear contraseña</button>
+
+    <p id="msg"></p>
+    <p class="small">¿No tenés cuenta? <a href="registro.html">Registrar Iglesia</a></p>
   </div>
-  <script type="module" src="./js/auth.js"></script>
+
+  <!-- AUTH INLINE -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import {
+      getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
+      sendEmailVerification, sendPasswordResetEmail, onAuthStateChanged, signOut
+    } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    import {
+      getFirestore, doc, getDoc
+    } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    // 🔵 PEGÁ TU MISMO firebaseConfig (el real, de la consola CDN)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702",
+      measurementId: "G-VEPJFQGCQB"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const $ = (id) => document.getElementById(id);
+    const msg = $('msg');
+
+    async function login(){
+      const email = $('email').value.trim();
+      const password = $('password').value.trim();
+      try {
+        msg.textContent = 'Ingresando...';
+        const { user } = await signInWithEmailAndPassword(auth, email, password);
+
+        if (!user.emailVerified){
+          msg.innerHTML = '⚠️ Tu email no está verificado. <button id="resendBtn">Reenviar verificación</button>';
+          document.getElementById('resendBtn').onclick = async () => {
+            await sendEmailVerification(user);
+            msg.textContent = '✅ Verificación reenviada. Revisá tu correo.';
+          };
+          return;
+        }
+
+        // Buscar iglesia y decidir navegación
+        const snap = await getDoc(doc(db, 'iglesias', user.uid));
+        const data = snap.data();
+        if (!snap.exists() || !data){
+          msg.textContent = 'No se encontró la iglesia asociada a tu cuenta.';
+          return;
+        }
+        if (['baneada','banneada'].includes(data.estado)){
+          msg.textContent = '❌ Tu iglesia está baneada. Contactá al soporte.';
+          return;
+        }
+        if (data.estado !== 'activa'){
+          msg.textContent = '⏳ Tu iglesia está pendiente de aprobación.';
+          return;
+        }
+
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        console.error(e);
+        const map = {
+          'auth/user-not-found': 'No existe una cuenta con ese email.',
+          'auth/wrong-password': 'Contraseña incorrecta.',
+          'auth/too-many-requests': 'Demasiados intentos. Probá más tarde o restablecé la contraseña.',
+          'auth/user-disabled': 'La cuenta está deshabilitada.'
+        };
+        msg.textContent = '❌ ' + (map[e?.code] || e?.message || 'Error inesperado');
+      }
+    }
+
+    async function loginWithGoogle(){
+      const provider = new GoogleAuthProvider();
+      try {
+        const { user } = await signInWithPopup(auth, provider);
+        // Comprobar iglesia
+        const snap = await getDoc(doc(db, 'iglesias', user.uid));
+        if (!snap.exists()) { window.location.href = 'registro.html'; return; }
+        const data = snap.data();
+        if (['baneada','banneada'].includes(data.estado)){ msg.textContent = '❌ Iglesia baneada.'; return; }
+        if (data.estado !== 'activa'){ msg.textContent = '⏳ Iglesia pendiente de aprobación.'; return; }
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        console.error(e);
+        msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
+      }
+    }
+
+    async function resetPassword(){
+      const email = $('email').value.trim();
+      if (!email){ msg.textContent = 'Ingresá tu email para enviar el reseteo.'; return; }
+      try{
+        await sendPasswordResetEmail(auth, email);
+        msg.textContent = '📬 Te enviamos un email para resetear la contraseña.';
+      }catch(e){
+        console.error(e);
+        msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
+      }
+    }
+
+    $('btnLogin')?.addEventListener('click', () => login());
+    $('btnGoogleLogin')?.addEventListener('click', () => loginWithGoogle());
+    $('btnReset')?.addEventListener('click', () => resetPassword());
+  </script>
 </body>
 </html>
