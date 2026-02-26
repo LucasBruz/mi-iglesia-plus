@@ -1,31 +1,47 @@
-
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Panel de Iglesia | Mi Iglesia+</title>
+  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+
   <style>
     :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
     *{ box-sizing:border-box }
     body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
-    .container{max-width:760px;margin:32px auto;padding:0 16px}
+    .container{max-width:960px;margin:32px auto;padding:0 16px}
     .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:22px}
     h1{margin:0 0 6px 0;font-size:28px}
     p.lead{color:#666;margin:0 0 16px 0}
-    label{display:block;margin-top:10px;margin-bottom:6px;font-weight:600}
-    input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .row > div{flex:1 1 260px}
-    .actions{display:flex;gap:12px;margin-top:16px}
-    button{flex:1 0 200px;padding:12px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    .muted{color:#888;font-size:.9rem}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
+    button{padding:10px 14px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
     button.secondary{background:#111}
     button:disabled{opacity:.6;cursor:not-allowed}
+    input,textarea,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
+    label{display:block;margin:8px 0 4px 0;font-weight:600}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .row > div{flex:1 1 280px}
     #status{margin-top:6px;color:#444}
     #msg{margin-top:10px;color:#444;min-height:1.2em}
-    .muted{color:#888;font-size:.9rem}
-    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+
+    /* Tabs */
+    .tabs{display:flex;gap:8px;margin:16px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
+    .tab-btn{background:#f2f2f2;color:#333;border-radius:10px 10px 0 0;border:1px solid #eee;border-bottom:0;padding:10px 14px;cursor:pointer}
+    .tab-btn.active{background:#fff;color:#000;border-bottom:1px solid #fff}
+    .tab{display:none}
+    .tab.active{display:block}
+
+    /* Listados */
+    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
+    .item{border:1px solid #eee;border-radius:12px;padding:12px;background:#fff}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff;margin-right:6px}
+    .badge.pub{background:#28a745} .badge.priv{background:#6c757d}
+    iframe, audio, video{width:100%;border-radius:8px;border:0}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    .danger{background:#dc3545}
   </style>
 </head>
 <body>
@@ -34,7 +50,7 @@
       <div class="topbar">
         <div>
           <h1>Panel de Iglesia</h1>
-          <p class="lead">Editá los datos de tu iglesia (requiere cuenta verificada y estado activo).</p>
+          <p class="lead">Editá y publicá tus <b>Prédicas</b>, <b>Eventos</b> y <b>Peticiones</b>. Requiere cuenta verificada y estado activo.</p>
           <div class="muted">Sesión: <span id="emailLbl">—</span></div>
           <div id="status" class="muted"></div>
         </div>
@@ -43,50 +59,123 @@
         </div>
       </div>
 
-      <div class="row">
-        <div>
-          <label for="nombre">Nombre</label>
-          <input id="nombre" placeholder="Nombre de la iglesia" />
-        </div>
-        <div>
-          <label for="ciudad">Ciudad</label>
-          <input id="ciudad" placeholder="Ciudad" />
-        </div>
+      <!-- Pestañas -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="tab-predicas">Prédicas</button>
+        <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
+        <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
       </div>
 
-      <div class="row">
-        <div>
-          <label for="pastor">Pastor / Líder</label>
-          <input id="pastor" placeholder="Pastor / Líder" />
+      <!-- TAB: PRÉDICAS (solo YouTube) -->
+      <section id="tab-predicas" class="tab active">
+        <h2>Prédicas (YouTube)</h2>
+        <div class="row">
+          <div>
+            <label for="p_titulo">Título</label>
+            <input id="p_titulo" placeholder="Ej: Fe que mueve montañas" />
+          </div>
+          <div>
+            <label for="p_url">URL de YouTube</label>
+            <input id="p_url" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX" />
+          </div>
         </div>
-        <div>
-          <label for="telefono">Teléfono</label>
-          <input id="telefono" placeholder="Teléfono" />
+        <div class="row">
+          <div>
+            <label for="p_fecha">Fecha</label>
+            <input id="p_fecha" type="date" />
+          </div>
+          <div>
+            <label>Visibilidad</label>
+            <label><input id="p_publico" type="checkbox" checked /> Pública</label>
+          </div>
         </div>
-      </div>
+        <div class="actions">
+          <button id="btnPredicaGuardar">Guardar prédica</button>
+        </div>
 
-      <div class="row">
-        <div>
-          <label for="miembros">Miembros (número)</label>
-          <input id="miembros" placeholder="0" />
-        </div>
-      </div>
+        <div class="list" id="listaPredicas"></div>
+      </section>
 
-      <div class="actions">
-        <button id="btnSave" type="button">Guardar cambios</button>
-      </div>
+      <!-- TAB: EVENTOS -->
+      <section id="tab-eventos" class="tab">
+        <h2>Eventos</h2>
+        <div class="row">
+          <div>
+            <label for="e_titulo">Título</label>
+            <input id="e_titulo" placeholder="Vigilia de oración" />
+          </div>
+          <div>
+            <label for="e_lugar">Lugar</label>
+            <input id="e_lugar" placeholder="Templo central" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="e_inicio">Inicio</label>
+            <input id="e_inicio" type="datetime-local" />
+          </div>
+          <div>
+            <label for="e_fin">Fin</label>
+            <input id="e_fin" type="datetime-local" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="full">
+            <label for="e_desc">Descripción</label>
+            <textarea id="e_desc" rows="3" placeholder="Detalles del evento"></textarea>
+          </div>
+          <div>
+            <label>Visibilidad</label>
+            <label><input id="e_publico" type="checkbox" checked /> Público</label>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="btnEventoGuardar">Guardar evento</button>
+        </div>
+
+        <div class="list" id="listaEventos"></div>
+      </section>
+
+      <!-- TAB: PETICIONES -->
+      <section id="tab-peticiones" class="tab">
+        <h2>Peticiones de oración</h2>
+        <div class="row">
+          <div>
+            <label for="t_titulo">Título</label>
+            <input id="t_titulo" placeholder="Oración por salud" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="full">
+            <label for="t_detalle">Detalle</label>
+            <textarea id="t_detalle" rows="3" placeholder="Describe la petición..."></textarea>
+          </div>
+          <div>
+            <label>Visibilidad</label>
+            <label><input id="t_publico" type="checkbox" /> Pública</label>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="btnPeticionGuardar">Guardar petición</button>
+        </div>
+
+        <div class="list" id="listaPeticiones"></div>
+      </section>
 
       <p id="msg"></p>
     </div>
   </div>
 
   <script type="module">
-    // Firebase SDK desde CDN (una sola versión)
+    /* Firebase (CDN, una sola versión) */
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-    import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import {
+      getFirestore, doc, getDoc, collection, addDoc, serverTimestamp,
+      query, orderBy, getDocs, deleteDoc
+    } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    // 🔵 Config de tu proyecto (la que me pasaste)
+    /* 🔵 Config (usando la que me pasaste) */
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
@@ -102,88 +191,231 @@
     const db   = getFirestore(app);
 
     const $ = (id) => document.getElementById(id);
+    const msg = $('msg');
+    let uid = null;           // UID del admin logueado
+    let iglesiaDoc = null;    // Datos de la iglesia
 
-    let currentUid = null;
-    let churchRef = null;
-    let churchData = null;
-
-    function disableForm(disabled) {
-      ['nombre','ciudad','pastor','telefono','miembros','btnSave'].forEach(id => {
-        const el = $(id); if (el) el.disabled = disabled;
+    /* ---------- Tabs UI ---------- */
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabs = document.querySelectorAll('.tab');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b=>b.classList.remove('active'));
+        tabs.forEach(t=>t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
       });
-    }
-
-    onAuthStateChanged(auth, async (user) => {
-      const status = $('status');
-      if (!user) { window.location.href = 'login.html'; return; }
-      currentUid = user.uid;
-      $('emailLbl').textContent = user.email || '';
-
-      try {
-        churchRef = doc(db, 'iglesias', currentUid);
-        const snap = await getDoc(churchRef);
-        if (!snap.exists()) {
-          $('msg').textContent = 'No se encontró tu iglesia. Registrá primero.';
-          disableForm(true);
-          return;
-        }
-        churchData = snap.data();
-
-        // precargar campos
-        $('nombre').value   = churchData.nombre   ?? '';
-        $('ciudad').value   = churchData.ciudad   ?? '';
-        $('pastor').value   = churchData.pastor   ?? '';
-        $('telefono').value = churchData.telefono ?? '';
-        $('miembros').value = (churchData.miembros ?? '').toString();
-
-        if (churchData.estado !== 'activa') {
-          status.textContent = '⏳ Tu iglesia está PENDIENTE. Pedí a un admin que la apruebe.';
-          $('btnSave').disabled = true;
-        } else if (!user.emailVerified) {
-          status.innerHTML = '⚠️ Verificá tu email para poder guardar cambios. ' +
-            '<button id="btnResend" style="margin-left:6px;">Reenviar verificación</button>';
-          $('btnSave').disabled = true;
-          document.getElementById('btnResend').onclick = async () => {
-            await sendEmailVerification(user);
-            status.textContent = '📧 Verificación reenviada. Revisá tu correo.';
-          };
-        } else {
-          status.textContent = '✅ Estado: ACTIVA';
-          $('btnSave').disabled = false;
-        }
-      } catch (e) {
-        console.error(e);
-        $('msg').textContent = '❌ ' + (e?.message || 'Error cargando datos');
-        disableForm(true);
-      }
     });
 
-    $('btnSave').addEventListener('click', async () => {
-      const msg = $('msg');
-      try {
-        msg.textContent = 'Guardando...';
-        const payload = {
-          nombre:   $('nombre').value.trim(),
-          ciudad:   $('ciudad').value.trim(),
-          pastor:   $('pastor').value.trim(),
-          telefono: $('telefono').value.trim()
-        };
-        const miembrosTxt = $('miembros').value.trim();
-        if (miembrosTxt !== '') {
-          const n = Number(miembrosTxt);
-          if (!Number.isNaN(n)) payload.miembros = n;
-        }
-        await updateDoc(churchRef, payload);
-        msg.textContent = '✅ Cambios guardados.';
-      } catch (e) {
-        console.error(e);
-        $('msg').textContent = '❌ ' + (e?.message || 'No se pudo guardar.');
+    /* ---------- Helpers ---------- */
+    function youtubeIdFromUrl(url) {
+      const rx = /(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/;
+      const m = (url || '').match(rx);
+      return m ? m[1] : '';
+    }
+    function ensureActiveAndVerified(user, dataIglesia) {
+      const status = $('status');
+      if (dataIglesia?.estado !== 'activa') {
+        status.textContent = '⏳ Tu iglesia está PENDIENTE. Pedí a un admin que la apruebe.';
+        disableAllForms(true);
+        return false;
       }
+      if (!user.emailVerified) {
+        status.innerHTML = '⚠️ Verificá tu email para poder guardar. ' +
+          '<button id="btnResend" style="margin-left:6px;">Reenviar verificación</button>';
+        disableAllForms(true);
+        document.getElementById('btnResend').onclick = async () => {
+          await sendEmailVerification(user);
+          status.textContent = '📧 Verificación reenviada. Revisá tu correo.';
+        };
+        return false;
+      }
+      status.textContent = '✅ Estado: ACTIVA';
+      disableAllForms(false);
+      return true;
+    }
+    function disableAllForms(disabled) {
+      ['p_titulo','p_url','p_fecha','p_publico','btnPredicaGuardar',
+       'e_titulo','e_lugar','e_inicio','e_fin','e_desc','e_publico','btnEventoGuardar',
+       't_titulo','t_detalle','t_publico','btnPeticionGuardar'
+      ].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
+    }
+    function fmtDate(d) {
+      try { return new Date(d?.seconds ? d.seconds*1000 : d).toLocaleDateString(); }
+      catch { return ''; }
+    }
+
+    /* ---------- Estado de sesión ---------- */
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+      uid = user.uid;
+      $('emailLbl').textContent = user.email || '';
+
+      // Buscar documento de iglesia
+      const ref = doc(db, 'iglesias', uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) { msg.textContent = 'No se encontró tu iglesia. Registrá primero.'; disableAllForms(true); return; }
+      iglesiaDoc = snap.data();
+
+      // Habilitar/deshabilitar segun reglas
+      const ok = ensureActiveAndVerified(user, iglesiaDoc);
+
+      // Cargar listados
+      await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones()]);
+      if (!ok) return;
     });
 
     $('btnLogout').addEventListener('click', async () => {
       await signOut(auth);
       window.location.href = 'index.html';
+    });
+
+    /* ---------- PRÉDICAS ---------- */
+    async function cargarPredicas() {
+      const cont = $('listaPredicas'); cont.innerHTML = '';
+      const col = collection(db, 'iglesias', uid, 'predicas');
+      const q = query(col, orderBy('fecha','desc'));
+      const snap = await getDocs(q);
+      if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay prédicas.</div>'; return; }
+      snap.forEach(docu => {
+        const d = docu.data();
+        const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
+        const yt = d.youtubeId ? `<iframe height="180" src="https://www.youtube.com/embed/${d.youtubeId}" allowfullscreen></iframe>` : '';
+        cont.insertAdjacentHTML('beforeend', `
+          <div class="item">
+            <div>${badge} <b>${d.titulo || '(Sin título)'}</b></div>
+            <div class="muted">${fmtDate(d.fecha)}</div>
+            ${yt}
+            <div class="actions">
+              <button class="danger" data-del="${docu.id}">Eliminar</button>
+            </div>
+          </div>
+        `);
+      });
+      // Binds eliminar
+      cont.querySelectorAll('button[data-del]').forEach(b=>{
+        b.onclick = async () => {
+          if (!confirm('¿Eliminar esta prédica?')) return;
+          await deleteDoc(doc(db, 'iglesias', uid, 'predicas', b.dataset.del));
+          await cargarPredicas();
+        };
+      });
+    }
+
+    $('btnPredicaGuardar').addEventListener('click', async () => {
+      try {
+        msg.textContent = 'Guardando prédica...';
+        const titulo  = $('p_titulo').value.trim();
+        const url     = $('p_url').value.trim();
+        const youtubeId = youtubeIdFromUrl(url);
+        if (!youtubeId) { msg.textContent = '❌ URL de YouTube inválida'; return; }
+        const fecha   = $('p_fecha').value ? new Date($('p_fecha').value) : new Date();
+        const publico = $('p_publico').checked;
+
+        await addDoc(collection(db, 'iglesias', uid, 'predicas'), {
+          titulo, url, youtubeId, fecha, publico, creadoPor: uid, creadoEn: serverTimestamp()
+        });
+        $('p_titulo').value = ''; $('p_url').value=''; $('p_publico').checked = true;
+        msg.textContent = '✅ Prédica guardada.';
+        await cargarPredicas();
+      } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar prédica'); }
+    });
+
+    /* ---------- EVENTOS ---------- */
+    async function cargarEventos() {
+      const cont = $('listaEventos'); cont.innerHTML = '';
+      const col = collection(db, 'iglesias', uid, 'eventos');
+      const q = query(col, orderBy('inicio','desc'));
+      const snap = await getDocs(q);
+      if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay eventos.</div>'; return; }
+      snap.forEach(docu => {
+        const d = docu.data();
+        const badge = d.publico ? '<span class="badge pub">Público</span>' : '<span class="badge priv">Privado</span>';
+        cont.insertAdjacentHTML('beforeend', `
+          <div class="item">
+            <div>${badge} <b>${d.titulo || '(Sin título)'}</b></div>
+            <div class="muted">${d.lugar || ''}</div>
+            <div class="muted">${fmtDate(d.inicio)} — ${fmtDate(d.fin)}</div>
+            <div class="muted">${d.descripcion || ''}</div>
+            <div class="actions">
+              <button class="danger" data-del="${docu.id}">Eliminar</button>
+            </div>
+          </div>
+        `);
+      });
+      cont.querySelectorAll('button[data-del]').forEach(b=>{
+        b.onclick = async () => {
+          if (!confirm('¿Eliminar este evento?')) return;
+          await deleteDoc(doc(db, 'iglesias', uid, 'eventos', b.dataset.del));
+          await cargarEventos();
+        };
+      });
+    }
+
+    $('btnEventoGuardar').addEventListener('click', async () => {
+      try {
+        msg.textContent = 'Guardando evento...';
+        const titulo = $('e_titulo').value.trim();
+        const lugar  = $('e_lugar').value.trim();
+        const inicio = $('e_inicio').value ? new Date($('e_inicio').value) : new Date();
+        const fin    = $('e_fin').value ? new Date($('e_fin').value) : inicio;
+        const descripcion = $('e_desc').value.trim();
+        const publico = $('e_publico').checked;
+
+        await addDoc(collection(db, 'iglesias', uid, 'eventos'), {
+          titulo, lugar, inicio, fin, descripcion, publico, creadoPor: uid, creadoEn: serverTimestamp()
+        });
+        $('e_titulo').value=''; $('e_lugar').value=''; $('e_inicio').value=''; $('e_fin').value='';
+        $('e_desc').value=''; $('e_publico').checked = true;
+        msg.textContent = '✅ Evento guardado.';
+        await cargarEventos();
+      } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar evento'); }
+    });
+
+    /* ---------- PETICIONES ---------- */
+    async function cargarPeticiones() {
+      const cont = $('listaPeticiones'); cont.innerHTML = '';
+      const col = collection(db, 'iglesias', uid, 'peticiones');
+      const q = query(col, orderBy('fecha','desc'));
+      const snap = await getDocs(q);
+      if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay peticiones.</div>'; return; }
+      snap.forEach(docu=>{
+        const d = docu.data();
+        const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
+        cont.insertAdjacentHTML('beforeend', `
+          <div class="item">
+            <div>${badge} <b>${d.titulo || '(Sin título)'}</b></div>
+            <div class="muted">${fmtDate(d.fecha)}</div>
+            <div class="muted">${d.detalle || ''}</div>
+            <div class="actions">
+              <button class="danger" data-del="${docu.id}">Eliminar</button>
+            </div>
+          </div>
+        `);
+      });
+      cont.querySelectorAll('button[data-del]').forEach(b=>{
+        b.onclick = async () => {
+          if (!confirm('¿Eliminar esta petición?')) return;
+          await deleteDoc(doc(db, 'iglesias', uid, 'peticiones', b.dataset.del));
+          await cargarPeticiones();
+        };
+      });
+    }
+
+    $('btnPeticionGuardar').addEventListener('click', async () => {
+      try {
+        msg.textContent = 'Guardando petición...';
+        const titulo = $('t_titulo').value.trim();
+        const detalle= $('t_detalle').value.trim();
+        const publico= $('t_publico').checked;
+
+        await addDoc(collection(db, 'iglesias', uid, 'peticiones'), {
+          titulo, detalle, publico, fecha: new Date(), creadaPor: uid, creadoEn: serverTimestamp()
+        });
+        $('t_titulo').value=''; $('t_detalle').value=''; $('t_publico').checked=false;
+        msg.textContent = '✅ Petición guardada.';
+        await cargarPeticiones();
+      } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar petición'); }
     });
   </script>
 </body>
