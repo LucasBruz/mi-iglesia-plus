@@ -1,1 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pago completado | Mi Iglesia+</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin:0; padding:0;
+      font-family:Poppins, sans-serif;
+      background:#f5f5f5;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      color:#1a1a1a;
+    }
+    .card {
+      width:100%;
+      max-width:420px;
+      background:white;
+      padding:28px;
+      border-radius:18px;
+      box-shadow:0 4px 18px rgba(0,0,0,0.1);
+      text-align:center;
+    }
+    h2 { margin-top:0; font-weight:800; }
+    #msg { margin:10px 0 20px 0; color:#666; }
+
+    button {
+      width:100%;
+      padding:14px;
+      background:#111;
+      color:white;
+      border:0;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      opacity:0.8;
+    }
+    button:enabled:hover { opacity:1; }
+    button:disabled { opacity:0.4; cursor:not-allowed; }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h2>Procesando pago…</h2>
+    <p id="msg">Esperando confirmación…</p>
+
+    <button id="btnSeguir" disabled>Continuar al registro</button>
+  </div>
+
+  <script type="module">
+    import { getAuth, onAuthStateChanged } from
+    "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    import { getFirestore, getDoc, doc } from
+    "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const auth = getAuth();
+    const db = getFirestore();
+
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("btnSeguir");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+
+      async function checkPayment() {
+        const snap = await getDoc(doc(db, "preonboarding", user.uid));
+        if (snap.exists() && snap    msg.textContent = "✅ Pago aprobado";
+          btn.disabled = false;
+          btn.onclick = () => location.href = "registro.html";
+        } else {
+          msg.textContent = "⏳ Aún no vemos el pago confirmado…";
+          setTimeout(checkPayment, 2500);
+        }
+      }
+      checkPayment();
+    });
+  </script>
+</body>
+</html>
