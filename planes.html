@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Planes | Mi Iglesia+</title>
+
+  <!-- GOOGLE FONTS (forma correcta / limpia) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{ --bg:#f5f5f5; --card:#fff; --text:#1a1a1a; --muted:#666; --primary:#ff6b5b; --border:#eee; --dark:#111; }
+    body{ margin:0; padding:0; background:var(--bg); font-family:Poppins, sans-serif; color:var(--text); }
+    h1{ text-align:center; font-size:32px; font-weight:800; margin:34px 12px 10px; }
+    p.lead{ text-align:center; color:var(--muted); margin:0 0 20px; }
+    .container{
+      max-width:1100px; margin:0 auto; padding:18px;
+      display:flex; flex-wrap:wrap; justify-content:center; gap:18px;
+    }
+    .card{
+      background:var(--card); border:1px solid var(--border);
+      width:320px; border-radius:18px; padding:22px;
+      text-align:center; box-shadow:0 4px 18px rgba(0,0,0,.06);
+    }
+    .card h2{ font-size:22px; font-weight:800; margin:0 0 8px; }
+    .price{ font-size:30px; font-weight:800; color:var(--primary); margin:8px 0 12px; }
+    .features{ color:var(--muted); line-height:1.6; font-size:15px; min-height:72px; }
+    .btn{
+      width:100%; margin-top:12px; padding:12px; border:0; border-radius:12px;
+      background:var(--dark); color:#fff; font-weight:700; cursor:pointer;
+    }
+    .btn:hover{ opacity:.9; }
+  </style>
+</head>
+<body>
+  <h1>Planes Mi Iglesia+</h1>
+  <p class="lead">Elegí el plan que mejor se adapte a tu iglesia.</p>
+
+  <section class="container">
+
+    <article class="card">
+      <h2>FREE</h2>
+      <div class="price">$0</div>
+      <div class="features">
+        • Prédicas limitadas<br>
+        • Eventos limitados<br>
+        • Ideal para comenzar
+      </div>
+      <a href="registro.html"><button class="btn">Comenzar</button></a>
+    </article>
+
+    <article class="card">
+      <h2>Starter</h2>
+      <div class="price">$10.000</div>
+      <div class="features">
+        • Prédicas ilimitadas<br>
+        • Eventos extendidos<br>
+        • Peticiones públicas
+      </div>
+      <a href="registro.html"><button class="btn">Elegir plan</button></a>
+    </article>
+
+    <article class="card">
+      <h2>Pro</h2>
+      <div class="price">$30.000</div>
+      <div class="features">
+        • Todo Starter<br>
+        • Admins adicionales<br>
+        • Estadísticas avanzadas
+      </div>
+      <a href="registro.html"><button class="btn">Elegir plan</button></a>
+    </article>
+
+  </section>
+</body>
+</html>
