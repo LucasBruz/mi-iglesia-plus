@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi Cuenta | Facturación</title>
+
+  <!-- Tipografía -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap">
+
+  <style>
+    :root{
+      --bg:#f5f5f5; --card:#fff; --text:#1a1a1a; --muted:#666;
+      --primary:#ff6b5b; --dark:#111; --border:#eee;
+    }
+    *{ box-sizing:border-box }
+    body{
+      margin:0; padding:0; font-family:Poppins, sans-serif; color:var(--text);
+      background:var(--bg); min-height:100vh; display:flex; justify-content:center;
+      align-items:flex-start; padding:28px 16px;
+    }
+    .wrap{ width:100%; max-width:920px; display:grid; gap:16px; }
+    .title{
+      font-weight:800; font-size:28px; margin:0 0 6px 0;
+    }
+    .muted{ color:var(--muted) }
+    .grid{
+      display:grid; grid-template-columns:1fr; gap:16px;
+    }
+    @media (min-width: 820px){
+      .grid{ grid-template-columns: 1.1fr .9fr; }
+    }
+    .card{
+      background:var(--card); border:1px solid var(--border);
+      border-radius:18px; padding:22px; box-shadow:0 4px 18px rgba(0,0,0,.06);
+    }
+    .h2{ margin:0 0 10px; font-weight:800; font-size:20px; }
+    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .kv{ margin:10px 0; }
+    .kv b{ display:inline-block; min-width:140px; }
+    .badge{
+      display:inline-block; padding:4px 10px; border-radius:999px;
+      font-size:12px; color:#fff; background:#6c757d; vertical-align:middle;
+    }
+    .badge.active{ background:#28a745 }
+    .badge.past_due{ background:#ffc107; color:#222 }
+    .badge.canceled{ background:#dc3545 }
+    .badge.incomplete{ background:#6c757d }
+
+    table{ width:100%; border-collapse:collapse; }
+    th, td{ font-size:14px; padding:10px; text-align:left; border-bottom:1px solid #f0f0f0; }
+    th{ color:#444; font-weight:700; }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .btn{
+      appearance:none; border:0; border-radius:12px; padding:12px 16px;
+      font-weight:700; cursor:pointer;
+    }
+    .btn-primary{ background:var(--primary); color:#fff; }
+    .btn-dark{ background:var(--dark); color:#fff; }
+    .btn-light{ background:#fff; color:#333; border:1px solid #ddd; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .small{ font-size:13px; color:#888; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1 class="title">Mi cuenta / Facturación</h1>
+      <p class="muted" id="userEmail">—</p>
+    </header>
+
+    <section class="grid">
+      <!-- Columna izquierda: Información del plan -->
+      <div class="card">
+        <h2 class="h2">Plan actual</h2>
+        <div class="kv"><b>Plan:</b> <span id="plan">—</span></div>
+        <div class="kv"><b>Estado:</b> <span id="estado">—</span></div>
+        <div class="kv"><b>Próxima renovación:</b> <span id="renovacion">—</span></div>
+
+        <div class="actions">
+          <!-- Ir directo a la pestaña de planes en el dashboard -->
+          <a href="dashboard.html" class="btn btn-primary">Ir a Plan y facturación</a>
+          <a href="dashboard.html" class="btn btn-light">Volver al Panel</a>
+        </div>
+
+        <p class="small" style="margin-top:10px;">
+          Si tu estado es <b>“past_due”</b> o <b>“incomplete”</b>, ingresá desde “Plan y facturación”
+          para reintentar el pago o cambiar método.
+        </p>
+      </div>
+
+      <!-- Columna derecha: Historial simple (opcional) -->
+      <div class="card">
+        <h2 class="h2">Historial</h2>
+        <p class="small muted" style="margin:0 0 10px 0;">
+          Muestra los últimos eventos (pagos / suscripciones) recibidos por los webhooks.
+        </p>
+        <table>
+          <thead>
+            <tr><th>Fecha</th><th>Tipo</th><th>Detalle</th></tr>
+          </thead>
+          <tbody id="histBody">
+            <tr><td colspan="3" class="muted">Sin registros todavía.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Colapsable informativo -->
+    <section class="card">
+      <h2 class="h2">Ayuda</h2>
+      <p class="small">
+        • <b>FREE</b>: sin cobro mensual, funcionalidades básicas.<br>
+        • <b>Starter</b>: cobro mensual vía Mercado Pago (preapproval).<br>
+        • <b>PRO</b>: cobro mensual vía Mercado Pago (preapproval) con beneficios extra.<br>
+        • Los cambios de estado (active / past_due / canceled / incomplete) se reflejan automáticamente por webhooks.
+      </p>
+    </section>
+  </main>
+
+  <!-- LÓGICA -->
+  <script type="module">
+    import { getAuth, onAuthStateChanged } from
+      "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs }
+      from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const auth = getAuth();
+    const db   = getFirestore();
+
+    const $ = (id) => document.getElementById(id);
+    const fmtDate = (d) => {
+      try {
+        const date = d?.seconds ? new Date(d.seconds*1000) : new Date(d);
+        return date.toLocaleDateString();
+      } catch { return "—"; }
+    };
+
+    function badge(status){
+      const s = (status || "").toLowerCase();
+      const span = document.createElement("span");
+      span.className = "badge " + s.replace(/[^a-z_]/g,'');
+      span.textContent = status || "—";
+      return span.outerHTML;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { location.href = "login.html"; return; }
+      $("userEmail").textContent = user.email || "—";
+
+      // Cargar plan
+      const ref = doc(db, "iglesias", user.uid);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()){
+        $("plan").textContent = "—";
+        $("estado").textContent = "—";
+        $("renovacion").textContent = "—";
+        return;
+      }
+
+      const sub = snap.data().subscription || {};
+      $("plan").textContent = (sub.priceIdOrPlanId || "Ninguno").toUpperCase();
+      $("estado").innerHTML = badge(sub.status || "sin plan");
+      $("renovacion").textContent = sub.currentPeriodEnd ? fmtDate(sub.currentPeriodEnd) : "—";
+
+      // Historial (opcional)
+      try {
+        const logsRef = collection(db, "mp_webhook_logs");
+        // Si querés filtrar por usuario, guardá uid o external_reference en el log y agregá where
+        const q = query(logsRef, orderBy("createdAt", "desc"), limit(8));
+        const logsSnap = await getDocs(q);
+        const tbody = $("histBody");
+        tbody.innerHTML = "";
+
+        if (logsSnap.empty){
+          tbody.innerHTML = `<tr><td colspan="3" class="muted">Sin registros todavía.</td></tr>`;
+          return;
+        }
+
+        logsSnap.forEach(docu => {
+          const d = docu.data();
+          const fecha = d.createdAt ? fmtDate(d.createdAt) : "—";
+          const tipo  = (d.scope || "evento").toString();
+          let detalle = (d.body?.type || d.body?.action || "—").toString();
+
+          //    const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${fecha}</td><td>${tipo}</td><td>${detalle}</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        // Si no usás logs de webhooks, no pasa nada
+      }
+    });
+  </script>
+</body>
+</html>
