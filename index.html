@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mi Iglesia+ | Conecta tu Comunidad de Fe</title>
 
-  <!-- Google Fonts (correcto / limpio) -->
+  <!-- Google Fonts (forma correcta / limpia) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -114,7 +114,7 @@
   <!-- NAV -->
   <nav>
     <div class="nav-container">
-      <a class="logo" href="#home">
+      <a class="logo" href="#home" onclick="event.preventDefault(); document.querySelector('#home').scrollIntoView({behavior:'smooth'})">
         <img src="assets/logo.jpg" alt="Mi Iglesia+">
         <span class="logo-text">Mi <span>Iglesia+</span></span>
       </a>
@@ -176,11 +176,11 @@
       <div class="search-box">
         <input type="text" id="searchInput" class="search-input" placeholder="Ej: Comunidad Cristiana, Ciudad de Mendoza, Pastor Juan..." aria-label="Buscar iglesias">
         <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
-      </div>
 
-      <!-- Autocomplete -->
-      <div class="autocomplete" id="autocomplete">
-        <div class="suggestions" id="suggestions"></div>
+        <!-- Autocomplete debajo del input -->
+        <div class="autocomplete" id="autocomplete" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
       </div>
 
       <!-- Resultados -->
@@ -207,7 +207,6 @@
       <div id="tab-contacto" class="tab-pane">
         <h3 style="margin-bottom:.6rem;">Contacto</h3>
         <p class="muted" style="color:var(--gray);margin-bottom:.6rem;">Escribinos por WhatsApp:</p>
-        <!-- Número real -->
         <p>
           <a class="btn btn-secondary" href="https://wa.me/5492615515707" target="_blank" rel="noopener">
             WhatsApp: +54 9 261 551 5707
@@ -248,11 +247,14 @@
       setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
     }
 
-    /* ==== Carga inicial de iglesias activas ==== */
+    /* ==== Carga inicial de iglesias registradas ==== */
     async function cargarIglesias(){
       try{
+        // Por defecto: solo activas. Si querés TODAS registradas, reemplazá estas 2 líneas por:
+        // const snap = await getDocs(collection(db, 'iglesias'));
         const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
         const snap = await getDocs(q);
+
         iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
         mostrarTodasLasIglesias();
       }catch(e){
@@ -305,7 +307,6 @@
 
     /* ==== AUTOCOMPLETE ==== */
     const input = document.getElementById('searchInput');
-    const box   = document.getElementById('autocomplete');
     const sug   = document.getElementById('suggestions');
 
     function ocultarSugerencias(){ sug.style.display='none'; }
@@ -343,7 +344,8 @@
     input.addEventListener('input', (e)=> buildSugerencias(e.target.value));
     input.addEventListener('keydown', (e)=> { if(e.key==='Escape') ocultarSugerencias(); });
     document.addEventListener('click', (e)=> {
-      if (!box.contains(e.target) && e.target !== input) ocultarSugerencias();
+      const auto = document.getElementById('autocomplete');
+      if (!auto.contains(e.target) && e.target !== input) ocultarSugerencias();
     });
     document.getElementById('searchInput').addEventListener('keypress', function(e){ if(e.key==='Enter') buscarIglesias(); });
 
@@ -356,13 +358,9 @@
         panes.forEach(p=>p.classList.remove('active'));
         b.classList.add('active');
         document.getElementById(b.dataset.pane)?.classList.add('active');
-        // Llevar al inicio de la sección de tabs
         document.querySelector('#info').scrollIntoView({behavior:'smooth', block:'start'});
       });
     });
 
-    /* ==== INIT ==== */
-    document.addEventListener('DOMContentLoaded', cargarIglesias);
-  </script>
-</body>
-</html
+    // Abrir pestaña por hash (#contacto o #sobre)
+   /html>
