@@ -162,7 +162,7 @@
   <section class="cta">
     <div class="container">
       <h2>¿Listo para conectar tu iglesia?</h2>
-    <p>Unite a iglesias que ya están transformando la forma en que se conectan con sus comunidades.</p>
+      <p>Unite a iglesias que ya están transformando la forma en que se conectan con sus comunidades.</p>
       <a class="btn btn-primary" style="background:white;color:var(--primary)" href="registro.html">Comenzar Ahora</a>
     </div>
   </section>
@@ -208,7 +208,10 @@
         <h3 style="margin-bottom:.6rem;">Contacto</h3>
         <p class="muted" style="color:var(--gray);margin-bottom:.6rem;">Escribinos por WhatsApp:</p>
         <p>
-          <a class="btn btn-secondary" href="https://wa.me/5492615515707" target="_blank" rel="noopener noreferrer">
+          <a class="btn btn-primary"
+             href="https://wa.me/5492615515707"
+             target="_blank"
+             rel="noopener noreferrer">
             WhatsApp: +54 9 261 551 5707
           </a>
         </p>
@@ -220,7 +223,7 @@
   <footer>
     <div class="footer-founder">
       <div class="founder-photo">
-        <img src="assets/lucas-bruz.jpg" alt="Fundador Mi Iglesia+">
+        <img src="assets/lucas-bruz.jpg" alt="Lucas Bruz">
       </div>
       <div class="founder-info">
         <h4>Lucas Bruz</h4>
@@ -250,7 +253,7 @@
     /* ==== Carga inicial de iglesias registradas ==== */
     async function cargarIglesias(){
       try{
-        // Por defecto: solo activas. Si querés TODAS registradas, reemplazá por: const snap = await getDocs(collection(db,'iglesias'));
+        // Por defecto: solo activas. Si querés TODAS registradas: const snap = await getDocs(collection(db,'iglesias'));
         const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
         const snap = await getDocs(q);
         iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
@@ -342,7 +345,7 @@
     input.addEventListener('keydown', (e)=> { if(e.key==='Escape') ocultarSugerencias(); });
     document.addEventListener('click', (e)=> {
       const auto = document.getElementById('autocomplete');
-      if (!auto.contains(e.target) && e.target !== input) ocultarSugerencias();
+      if (auto && !auto.contains(e.target) && e.target !== input) ocultarSugerencias();
     });
     document.getElementById('searchInput').addEventListener('keypress', function(e){ if(e.key==='Enter') buscarIglesias(); });
 
@@ -366,4 +369,5 @@
       const target = map[h];
       if (!target) return;
       btns.forEach(b=> b.classList.toggle('active', b.dataset.pane === target));
-      panes.for
+      panes.forEach(p=> p.classList.toggle('active', p.id === target));
+      document
