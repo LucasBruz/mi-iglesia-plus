@@ -6,9 +6,9 @@
   <title>Mi Iglesia+ | Conecta tu Comunidad de Fe</title>
 
   <!-- Google Fonts (correcto / limpio) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -115,7 +115,7 @@
   <nav>
     <div class="nav-container">
       <a class="logo" href="#home">
-        <img src="assets/logo.jpg" alt="Mi Iglesia+">
+        <img src="assets/logo.jpg" alt="Mi Iglesia+"/>
         <span class="logo-text">Mi <span>Iglesia+</span></span>
       </a>
       <div class="nav-buttons">
@@ -130,7 +130,7 @@
   <section class="hero" id="home">
     <div class="hero-content">
       <div class="logo-circle">
-        <img src="assets/logo.jpg" alt="Mi Iglesia+">
+        <img src="assets/logo.jpg" alt="Mi Iglesia+"/>
       </div>
       <h1>Conectá tu comunidad de <span>fe</span> como nunca antes</h1>
       <p>La plataforma moderna que necesitaba tu iglesia. Gestioná eventos, compartí prédicas, administrá ofrendas y mantené unida tu congregación en un solo lugar.</p>
@@ -174,7 +174,7 @@
       <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad o pastor</p>
 
       <div class="search-box">
-        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Comunidad Cristiana, Ciudad de Mendoza, Pastor Juan..." aria-label="Buscar iglesias">
+        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Comunidad Cristiana, Ciudad de Mendoza, Pastor Juan..." aria-label="Buscar iglesias"/>
         <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
 
         <!-- Autocomplete debajo del input -->
@@ -207,11 +207,21 @@
       <div id="tab-contacto" class="tab-pane">
         <h3 style="margin-bottom:.6rem;">Contacto</h3>
         <p class="muted" style="color:var(--gray);margin-bottom:.6rem;">Escribinos por WhatsApp:</p>
+
+        <!-- Botón que abre WhatsApp directamente -->
         <p>
-          https://wa.me/5492615515707
+          <a class="btn btn-primary" href="https://wa.me/5492615515707" target="_blank" rel="noopener noreferrer">
             WhatsApp: +54 9 261 551 5707
           </a>
         </p>
+
+        <!-- (Opcional) Mensaje prefabricado:
+        <p style="margin-top:.6rem;">
+          <a class="btn btn-secondary" href="https://wa.me/5492615515707?text=Hola%20Mi%20Iglesia%2B%2C%20necesito%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer">
+            Escribir con mensaje
+          </a>
+        </p>
+        -->
       </div>
     </div>
   </section>
@@ -220,7 +230,7 @@
   <footer>
     <div class="footer-founder">
       <div class="founder-photo">
-        <img src="assets/lucas-bruz.jpg" alt="Lucas Bruz">
+        <img src="assets/lucas-bruz.jpg" alt="Lucas Bruz"/>
       </div>
       <div class="founder-info">
         <h4>Lucas Bruz</h4>
@@ -366,14 +376,4 @@
       const target = map[h];
       if (!target) return;
       btns.forEach(b=> b.classList.toggle('active', b.dataset.pane === target));
-      panes.forEach(p=> p.classList.toggle('active', p.id === target));
-      document.querySelector('#info')?.scrollIntoView({behavior:'smooth', block:'start'});
-    }
-    openTabByHash();
-    window.addEventListener('hashchange', openTabByHash);
-
-    /* ==== INIT ==== */
-    document.addEventListener('DOMContentLoaded', cargarIglesias);
-  </script>
-</body>
-</html>
+     
