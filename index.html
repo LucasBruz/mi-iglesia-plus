@@ -20,17 +20,17 @@
     /* NAV */
     nav{background:var(--white);padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
     .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-    .logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.3rem}
+    .logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.3rem;color:var(--dark)}
     .logo img{height:45px;width:auto;display:block;border-radius:8px}
-    .logo-text{color:var(--dark)}
     .logo-text span{color:var(--primary)}
-    .nav-buttons{display:flex;gap:1rem}
+    .nav-buttons{display:flex;gap:.75rem;flex-wrap:wrap}
 
     /* Botones */
-    .btn{padding:.7rem 1.5rem;border:0;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .3s;display:inline-block;text-decoration:none;text-align:center}
+    .btn{padding:.7rem 1.1rem;border:0;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .3s;display:inline-block;text-decoration:none;text-align:center}
     .btn-secondary{background:#f0f0f0;color:var(--dark);border:1px solid var(--border)}
     .btn-primary{background:var(--primary);color:var(--white)}
     .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,91,.3)}
+    .btn-wa{background:#25D366;color:#fff}
 
     /* HERO */
     .hero{background:linear-gradient(135deg,#f5e6e8 0%,#fde8e8 100%);padding:5rem 2rem;text-align:center}
@@ -120,8 +120,9 @@
       </a>
       <div class="nav-buttons">
         <a class="btn btn-secondary" href="login.html">Ingresar</a>
-        <!-- CAMBIO: “Comenzar gratis” → “Comenzar” -->
         <a class="btn btn-primary" href="registro.html">Comenzar</a>
+        <!-- Botón CONTACTO que abre WhatsApp DIRECTO -->
+        <a class="btn btn-wa" href="https://wa.me/5492615515707" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp Mi Iglesia+">Contacto</a>
       </div>
     </div>
   </nav>
@@ -137,7 +138,7 @@
 
       <div class="hero-buttons">
         <!-- Abre el buscador con scroll suave + focus -->
-        <a class="btn btn-primary" href="#buscar" onclick="irABuscador(event)">Ver Iglesias</a>
+        <a class="btn btn-secondary" href="#buscar" onclick="irABuscador(event)">Ver Iglesias</a>
         <!-- “Ver Demo” eliminado -->
       </div>
     </div>
@@ -208,18 +209,16 @@
         <h3 style="margin-bottom:.6rem;">Contacto</h3>
         <p class="muted" style="color:var(--gray);margin-bottom:.6rem;">Escribinos por WhatsApp:</p>
 
-        <!-- Botón que abre WhatsApp directamente -->
+        <!-- Botón que abre WhatsApp DIRECTO -->
         <p>
-          <a class="btn btn-primary" href="https://wa.me/5492615515707" target="_blank" rel="noopener noreferrer">
+          <a class="btn btn-wa" href="https://wa.me/5492615515707" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp Mi Iglesia+">
             WhatsApp: +54 9 261 551 5707
           </a>
         </p>
 
-        <!-- (Opcional) Mensaje prefabricado:
+        <!-- (Opcional) con mensaje prellenado:
         <p style="margin-top:.6rem;">
-          <a class="btn btn-secondary" href="https://wa.me/5492615515707?text=Hola%20Mi%20Iglesia%2B%2C%20necesito%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer">
-            Escribir con mensaje
-          </a>
+          <a class="btn btn-secondary" href="https://wa.me/5492615515707?text=Hola%20Mi%20Iglesia%2B%2C%20necesito%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer">Escribir con mensaje</a>
         </p>
         -->
       </div>
@@ -260,7 +259,7 @@
     /* ==== Carga inicial de iglesias registradas ==== */
     async function cargarIglesias(){
       try{
-        // Por defecto: solo activas. Si querés TODAS registradas: const snap = await getDocs(collection(db,'iglesias'));
+        // Por defecto: solo activas. Para TODAS registradas: const snap = await getDocs(collection(db,'iglesias'));
         const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
         const snap = await getDocs(q);
         iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
@@ -376,4 +375,11 @@
       const target = map[h];
       if (!target) return;
       btns.forEach(b=> b.classList.toggle('active', b.dataset.pane === target));
-     
+      panes.forEach(p=> p.classList.toggle('active', p.id === target));
+      document.querySelector('#info')?.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    openTabByHash();
+    window.addEventListener('hashchange', openTabByHash);
+
+    /* ==== INIT ==== */
+   
