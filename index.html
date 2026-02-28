@@ -208,10 +208,7 @@
         <h3 style="margin-bottom:.6rem;">Contacto</h3>
         <p class="muted" style="color:var(--gray);margin-bottom:.6rem;">Escribinos por WhatsApp:</p>
         <p>
-          <a class="btn btn-primary"
-             href="https://wa.me/5492615515707"
-             target="_blank"
-             rel="noopener noreferrer">
+          https://wa.me/5492615515707
             WhatsApp: +54 9 261 551 5707
           </a>
         </p>
@@ -370,4 +367,13 @@
       if (!target) return;
       btns.forEach(b=> b.classList.toggle('active', b.dataset.pane === target));
       panes.forEach(p=> p.classList.toggle('active', p.id === target));
-      document
+      document.querySelector('#info')?.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    openTabByHash();
+    window.addEventListener('hashchange', openTabByHash);
+
+    /* ==== INIT ==== */
+    document.addEventListener('DOMContentLoaded', cargarIglesias);
+  </script>
+</body>
+</html>
