@@ -64,9 +64,11 @@
         <button class="tab-btn active" data-tab="tab-predicas">Prédicas</button>
         <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
         <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
+        <!-- NUEVA pestaña Planes -->
+        <button class="tab-btn" data-tab="tab-planes">Plan y facturación</button>
       </div>
 
-      <!-- TAB: PRÉDICAS (solo YouTube) -->
+      <!-- TAB: PRÉDICAS -->
       <section id="tab-predicas" class="tab active">
         <h2>Prédicas (YouTube)</h2>
         <div class="row">
@@ -162,6 +164,37 @@
         <div class="list" id="listaPeticiones"></div>
       </section>
 
+      <!-- TAB: PLANES (NUEVA) -->
+      <section id="tab-planes" class="tab">
+        <h2>Plan y facturación</h2>
+        <p class="muted" id="planStatus">Cargando plan...</p>
+
+        <div class="list">
+          <div class="item">
+            <b style="font-size:18px;">FREE</b>
+            <p class="muted">AR$ 0 / mes</p>
+            <p>• Prédicas limitadas<br/>• Eventos limitados<br/>• Peticiones básicas</p>
+            <button id="btnPlanFree">Elegir FREE</button>
+          </div>
+
+          <div class="item">
+            <b style="font-size:18px;">Starter</b>
+            <p class="muted">AR$ 10.000 / mes</p>
+            <p>• Prédicas ilimitadas<br/>• Eventos extendidos<br/>• Peticiones públicas</p>
+            <button id="btnPlanStarter">Elegir Starter</button>
+          </div>
+
+          <div class="item">
+            <b style="font-size:18px;">PRO</b>
+            <p class="muted">AR$ 30.000 / mes</p>
+            <p>• Todo Starter<br/>• Admins ilimitados<br/>• Estadísticas avanzadas</p>
+            <button id="btnPlanPro">Elegir PRO</button>
+          </div>
+        </div>
+
+        <p id="msgPlan" class="muted" style="margin-top:12px;"></p>
+      </section>
+
       <p id="msg"></p>
     </div>
   </div>
@@ -175,7 +208,7 @@
       query, orderBy, getDocs, deleteDoc
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    /* 🔵 Config (usando la que me pasaste) */
+    /* 🔵 Config */
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
@@ -237,7 +270,8 @@
     function disableAllForms(disabled) {
       ['p_titulo','p_url','p_fecha','p_publico','btnPredicaGuardar',
        'e_titulo','e_lugar','e_inicio','e_fin','e_desc','e_publico','btnEventoGuardar',
-       't_titulo','t_detalle','t_publico','btnPeticionGuardar'
+       't_titulo','t_detalle','t_publico','btnPeticionGuardar',
+       'btnPlanFree','btnPlanStarter','btnPlanPro'
       ].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
     }
     function fmtDate(d) {
@@ -260,8 +294,12 @@
       // Habilitar/deshabilitar segun reglas
       const ok = ensureActiveAndVerified(user, iglesiaDoc);
 
-      // Cargar listados
+      // Cargar listados (no dependen del plan)
       await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones()]);
+
+      // Iniciar pestaña de Planes
+      initPlanesTab();
+
       if (!ok) return;
     });
 
@@ -417,6 +455,61 @@
         await cargarPeticiones();
       } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar petición'); }
     });
+
+    /* ---------- PLANES (NUEVO) ---------- */
+    const FN_PREAPPROVAL = "https://us-central1-miiglesia-plus.cloudfunctions.net/mpCreatePreapproval";
+
+    function initPlanesTab(){
+      const planStatus = $('planStatus');
+      const msgPlan    = $('msgPlan');
+      const btnFree    = $('btnPlanFree');
+      const btnStart   = $('btnPlanStarter');
+      const btnPro     = $('btnPlanPro');
+
+      if (!iglesiaDoc) {
+        planStatus.textContent = 'Aún no registraste tu iglesia (o falta aprobación).';
+        [btnFree, btnStart, btnPro].forEach(b=> b && (b.disabled = true));
+        return;
+      }
+
+      const sub = iglesiaDoc.subscription || {};
+      planStatus.innerHTML = `Plan actual: <b>${sub.priceIdOrPlanId || 'Ninguno'}</b> — Estado: <b>${sub.status || 'sin plan'}</b>`;
+
+      async function elegir(planId){
+        msgPlan.textContent = 'Procesando...';
+        try {
+          const r = await fetch(FN_PREAPPROVAL, {
+            method:"POST",
+            headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({ planId, iglesiaUid: uid })
+          });
+          const d = await r.json();
+
+          if (planId === 'free' && d.ok) {
+            msgPlan.textContent = 'Plan FREE activado.';
+            setTimeout(()=> location.reload(), 800);
+            return;
+          }
+          if (d.error) {
+            msgPlan.textContent = 'Error: ' + d.error;
+            return;
+          }
+          const url = d.init_point || d.sandbox_init_point || d.url;
+          if (!url) {
+            msgPlan.textContent = 'No se recibió URL de suscripción.';
+            return;
+          }
+          window.location.href = url;
+        } catch (e) {
+          console.error(e);
+          msgPlan.textContent = 'No se pudo iniciar la suscripción.';
+        }
+      }
+
+      if (btnFree)   btnFree.onclick   = ()=> elegir('free');
+      if (btnStart)  btnStart.onclick  = ()=> elegir('starter');
+      if (btnPro)    btnPro.onclick    = ()=> elegir('pro');
+    }
   </script>
 </body>
 </html>
