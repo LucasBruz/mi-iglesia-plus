@@ -4,14 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Panel de Iglesia | Mi Iglesia+</title>
+
   <!-- Tipografía -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
 
   <style>
-    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
+    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; --ok:#28a745; --warn:#ffb703; --danger:#dc3545; --muted:#888;}
     *{ box-sizing:border-box }
     body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
-    .container{max-width:960px;margin:32px auto;padding:0 16px}
+    .container{max-width:1000px;margin:32px auto;padding:0 16px}
     .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:22px}
     h1{margin:0 0 6px 0;font-size:28px}
     p.lead{color:#666;margin:0 0 16px 0}
@@ -42,6 +45,26 @@
     iframe, audio, video{width:100%;border-radius:8px;border:0}
     .actions{display:flex;gap:8px;margin-top:10px}
     .danger{background:#dc3545}
+
+    /* Publicidad */
+    .ad-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
+    .ad-card{border:1px solid #eee;border-radius:12px;overflow:hidden;background:#fff}
+    .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
+    .ad-body{padding:12px}
+    .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
+    .chip.starter{background:#6c757d}
+    .chip.pro{background:#28a745}
+    .chip.draft{background:#ff9800}
+    .chip.approved{background:#28a745}
+    .chip.archived{background:#6c757d}
+    .counter{display:flex;gap:10px;align-items:center;margin:10px 0;color:#444}
+    .small{font-size:.9rem;color:#777}
+
+    /* Uploader */
+    .uploader{margin-top:8px;border:1px dashed #bbb;border-radius:10px;padding:12px;background:#fff}
+    .prog{margin-top:8px;height:8px;border-radius:6px;background:#f0f0f0;overflow:hidden}
+    .prog > i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
+    .hint{color:#888;font-size:.85rem;margin-top:6px}
   </style>
 </head>
 <body>
@@ -50,7 +73,7 @@
       <div class="topbar">
         <div>
           <h1>Panel de Iglesia</h1>
-          <p class="lead">Editá y publicá tus <b>Prédicas</b>, <b>Eventos</b> y <b>Peticiones</b>. Requiere cuenta verificada y estado activo.</p>
+          <p class="lead">Editá y publicá tus <b>Prédicas</b>, <b>Eventos</b>, <b>Peticiones</b> y <b>Publicidad</b>. Requiere cuenta verificada y estado activo.</p>
           <div class="muted">Sesión: <span id="emailLbl">—</span></div>
           <div id="status" class="muted"></div>
         </div>
@@ -64,11 +87,10 @@
         <button class="tab-btn active" data-tab="tab-predicas">Prédicas</button>
         <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
         <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
-        <!-- NUEVA pestaña Planes -->
-        <button class="tab-btn" data-tab="tab-planes">Plan y facturación</button>
+        <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
       </div>
 
-      <!-- TAB: PRÉDICAS -->
+      <!-- TAB: PRÉDICAS (YouTube) -->
       <section id="tab-predicas" class="tab active">
         <h2>Prédicas (YouTube)</h2>
         <div class="row">
@@ -94,7 +116,6 @@
         <div class="actions">
           <button id="btnPredicaGuardar">Guardar prédica</button>
         </div>
-
         <div class="list" id="listaPredicas"></div>
       </section>
 
@@ -134,7 +155,6 @@
         <div class="actions">
           <button id="btnEventoGuardar">Guardar evento</button>
         </div>
-
         <div class="list" id="listaEventos"></div>
       </section>
 
@@ -160,39 +180,47 @@
         <div class="actions">
           <button id="btnPeticionGuardar">Guardar petición</button>
         </div>
-
         <div class="list" id="listaPeticiones"></div>
       </section>
 
-      <!-- TAB: PLANES (NUEVA) -->
-      <section id="tab-planes" class="tab">
-        <h2>Plan y facturación</h2>
-        <p class="muted" id="planStatus">Cargando plan...</p>
+      <!-- TAB: PUBLICIDAD -->
+      <section id="tab-ads" class="tab">
+        <h2>Publicidad</h2>
+        <p class="small">Mostrá anuncios en la portada de Mi Iglesia+. <b>Starter:</b> 1 anuncio (borrador o aprobado). <b>Pro:</b> sin límite.</p>
 
-        <div class="list">
-          <div class="item">
-            <b style="font-size:18px;">FREE</b>
-            <p class="muted">AR$ 0 / mes</p>
-            <p>• Prédicas limitadas<br/>• Eventos limitados<br/>• Peticiones básicas</p>
-            <button id="btnPlanFree">Elegir FREE</button>
+        <!-- Estado del plan -->
+        <div class="counter">
+          <span>Plan:</span>
+          <span id="planChip" class="chip">—</span>
+          <span id="planCount" class="small">Cargando…</span>
+        </div>
+
+        <!-- Formulario crear anuncio -->
+        <div class="row">
+          <div>
+            <label for="ad_title">Título del anuncio</label>
+            <input id="ad_title" placeholder="Ej: Reunión de jóvenes – Sábado 19 hs" />
           </div>
-
-          <div class="item">
-            <b style="font-size:18px;">Starter</b>
-            <p class="muted">AR$ 10.000 / mes</p>
-            <p>• Prédicas ilimitadas<br/>• Eventos extendidos<br/>• Peticiones públicas</p>
-            <button id="btnPlanStarter">Elegir Starter</button>
-          </div>
-
-          <div class="item">
-            <b style="font-size:18px;">PRO</b>
-            <p class="muted">AR$ 30.000 / mes</p>
-            <p>• Todo Starter<br/>• Admins ilimitados<br/>• Estadísticas avanzadas</p>
-            <button id="btnPlanPro">Elegir PRO</button>
+          <div>
+            <label for="ad_href">URL (opcional)</label>
+            <input id="ad_href" placeholder="https://mi-iglesia.com/landing" />
           </div>
         </div>
 
-        <p id="msgPlan" class="muted" style="margin-top:12px;"></p>
+        <div class="uploader">
+          <label for="ad_file"><b>Imagen del anuncio</b> (JPG/PNG, máx. 5MB, 1200×675 recomendado)</label>
+          <input id="ad_file" type="file" accept=".jpg,.jpeg,.png" />
+          <div class="prog"><i id="ad_bar"></i></div>
+          <div class="hint">La imagen se sube a Firebase Storage y se usa su URL en el anuncio.</div>
+          <div id="ad_msg" class="hint" style="min-height:18px;margin-top:6px;"></div>
+        </div>
+
+        <div class="actions" style="margin-top:10px;">
+          <button id="btnCreateAd">Crear publicidad</button>
+        </div>
+
+        <!-- Lista de anuncios -->
+        <div class="ad-grid" id="adsList"></div>
       </section>
 
       <p id="msg"></p>
@@ -200,15 +228,17 @@
   </div>
 
   <script type="module">
-    /* Firebase (CDN, una sola versión) */
+    /* Firebase (CDN v10) */
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
     import {
       getFirestore, doc, getDoc, collection, addDoc, serverTimestamp,
       query, orderBy, getDocs, deleteDoc
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
+    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js';
 
-    /* 🔵 Config */
+    /* Config del proyecto */
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
@@ -222,11 +252,13 @@
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
+    const st   = getStorage(app);
+    const fns  = getFunctions(app, "us-central1");
 
     const $ = (id) => document.getElementById(id);
     const msg = $('msg');
-    let uid = null;           // UID del admin logueado
-    let iglesiaDoc = null;    // Datos de la iglesia
+    let uid = null;         // UID admin logueado
+    let iglesiaDoc = null;  // Datos de la iglesia
 
     /* ---------- Tabs UI ---------- */
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -271,7 +303,7 @@
       ['p_titulo','p_url','p_fecha','p_publico','btnPredicaGuardar',
        'e_titulo','e_lugar','e_inicio','e_fin','e_desc','e_publico','btnEventoGuardar',
        't_titulo','t_detalle','t_publico','btnPeticionGuardar',
-       'btnPlanFree','btnPlanStarter','btnPlanPro'
+       'ad_title','ad_href','ad_file','btnCreateAd'
       ].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
     }
     function fmtDate(d) {
@@ -279,26 +311,22 @@
       catch { return ''; }
     }
 
-    /* ---------- Estado de sesión ---------- */
+    /* ---------- Sesión ---------- */
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = 'login.html'; return; }
       uid = user.uid;
       $('emailLbl').textContent = user.email || '';
 
-      // Buscar documento de iglesia
+      // Buscar doc de iglesia
       const ref = doc(db, 'iglesias', uid);
       const snap = await getDoc(ref);
       if (!snap.exists()) { msg.textContent = 'No se encontró tu iglesia. Registrá primero.'; disableAllForms(true); return; }
       iglesiaDoc = snap.data();
 
-      // Habilitar/deshabilitar segun reglas
       const ok = ensureActiveAndVerified(user, iglesiaDoc);
 
-      // Cargar listados (no dependen del plan)
       await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones()]);
-
-      // Iniciar pestaña de Planes
-      initPlanesTab();
+      await initAdsTab();  // ← cargar plan/contador/anuncios
 
       if (!ok) return;
     });
@@ -310,10 +338,11 @@
 
     /* ---------- PRÉDICAS ---------- */
     async function cargarPredicas() {
-      const cont = $('listaPredicas'); cont.innerHTML = '';
+      const cont = $('listaPredicas'); if (!cont) return;
+      cont.innerHTML = '';
       const col = collection(db, 'iglesias', uid, 'predicas');
-      const q = query(col, orderBy('fecha','desc'));
-      const snap = await getDocs(q);
+      const qy = query(col, orderBy('fecha','desc'));
+      const snap = await getDocs(qy);
       if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay prédicas.</div>'; return; }
       snap.forEach(docu => {
         const d = docu.data();
@@ -330,7 +359,6 @@
           </div>
         `);
       });
-      // Binds eliminar
       cont.querySelectorAll('button[data-del]').forEach(b=>{
         b.onclick = async () => {
           if (!confirm('¿Eliminar esta prédica?')) return;
@@ -339,7 +367,6 @@
         };
       });
     }
-
     $('btnPredicaGuardar').addEventListener('click', async () => {
       try {
         msg.textContent = 'Guardando prédica...';
@@ -361,10 +388,11 @@
 
     /* ---------- EVENTOS ---------- */
     async function cargarEventos() {
-      const cont = $('listaEventos'); cont.innerHTML = '';
+      const cont = $('listaEventos'); if (!cont) return;
+      cont.innerHTML = '';
       const col = collection(db, 'iglesias', uid, 'eventos');
-      const q = query(col, orderBy('inicio','desc'));
-      const snap = await getDocs(q);
+      const qy = query(col, orderBy('inicio','desc'));
+      const snap = await getDocs(qy);
       if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay eventos.</div>'; return; }
       snap.forEach(docu => {
         const d = docu.data();
@@ -389,7 +417,6 @@
         };
       });
     }
-
     $('btnEventoGuardar').addEventListener('click', async () => {
       try {
         msg.textContent = 'Guardando evento...';
@@ -412,10 +439,11 @@
 
     /* ---------- PETICIONES ---------- */
     async function cargarPeticiones() {
-      const cont = $('listaPeticiones'); cont.innerHTML = '';
+      const cont = $('listaPeticiones'); if (!cont) return;
+      cont.innerHTML = '';
       const col = collection(db, 'iglesias', uid, 'peticiones');
-      const q = query(col, orderBy('fecha','desc'));
-      const snap = await getDocs(q);
+      const qy = query(col, orderBy('fecha','desc'));
+      const snap = await getDocs(qy);
       if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay peticiones.</div>'; return; }
       snap.forEach(docu=>{
         const d = docu.data();
@@ -439,7 +467,6 @@
         };
       });
     }
-
     $('btnPeticionGuardar').addEventListener('click', async () => {
       try {
         msg.textContent = 'Guardando petición...';
@@ -456,60 +483,175 @@
       } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar petición'); }
     });
 
-    /* ---------- PLANES (NUEVO) ---------- */
-    const FN_PREAPPROVAL = "https://us-central1-miiglesia-plus.cloudfunctions.net/mpCreatePreapproval";
+    /* ---------- PUBLICIDAD ---------- */
+    const PLAN_LIMITS = { starter: 1, pro: Infinity };
 
-    function initPlanesTab(){
-      const planStatus = $('planStatus');
-      const msgPlan    = $('msgPlan');
-      const btnFree    = $('btnPlanFree');
-      const btnStart   = $('btnPlanStarter');
-      const btnPro     = $('btnPlanPro');
+    async function initAdsTab(){
+      // Mostrar plan + contador
+      const sub = iglesiaDoc?.subscription || {};
+      const plan = (sub.priceIdOrPlanId || '').toLowerCase();
+      const status = (sub.status || '').toLowerCase();
 
-      if (!iglesiaDoc) {
-        planStatus.textContent = 'Aún no registraste tu iglesia (o falta aprobación).';
-        [btnFree, btnStart, btnPro].forEach(b=> b && (b.disabled = true));
-        return;
+      const planChip = $('planChip');
+      const planCount= $('planCount');
+
+      if (!['starter','pro'].includes(plan) || status !== 'active') {
+        planChip.textContent = 'Sin plan activo';
+        planChip.className   = 'chip';
+        planCount.textContent= 'Para publicar anuncios, activá Starter o Pro.';
+        disableAdsForm(true);
+      } else {
+        planChip.textContent = plan.toUpperCase();
+        planChip.className   = `chip ${plan}`;
+        disableAdsForm(false);
       }
 
-      const sub = iglesiaDoc.subscription || {};
-      planStatus.innerHTML = `Plan actual: <b>${sub.priceIdOrPlanId || 'Ninguno'}</b> — Estado: <b>${sub.status || 'sin plan'}</b>`;
+      await listarAdsYContar(plan);
+      bindCreateAd(plan);
+    }
 
-      async function elegir(planId){
-        msgPlan.textContent = 'Procesando...';
-        try {
-          const r = await fetch(FN_PREAPPROVAL, {
-            method:"POST",
-            headers:{ "Content-Type":"application/json" },
-            body: JSON.stringify({ planId, iglesiaUid: uid })
-          });
-          const d = await r.json();
+    function disableAdsForm(disabled){
+      ['ad_title','ad_href','ad_file','btnCreateAd'].forEach(id=>{
+        const el = $(id);
+        if (el) el.disabled = disabled;
+      });
+    }
 
-          if (planId === 'free' && d.ok) {
-            msgPlan.textContent = 'Plan FREE activado.';
-            setTimeout(()=> location.reload(), 800);
-            return;
-          }
-          if (d.error) {
-            msgPlan.textContent = 'Error: ' + d.error;
-            return;
-          }
-          const url = d.init_point || d.sandbox_init_point || d.url;
-          if (!url) {
-            msgPlan.textContent = 'No se recibió URL de suscripción.';
-            return;
-          }
-          window.location.href = url;
-        } catch (e) {
-          console.error(e);
-          msgPlan.textContent = 'No se pudo iniciar la suscripción.';
+    function validarArchivo(file){
+      if (!file) return { ok:true, reason:'sin archivo (opcional)' };
+      const okTypes = ['image/jpeg','image/png'];
+      if (!okTypes.includes(file.type)) return { ok:false, reason:'Formato inválido (usa JPG/PNG).' };
+      const MAX = 5 * 1024 * 1024; // 5MB
+      if (file.size > MAX) return { ok:false, reason:'El archivo supera 5MB.' };
+      return { ok:true };
+    }
+
+    async function subirImagenAds(uid, file){
+      return new Promise((resolve, reject) => {
+        const name = `banner-${Date.now()}-${file.name}`;
+        const ref  = sRef(st, `ads/${uid}/${name}`);
+        const task = uploadBytesResumable(ref, file, { contentType:file.type });
+        const bar  = $('ad_bar'); const msg = $('ad_msg');
+
+        task.on('state_changed', (snap)=>{
+          const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+          if (bar) bar.style.width = pct + '%';
+        }, (err)=>{
+          if (msg) msg.textContent = '❌ Error subiendo imagen';
+          reject(err);
+        }, async ()=>{
+          const url = await getDownloadURL(task.snapshot.ref);
+          if (msg) msg.textContent = '✔ Imagen subida';
+          resolve(url);
+        });
+      });
+    }
+
+    async function listarAdsYContar(plan){
+      const list = $('adsList'); list.innerHTML = 'Cargando…';
+
+      // Traemos TODOS los anuncios del dueño
+      const qy = query(collection(db,'ads'));  // lectura pública permitida
+      const snap = await getDocs(qy);
+      // Filtramos por iglesiaUid == uid
+      const all = snap.docs
+        .map(d=>({ id:d.id, ...d.data() }))
+        .filter(a => a.iglesiaUid === uid);
+
+      // Contamos activos para cupo (draft + approved)
+      const activos = all.filter(a => ['draft','approved'].includes(String(a.status||'').toLowerCase()));
+      const n = activos.length;
+
+      // Mostrar contador
+      const limit = plan ? PLAN_LIMITS[plan] ?? 0 : 0;
+      const countLbl = $('planCount');
+      if (['starter','pro'].includes(plan)) {
+        if (limit === Infinity) {
+          countLbl.textContent = `Anuncios activos: ${n} / ∞`;
+        } else {
+          countLbl.textContent = `Anuncios activos: ${n} / ${limit}`;
         }
       }
 
-      if (btnFree)   btnFree.onclick   = ()=> elegir('free');
-      if (btnStart)  btnStart.onclick  = ()=> elegir('starter');
-      if (btnPro)    btnPro.onclick    = ()=> elegir('pro');
+      // Render lista
+      if (all.length === 0){
+        list.innerHTML = '<div class="muted">Aún no creaste anuncios.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      all.sort((a,b)=> (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+      for (const ad of all){
+        const img = ad.imageUrl || 'assets/placeholder-ad.jpg';
+        const t   = ad.title || '(Sin título)';
+        const href= ad.href || '';
+        const st  = String(ad.status||'draft').toLowerCase();
+
+        list.insertAdjacentHTML('beforeend', `
+          <div class="ad-card">
+            <img class="ad-img" src="${img}" alt="Anuncio" />
+            <div class="ad-body">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <b>${t}</b>
+                <span class="chip ${st}">${st}</span>
+              </div>
+              ${href ? `<div class="small" style="margin-top:6px;word-break:break-all;">${href}</div>` : ''}
+            </div>
+          </div>
+        `);
+      }
     }
+
+    function bindCreateAd(plan){
+      const btn = $('btnCreateAd');
+      const titleEl = $('ad_title');
+      const hrefEl  = $('ad_href');
+      const fileEl  = $('ad_file');
+      const msgEl   = $('ad_msg');
+      const bar     = $('ad_bar');
+
+      btn.onclick = async () => {
+        if (!['starter','pro'].includes(plan)) {
+          alert('Necesitás tener plan Starter o Pro activo para crear anuncios.');
+          return;
+        }
+
+        const title = (titleEl.value || '').trim();
+        const href  = (hrefEl.value || '').trim();
+        const file  = fileEl.files?.[0];
+
+        if (!title) { alert('Ingresá un título.'); return; }
+
+        // Opcional: subir imagen si existe
+        let imageUrl = null;
+        if (file) {
+          const v = validarArchivo(file);
+          if (!v.ok) { alert(v.reason); return; }
+          try {
+            if (bar) bar.style.width = '0%';
+            if (msgEl) msgEl.textContent = 'Subiendo       return;
+          }
+        }
+
+        try {
+          // Llamar Function createAd (bloquea por cuota para Starter)
+          const createAd = httpsCallable(fns, 'createAd');
+          const resp = await createAd({ title, href: href || null, imageUrl });
+          console.log('Ad creado:', resp.data);
+          alert('Publicidad creada como borrador.');
+
+          // Reset de formulario
+          titleEl.value = ''; hrefEl.value = ''; fileEl.value = '';
+          if (bar) bar.style.width = '0%';
+          if (msgEl) msgEl.textContent = '';
+
+          await listarAdsYContar(plan);
+        } catch (e) {
+          console.error(e);
+          alert(e?.message || e?.code || 'No se pudo crear la publicidad (verificá plan/estado).');
+        }
+      };
+    }
+
   </script>
 </body>
 </html>
