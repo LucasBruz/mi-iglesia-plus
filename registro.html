@@ -62,14 +62,13 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import {
       getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-      GoogleAuthProvider, signInWithPopup, sendEmailVerification,
-      sendPasswordResetEmail, signOut, onAuthStateChanged
+      sendEmailVerification, signOut
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
     import {
       getFirestore, doc, setDoc, serverTimestamp, getDoc
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    /* 🔵 Tu configuración real (tal como la enviaste) */
+    /* 🔵 Config */
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
@@ -84,12 +83,35 @@
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
-    console.info("Firebase config OK. apiKey usada:", app.options?.apiKey);
+    console.info("Firebase OK. apiKey:", app.options?.apiKey);
 
     /* Utilidad */
     const $ = (id) => document.getElementById(id);
 
-    /* -------- Registro -------- */
+    async function ensurePaidOrRedirect(uid) {
+      // Revisa preonboarding/{uid}.paid
+      const pre = await getDoc(doc(db, 'preonboarding', uid));
+      if (!pre.exists() || pre.data()?.paid !== true) {
+        $('msg').innerHTML = '💳 Debés abonar el registro antes de crear la iglesia. pago-unico.htmlIr a pagar</a>';
+        // Deja la sesión iniciada para que el pago funcione
+        setTimeout(()=> location.href='pago-unico.html', 1200);
+        return false;
+      }
+      return true;
+    }
+
+    async function createChurch(uid, payload) {
+      await setDoc(doc(db, 'iglesias', uid), {
+        id: uid,
+        ...payload,
+        adminUid: uid,
+        miembros: 0,
+        creadoEn: serverTimestamp(),
+        estado: 'pendiente'
+      }, { merge: true });
+    }
+
+    /* -------- Registro (con gate de pago previo) -------- */
     async function registerChurchAdmin(){
       const email    = $('email').value.trim();
       const password = $('password').value.trim();
@@ -106,26 +128,51 @@
 
       try {
         msg.textContent = 'Creando cuenta...';
+        // 1) Intentar crear cuenta
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const churchId = cred.user.uid;
+        const uid  = cred.user.uid;
 
-        await setDoc(doc(db, 'iglesias', churchId), {
-          id: churchId,
-          nombre,
-          ciudad,
-          pastor: pastor || '',
-          telefono: telefono || '',
-          adminUid: cred.user.uid,
-          miembros: 0,
-          emailContacto: email,
-          creadoEn: serverTimestamp(),
-          estado: 'pendiente'
-        });
+        // 2) Gate de pago previo
+        msg.textContent = 'Verificando pago de registro...';
+        const ok = await ensurePaidOrRedirect(uid);
+        if (!ok) return; // sin pago, NO crear iglesia
 
+        // 3) Crear iglesia
+        msg.textContent = 'Creando iglesia...';
+        await createChurch(uid, { nombre, ciudad, pastor: pastor || '', telefono: telefono || '', emailContacto: email });
+
+        // 4) Verificación de email + salir
         await sendEmailVerification(cred.user);
-        msg.textContent = '✅ Cuenta creada. Te enviamos un email de verificación. Revisá tu inbox/spam.';
+        msg.textContent = '✅ Iglesia creada. Te enviamos un email de verificación. Revisá tu inbox/spam.';
         await signOut(auth);
+
       } catch (e) {
+        // Si el email ya existe, intentamos iniciar sesión y repetir lógica de gate+crear
+        if (e?.code === 'auth/email-already-in-use') {
+          try {
+            const cred2 = await signInWithEmailAndPassword(auth, email, password);
+            const uid   = cred2.user.uid;
+
+            $('msg').textContent = 'Verificando pago de registro...';
+            const ok = await ensurePaidOrRedirect(uid);
+            if (!ok) return;
+
+            // Si ya existe doc iglesia, no volver a crear
+            const igSnap = await getDoc(doc(db, 'iglesias', uid));
+            if (!igSnap.exists()) {
+              $('msg').textContent = 'Creando iglesia...';
+              await createChurch(uid, { nombre, ciudad, pastor: pastor || '', telefono: telefono || '', emailContacto: email });
+            }
+
+            await sendEmailVerification(cred2.user);
+            $('msg').textContent = '✅ Iglesia creada o actualizada. Verificá tu email.';
+            await signOut(auth);
+            return;
+          } catch (e2) {
+            showErr(e2);
+            return;
+          }
+        }
         showErr(e);
       }
     }
@@ -137,7 +184,11 @@
     function showErr(e){
       console.error(e);
       const msg = document.getElementById('msg');
-      if (msg) msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
+      let txt = e?.message || 'Error inesperado';
+      if (e?.code === 'auth/weak-password') txt = 'La contraseña es demasiado corta (mín. 6).';
+      if (e?.code === 'auth/invalid-email') txt = 'Email inválido.';
+      if (e?.code === 'auth/email-already-in-use') txt = 'Ese email ya está registrado. Si es tuyo, probá iniciar sesión.';
+      msg.textContent = '❌ ' + txt;
     }
   </script>
 </body>
