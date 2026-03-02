@@ -1,7 +1,7 @@
+cat > functions/package.json <<'EOF'
 {
   "name": "miiglesia-plus-functions",
-  "description": "Cloud Functions for Mi Iglesia+",
-  "engines": { "node": "18" },
+  "engines": { "node": "20" },
   "main": "index.js",
   "type": "commonjs",
   "dependencies": {
@@ -9,3 +9,4 @@
     "firebase-functions": "^4.5.0"
   }
 }
+EOF
