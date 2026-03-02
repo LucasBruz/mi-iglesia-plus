@@ -1,194 +1,187 @@
-// functions/index.js
-// Node 18 (asegurate en functions/package.json: { "engines": { "node": "18" } })
+// ==============================================
+//  Cloud Functions para Mi Iglesia+
+//  Incluye:
+//    - Publicidad (Starter/Pro con límite)
+//    - Admin Panel (Aprobación iglesias, ads, preonboarding, asignar planes)
+//  Admin autorizado: miiglesia.on@gmail.com
+// ==============================================
 
-/* Firebase Functions v2 */
-const { onCall, HttpsError } = require('firebase-functions/v2/https');
-const { onDocumentCreated } = require('firebase-functions/v2/firestore');
-
-/* Admin SDK */
-const admin = require('firebase-admin');
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const admin = require("firebase-admin");
 if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
 
-/* ============================================================
-   CONFIG GENERAL
-   ============================================================ */
-
-/** ⚠️ WHITELIST de emails admin (cambiá por el tuyo) */
+// =============================
+// 🔐 ADMINES DEL SISTEMA
+// =============================
 const ADMINS = [
-  'miiglesia.on@gmail.com', // <-- REEMPLAZAR por tu email admin
+  "miiglesia.on@gmail.com"   // <--- TU CORREO ADMIN PRINCIPAL
 ];
 
-/** Normaliza string */
-function norm(v) { return String(v || '').toLowerCase(); }
-
-/** Timestamp actual */
+// Helpers
+function norm(v) { return String(v || "").toLowerCase(); }
 function nowTs() { return admin.firestore.Timestamp.now(); }
-
-/** Planes válidos para anuncios */
-const PLANS = ['starter', 'pro'];
-
-/** Estados de anuncio que cuentan como "activos" (para cupo de Starter) */
-const ALLOWED_STATUSES_FOR_COUNT = ['draft', 'approved'];
-
-/** Verifica que la invocación sea de un usuario administrador */
 function assertAdmin(req) {
-  // onCall v2 → req.auth?.token?.email y claims
-  const email = (req.auth?.token?.email || '').toLowerCase();
+  const email = (req.auth?.token?.email || "").toLowerCase();
   const isClaim = req.auth?.token?.admin === true;
-  const isWL = email && ADMINS.includes(email);
-  if (!req.auth || (!isClaim && !isWL)) {
-    throw new HttpsError('permission-denied', 'No sos administrador');
+  const isWhiteList = ADMINS.includes(email);
+  if (!req.auth || (!isClaim && !isWhiteList)) {
+    throw new HttpsError("permission-denied", "No sos administrador");
   }
 }
 
-/* ============================================================
-   PUBLICIDAD (CREATE + ENFORCE QUOTA)
-   ============================================================ */
+// Planes válidos para publicidad
+const PLANS = ["starter", "pro"];
+const ACTIVE_STATUSES = ["draft", "approved"];
 
-/**
- * Callable: createAd
- * - Requiere auth
- * - Verifica suscripción activa (starter/pro)
- * - Starter: 1 anuncio "activo" (draft/approved)
- * - Crea anuncio en estado 'draft'
- */
-exports.createAd = onCall({ region: 'us-central1' }, async (req) => {
+// ========================================================
+//  PUBLICIDAD - Creación con límite Starter (1 anuncio)
+// ========================================================
+
+exports.createAd = onCall({ region: "us-central1" }, async (req) => {
   const uid = req.auth?.uid;
-  if (!uid) throw new HttpsError('unauthenticated', 'Iniciá sesión para crear publicidades.');
+  if (!uid) throw new HttpsError("unauthenticated", "Necesitás iniciar sesión.");
 
   const { title, href, imageUrl } = req.data || {};
-  if (!title || typeof title !== 'string' || !title.trim()) {
-    throw new HttpsError('invalid-argument', 'Falta el título del anuncio.');
-  }
+  if (!title) throw new HttpsError("invalid-argument", "Falta el título.");
 
-  // 1) Traer iglesia + suscripción
   const igSnap = await db.doc(`iglesias/${uid}`).get();
-  if (!igSnap.exists) {
-    throw new HttpsError('failed-precondition', 'No se encontró tu iglesia. Registrate primero.');
-  }
-  const data = igSnap.data() || {};
-  const sub  = data.subscription || {};
+  if (!igSnap.exists)
+    throw new HttpsError("failed-precondition", "Tu iglesia no existe.");
+
+  const sub = igSnap.data().subscription || {};
   const plan = norm(sub.priceIdOrPlanId);
   const stat = norm(sub.status);
 
-  const okPlan   = PLANS.includes(plan);
-  const okActive = (stat === 'active');
-
-  if (!okActive || !okPlan) {
-    throw new HttpsError('permission-denied',
-      'Tu plan no habilita publicidades activas (se requiere Starter o Pro con suscripción activa).');
+  if (!PLANS.includes(plan) || stat !== "active") {
+    throw new HttpsError(
+      "permission-denied",
+      "Solo Starter/Pro ACTIVO pueden crear anuncios."
+    );
   }
 
-  // 2) Límite para Starter (máximo 1 entre 'draft' y 'approved')
-  if (plan === 'starter') {
-    const q = db.collection('ads')
-      .where('iglesiaUid', '==', uid)
-      .where('status', 'in', ALLOWED_STATUSES_FOR_COUNT)
-      .limit(1);
-    const exists = await q.get();
-    if (!exists.empty) {
-      throw new HttpsError('failed-precondition',
-        'Tu plan Starter permite 1 publicidad activa. Archivá la anterior o pasate a Pro.');
+  // LÍMITE STARTER (1 activo)
+  if (plan === "starter") {
+    const q = await db
+      .collection("ads")
+      .where("iglesiaUid", "==", uid)
+      .where("status", "in", ACTIVE_STATUSES)
+      .limit(1)
+      .get();
+
+    if (!q.empty) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Tu plan STARTER solo permite 1 anuncio activo."
+      );
     }
   }
 
-  // 3) Crear anuncio (status: draft)
   const payload = {
     iglesiaUid: uid,
-    title: String(title).trim().slice(0, 120),
-    href: href ? String(href).trim() : null,
-    imageUrl: imageUrl ? String(imageUrl).trim() : null,
-    status: 'draft', // draft | approved | archived
+    title: title.trim(),
+    href: href || null,
+    imageUrl: imageUrl || null,
+    status: "draft",
     createdAt: nowTs(),
-    updatedAt: nowTs()
+    updatedAt: nowTs(),
   };
 
-  const ref = await db.collection('ads').add(payload);
-  return { id: ref.id, ok: true };
+  const ref = await db.collection("ads").add(payload);
+  return { ok: true, id: ref.id };
 });
 
-/**
- * Trigger Firestore: enforceAdQuota
- * - Se ejecuta al crear ads/{adId}
- * - Si plan inválido/inactivo → archiva
- * - Si Starter excede 1 activo → archiva el recién creado
- */
-exports.enforceAdQuota = onDocumentCreated('ads/{adId}', async (event) => {
+// ====================================================================
+//  Trigger automático para asegurar límite Starter (seguridad extra)
+// ====================================================================
+
+exports.enforceAdQuota = onDocumentCreated("ads/{adId}", async (event) => {
   const snap = event.data;
   if (!snap) return;
+
   const ad = snap.data();
   const adRef = snap.ref;
 
   try {
-    const uid = ad?.iglesiaUid;
+    const uid = ad.iglesiaUid;
     if (!uid) return;
 
     const igSnap = await db.doc(`iglesias/${uid}`).get();
     if (!igSnap.exists) {
-      await adRef.update({ status: 'archived', quotaViolation: true, note: 'iglesia inexistente', updatedAt: nowTs() });
+      await adRef.update({
+        status: "archived",
+        quotaViolation: true,
+        note: "iglesia inexistente",
+        updatedAt: nowTs(),
+      });
       return;
     }
 
-    const sub  = igSnap.data()?.subscription || {};
+    const sub = igSnap.data().subscription || {};
     const plan = norm(sub.priceIdOrPlanId);
     const stat = norm(sub.status);
 
-    if (!PLANS.includes(plan) || stat !== 'active') {
-      await adRef.update({ status: 'archived', quotaViolation: true, note: 'plan inactivo/no válido', updatedAt: nowTs() });
+    if (!PLANS.includes(plan) || stat !== "active") {
+      await adRef.update({
+        status: "archived",
+        quotaViolation: true,
+        note: "plan inactivo/no válido",
+        updatedAt: nowTs(),
+      });
       return;
     }
 
-    if (plan === 'starter') {
-      const qs = await db.collection('ads')
-        .where('iglesiaUid', '==', uid)
-        .where('status', 'in', ALLOWED_STATUSES_FOR_COUNT)
+    // Starter → aseguramos máximo 1
+    if (plan === "starter") {
+      const qs = await db
+        .collection("ads")
+        .where("iglesiaUid", "==", uid)
+        .where("status", "in", ACTIVE_STATUSES)
         .get();
 
       if (qs.size > 1) {
-        await adRef.update({ status: 'archived', quotaViolation: true, note: 'starter-limit', updatedAt: nowTs() });
+        await adRef.update({
+          status: "archived",
+          quotaViolation: true,
+          note: "starter-limit",
+          updatedAt: nowTs(),
+        });
       }
     }
   } catch (e) {
-    console.error('enforceAdQuota error:', e);
+    console.error("enforceAdQuota error:", e);
   }
 });
 
-/* ============================================================
-   ADMIN (CALLABLES para Panel Admin)
-   - Requieren admin por custom claim o whitelist de emails
-   ============================================================ */
+// ========================================================
+//                 PANEL ADMINISTRADOR
+// ========================================================
 
-/** Ping para verificar permisos admin */
-exports.adminPing = onCall({ region: 'us-central1' }, async (req) => {
+// Ping para saber si el usuario es admin
+exports.adminPing = onCall({ region: "us-central1" }, (req) => {
   assertAdmin(req);
   return { ok: true };
 });
 
-/**
- * Aprobar/Rechazar iglesia
- * - action: 'activa' | 'rechazada'
- * - reason (opcional si rechazás)
- */
-exports.adminApproveChurch = onCall({ region: 'us-central1' }, async (req) => {
+// Aprobar o rechazar iglesia
+exports.adminApproveChurch = onCall({ region: "us-central1" }, async (req) => {
   assertAdmin(req);
-  const { iglesiaUid, action, reason } = req.data || {};
-  const act = String(action || '').toLowerCase();
 
-  if (!iglesiaUid || !['activa', 'rechazada'].includes(act)) {
-    throw new HttpsError('invalid-argument', 'Datos inválidos');
+  const { iglesiaUid, action, reason } = req.data;
+  const act = norm(action);
+
+  if (!iglesiaUid || !["activa", "rechazada"].includes(act)) {
+    throw new HttpsError("invalid-argument", "Datos inválidos.");
   }
 
   const ref = db.doc(`iglesias/${iglesiaUid}`);
-  const snap = await ref.get();
-  if (!snap.exists) throw new HttpsError('not-found', 'Iglesia no encontrada');
-
   const patch = {
     estado: act,
     updatedAt: nowTs(),
   };
 
-  if (act === 'rechazada') {
+  if (act === "rechazada") {
     patch.rejectedReason = reason || null;
   } else {
     patch.approvedAt = nowTs();
@@ -198,78 +191,77 @@ exports.adminApproveChurch = onCall({ region: 'us-central1' }, async (req) => {
   return { ok: true };
 });
 
-/**
- * Marcar preonboarding como pagado/rechazado
- * - { iglesiaUid, paid: boolean, rejected?: boolean }
- */
-exports.adminSetPreonboardingPaid = onCall({ region: 'us-central1' }, async (req) => {
-  assertAdmin(req);
-  const { iglesiaUid, paid, rejected } = req.data || {};
-  if (!iglesiaUid || typeof paid !== 'boolean') {
-    throw new HttpsError('invalid-argument', 'Datos inválidos');
+// Marcar preonboarding pagado/rechazado
+exports.adminSetPreonboardingPaid = onCall(
+  { region: "us-central1" },
+  async (req) => {
+    assertAdmin(req);
+
+    const { iglesiaUid, paid, rejected } = req.data;
+    if (!iglesiaUid || typeof paid !== "boolean")
+      throw new HttpsError("invalid-argument", "Datos inválidos.");
+
+    const ref = db.doc(`preonboarding/${iglesiaUid}`);
+    const patch = {
+      paid,
+      updatedAt: nowTs(),
+    };
+
+    if (rejected) patch.rejected = true;
+
+    await ref.set(patch, { merge: true });
+    return { ok: true };
   }
+);
 
-  const ref = db.doc(`preonboarding/${iglesiaUid}`);
-  const snap = await ref.get();
-  if (!snap.exists) throw new HttpsError('not-found', 'Preonboarding no encontrado');
-
-  const patch = {
-    paid: !!paid,
-    updatedAt: nowTs(),
-  };
-  if (rejected) patch.rejected = true;
-
-  await ref.set(patch, { merge: true });
-  return { ok: true };
-});
-
-/**
- * Cambiar estado de un anuncio
- * - status: 'approved' | 'archived' | 'draft'
- */
-exports.adminSetAdStatus = onCall({ region: 'us-central1' }, async (req) => {
+// Cambiar estado de publicidad
+exports.adminSetAdStatus = onCall({ region: "us-central1" }, async (req) => {
   assertAdmin(req);
-  const { adId, status } = req.data || {};
-  const st = String(status || '').toLowerCase();
-  const allowed = ['approved', 'archived', 'draft'];
-  if (!adId || !allowed.includes(st)) throw new HttpsError('invalid-argument', 'Datos inválidos');
+
+  const { adId, status } = req.data;
+  const st = norm(status);
+
+  if (!adId || !["approved", "archived", "draft"].includes(st))
+    throw new HttpsError("invalid-argument", "Estado inválido.");
 
   const ref = db.doc(`ads/${adId}`);
-  const snap = await ref.get();
-  if (!snap.exists) throw new HttpsError('not-found', 'Anuncio no encontrado');
-
   await ref.update({ status: st, updatedAt: nowTs() });
+
   return { ok: true };
 });
 
-/**
- * Asignar plan manualmente a una iglesia
- * - planId: 'free' | 'starter' | 'pro'
- * - status: 'active' | 'past_due' | 'canceled' | 'incomplete'
- */
-exports.adminSetSubscription = onCall({ region: 'us-central1' }, async (req) => {
-  assertAdmin(req);
-  const { iglesiaUid, planId, status } = req.data || {};
-  const p = String(planId || '').toLowerCase();
-  const s = String(status || '').toLowerCase();
+// Asignar plan manualmente
+exports.adminSetSubscription = onCall(
+  { region: "us-central1" },
+  async (req) => {
+    assertAdmin(req);
 
-  const okPlan   = ['free', 'starter', 'pro'].includes(p);
-  const okStatus = ['active', 'past_due', 'canceled', 'incomplete'].includes(s);
-  if (!iglesiaUid || !okPlan || !okStatus) throw new HttpsError('invalid-argument', 'Datos inválidos');
+    const { iglesiaUid, planId, status } = req.data;
+    const p = norm(planId);
+    const s = norm(status);
 
-  const ref = db.doc(`iglesias/${iglesiaUid}`);
-  const snap = await ref.get();
-  if (!snap.exists) throw new HttpsError('not-found', 'Iglesia no encontrada');
-
-  const patch = {
-    subscription: {
-      provider: p === 'free' ? 'none' : 'mercado_pago',
-      priceIdOrPlanId: p,
-      status: s,
-      updatedAt: nowTs()
+    if (
+      !iglesiaUid ||
+      !["free", "starter", "pro"].includes(p) ||
+      !["active", "past_due", "canceled", "incomplete"].includes(s)
+    ) {
+      throw new HttpsError("invalid-argument", "Datos inválidos.");
     }
-  };
 
-  await ref.set(patch, { merge: true });
-  return { ok: true };
-});
+    const ref = db.doc(`iglesias/${iglesiaUid}`);
+
+    await ref.set(
+      {
+        subscription: {
+          provider: p === "free" ? "none" : "mercado_pago",
+          priceIdOrPlanId: p,
+          status: s,
+          updatedAt: nowTs(),
+        },
+      },
+      { merge: true }
+    );
+
+    return { ok: true };
+  }
+);
