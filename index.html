@@ -1,229 +1,355 @@
-# Mi Iglesia+ — Resumen operativo del chat y plan de trabajo
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Iglesia+ | Conecta tu Comunidad de Fe</title>
 
-> Documento pensado para continuar el proyecto en un nuevo hilo sin depender del contexto anterior.
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
----
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary:#FF6B5B;--dark:#1a1a1a;--gray:#666;--border:#e0e0e0;--white:#fff;--bg:#fafafa}
+    body{font-family:'Poppins',sans-serif;color:var(--dark);background:var(--bg);line-height:1.6}
 
-## 1) Estado actual del proyecto
-- Repositorio: **mi-iglesia-plus** (GitHub Pages, sitio estático).
-- Carpeta de estáticos: `/assets/` (actualmente: `fondo-iglesia.png`, `logo.jpg`, `lucas-bruz.jpg`).
-- No existe aún carpeta específica para eventos.
-- Proyecto ya integra **Firebase** (Auth y Firestore); falta integrar **Storage** para cargar imágenes desde el panel.
+    /* NAV */
+    nav{background:var(--white);padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+    .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.3rem;color:var(--dark)}
+    .logo img{height:45px;width:auto;display:block;border-radius:8px}
+    .logo-text span{color:var(--primary)}
+    .nav-buttons{display:flex;gap:.75rem;flex-wrap:wrap}
 
----
+    /* Botones */
+    .btn{padding:.7rem 1.1rem;border:0;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .3s;display:inline-block;text-decoration:none;text-align:center}
+    .btn-secondary{background:#f0f0f0;color:var(--dark);border:1px solid var(--border)}
+    .btn-primary{background:var(--primary);color:var(--white)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,91,.3)}
+    .btn-wa{background:#25D366;color:#fff}
 
-## 2) Objetivo inmediato
-Agregar una imagen de evento en **Eventos Destacados** y dejar un flujo escalable para que cada administrador de iglesia pueda subir sus propias imágenes sin tocar GitHub.
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#f5e6e8 0%,#fde8e8 100%);padding:5rem 2rem;text-align:center}
+    .hero-content{max-width:800px;margin:0 auto}
+    .logo-circle{width:280px;height:280px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:center}
+    .logo-circle img{width:100%;height:100%;object-fit:contain;border-radius:20px}
+    h1{font-size:3.5rem;font-weight:800;margin-bottom:1rem;line-height:1.2}
+    h1 span{color:var(--primary)}
+    .hero p{font-size:1.1rem;color:var(--gray);margin-bottom:2rem;line-height:1.8}
+    .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
 
----
+    /* FEATURES */
+    .features{padding:4rem 2rem;background:var(--white)}
+    .container{max-width:1200px;margin:0 auto}
+    .section-title{text-align:center;font-size:2.2rem;font-weight:800;margin-bottom:2rem}
 
-## 3) Organización de imágenes (convención de carpetas)
-Crear la carpeta:
-```
-/assets/eventos/
-```
-Guardar allí las variantes optimizadas en **WebP**.
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
+    .feature-card{background:var(--white);padding:2rem;border-radius:12px;border:1px solid var(--border);transition:all .3s;text-align:center}
+    .feature-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
+    .feature-icon{font-size:2.5rem;margin-bottom:1rem}
+    .feature-card h3{font-size:1.3rem;margin-bottom:1rem;color:var(--dark)}
+    .feature-card p{color:var(--gray);font-size:.95rem;line-height:1.6}
 
-### Nomenclatura sugerida
-```
-event_formando_abril2026-hero-1920w.webp
-... (1600w, 1280w, 1024w, 800w)
-event_formando_abril2026-mobile-1080w.webp
-... (900w, 720w, 540w)
-event_formando_abril2026-square-1200w.webp
-... (900w, 600w)
-```
+    /* CTA */
+    .cta{background:linear-gradient(135deg,var(--primary) 0%,#e63946 100%);color:var(--white);padding:4rem 2rem;text-align:center}
+    .cta h2{font-size:2.2rem;margin-bottom:1rem}
+    .cta p{font-size:1.05rem;margin-bottom:2rem;opacity:.95}
 
----
+    /* SEARCH */
+    .search-section{padding:4rem 2rem;background:var(--white)}
+    .search-box{display:flex;gap:1rem;max-width:600px;margin:0 auto 1rem;flex-wrap:wrap;justify-content:center;position:relative}
+    .search-input{flex:1;min-width:250px;padding:1rem;border:2px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:1rem;transition:border-color .3s}
+    .search-input:focus{outline:none;border-color:var(--primary)}
+    .search-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:0 auto}
+    .church-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all .3s;cursor:pointer}
+    .church-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
+    .church-card h3{color:var(--primary);margin-bottom:1rem;font-size:1.3rem}
+    .church-info{color:var(--gray);font-size:.95rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+    .church-info strong{color:var(--dark)}
+    .church-button{width:100%;margin-top:1rem;padding:.8rem}
+    .no-results{text-align:center;color:var(--gray);padding:2rem;grid-column:1 / -1;font-size:1.1rem}
 
-## 4) Optimización realizada (listo para usar)
-Se generaron crops y compresión WebP:
-- **Hero/Slider 16:9** → 1920/1600/1280/1024/800 px
-- **Mobile 4:5** → 1080/900/720/540 px
-- **Square 1:1** → 1200/900/600 px
+    /* AUTOCOMPLETE */
+    .autocomplete{max-width:600px;margin:0 auto 2rem;}
+    .suggestions{display:none;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.08);overflow:hidden}
+    .suggestion{padding:.7rem 1rem;display:flex;justify-content:space-between;gap:12px;cursor:pointer}
+    .suggestion small{color:var(--gray)}
+    .suggestion:hover{background:#f8f8f8}
 
-> Si el slider exige otra relación o tamaño, volver a exportar manteniendo el recorte centrado.
+    /* ==== EVENTOS DESTACADOS (HOME) ==== */
+    .ads-section{padding:3rem 2rem;background:#fff}
+    .ads-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1200px;margin:0 auto}
+    .ad-card{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:transform .2s, box-shadow .2s}
+    .ad-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+    .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
+    .ad-body{padding:12px}
+    .ad-title{font-weight:700;margin-bottom:4px}
+    .ad-meta{color:var(--gray);font-size:.92rem;display:flex;align-items:center;gap:8px}
+    .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
+    .chip.starter{background:#6c757d}
+    .chip.pro{background:#28a745}
 
----
+    /* TABS */
+    .tabs-section{padding:3rem 1.5rem;background:var(--bg)}
+    .tabs-wrap{max-width:1000px;margin:0 auto}
+    .tabs{display:flex;gap:10px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+    .tab-btn{padding:.6rem 1rem;border:1px solid var(--border);background:#fff;border-radius:999px;cursor:pointer;font-weight:700}
+    .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .tab-pane{display:none;background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;max-width:1000px;margin:0 auto}
+    .tab-pane.active{display:block}
 
-## 5) Integración en HTML (snippet listo)
+    /* FOOTER */
+    footer{background:var(--dark);color:rgba(255,255,255,.7);padding:2rem;text-align:center;font-size:.9rem}
+    .footer-founder{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:2rem}
+    .founder-photo{width:80px;height:80px;flex-shrink:0;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.1)}
+    .founder-photo img{width:100%;height:100%;object-fit:cover}
+    .founder-info{text-align:left}
+    .founder-info h4{margin:0;color:white;font-size:1.1rem}
+    .founder-info p{margin:.3rem 0 0 0;color:rgba(255,255,255,.7);font-size:.9rem}
+    .founder-info .btn{margin-top:.8rem;padding:.5rem 1.2rem;font-size:.85rem}
 
-### A) Slider/hero responsive con `<picture>` y `srcset`
-```html
-<picture>
-  <!-- Mobile primero (4:5) -->
-  <source
-    type="image/webp"
-    media="(max-width: 767px)"
-    srcset="
-      assets/eventos/event_formando_abril2026-mobile-540w.webp 540w,
-      assets/eventos/event_formando_abril2026-mobile-720w.webp 720w,
-      assets/eventos/event_formando_abril2026-mobile-900w.webp 900w,
-      assets/eventos/event_formando_abril2026-mobile-1080w.webp 1080w" 
-    sizes="100vw" />
-
-  <!-- Desktop (16:9) -->
-  <source
-    type="image/webp"
-    media="(min-width: 768px)"
-    srcset="
-      assets/eventos/event_formando_abril2026-hero-800w.webp 800w,
-      assets/eventos/event_formando_abril2026-hero-1024w.webp 1024w,
-      assets/eventos/event_formando_abril2026-hero-1280w.webp 1280w,
-      assets/eventos/event_formando_abril2026-hero-1600w.webp 1600w,
-      assets/eventos/event_formando_abril2026-hero-1920w.webp 1920w" 
-    sizes="(min-width: 1280px) 1200px, 100vw" />
-
-  <!-- Fallback -->
-  <img 
-    src="assets/eventos/event_formando_abril2026-hero-1280w.webp" 
-    alt="Cumbre Apostólica y Profética — Formando padres de padres (3–5 abril 2026)"
-    width="1280" height="720"
-    loading="lazy" decoding="async"
-    style="aspect-ratio:16/9; width:100%; height:auto; object-fit:cover;" />
-</picture>
-```
-
-### B) Card cuadrada (1:1)
-```html
-<img 
-  src="assets/eventos/event_formando_abril2026-square-600w.webp" 
-  alt="Evento destacado"
-  width="600" height="600" 
-  loading="lazy" decoding="async"
-  style="aspect-ratio:1/1; width:100%; height:auto; object-fit:cover;" />
-```
-
----
-
-## 6) Flujo actual (sin backend)
-- Subida manual al repo: `assets/eventos/`.
-- Commit a `main` → Deploy por GitHub Pages.
-- Ideal para una web única; **no escala** para múltiples administradores.
-
----
-
-## 7) Flujo recomendado (con backend ligero): Firebase Storage + Firestore
-Permite que **cada administrador** suba imágenes desde el panel.
-
-### Pasos de configuración
-1. En Firebase Console, habilitar **Storage**.
-2. Reglas iniciales (modo producción — ejemplo mínimo, ajustar a tu modelo de roles):
-```javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /eventos/{allPaths=**} {
-      allow read: if true; // o según visibilidad pública
-      allow write: if request.auth != null; // restringir según rol en Firestore
+    @media(max-width:768px){
+      h1{font-size:2rem}
+      .section-title{font-size:1.8rem}
+      .logo-circle{width:200px;height:200px}
+      .footer-founder{flex-direction:column;text-align:center}
+      .founder-info{text-align:center}
+      .nav-buttons{gap:.5rem}
+      .btn{padding:.5rem 1rem;font-size:.9rem}
     }
-  }
-}
-```
-3. En Firestore, colección `eventos` con documentos del tipo:
-```json
-{
-  "titulo": "Cumbre Apostólica y Profética",
-  "subtitulo": "Formando padres de padres",
-  "fechaInicio": "2026-04-03",
-  "fechaFin": "2026-04-05",
-  "imagenes": {
-    "hero": "https://firebasestorage.googleapis.com/.../hero.webp",
-    "mobile": "https://firebasestorage.googleapis.com/.../mobile.webp",
-    "square": "https://firebasestorage.googleapis.com/.../square.webp"
-  },
-  "publicado": true,
-  "creadoPor": "uidDelAdmin"
-}
-```
+  </style>
+</head>
+<body>
 
-### Subida desde el panel (JS)
-```html
-<input type="file" id="fileEvento" accept="image/*" />
-<button id="btnSubir">Subir imagen</button>
-<script type="module">
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { app } from './js/firebase-init.js'; // tu inicialización
+  <!-- NAV -->
+  <nav>
+    <div class="nav-container">
+      <a class="logo" href="#home">
+        <img src="assets/logo.jpg" alt="Mi Iglesia+">
+        <span class="logo-text">Mi <span>Iglesia+</span></span>
+      </a>
+      <div class="nav-buttons">
+        <a class="btn btn-secondary" href="login.html">Ingresar</a>
+        <a class="btn btn-primary" href="registro.html">Comenzar</a>
+        <a class="btn btn-wa" href="https://wa.me/5492615515707" target="_blank" rel="noopener">Contacto</a>
+      </div>
+    </div>
+  </nav>
 
-  const storage = getStorage(app);
-  const db = getFirestore(app);
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="logo-circle">
+        <img src="assets/logo.jpg" alt="Mi Iglesia+">
+      </div>
+      <h1>Conectá tu comunidad de <span>fe</span> como nunca antes</h1>
+      <p>La plataforma moderna que necesitaba tu iglesia. Gestioná eventos, compartí prédicas, administrá ofrendas y mantené unida tu congregación en un solo lugar.</p>
 
-  document.getElementById('btnSubir').addEventListener('click', async () => {
-    const file = document.getElementById('fileEvento').files[0];
-    if (!file) return alert('Seleccioná un archivo');
+      <div class="hero-buttons">
+        <a class="btn btn-secondary" href="#buscar" onclick="irABuscador(event)">Ver Iglesias</a>
+      </div>
+    </div>
+  </section>
 
-    const nombre = `eventos/${Date.now()}-${file.name}`;
-    const storageRef = ref(storage, nombre);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
+  <!-- EVENTOS DESTACADOS -->
+  <section class="ads-section" id="publicidad">
+    <div class="container">
+      <h2 class="section-title" style="text-align:center">Eventos destacados</h2>
+      <div id="adsGrid" class="ads-grid"><!-- Se completa por JS --></div>
+    </div>
+  </section>
 
-    await addDoc(collection(db, 'eventos'), {
-      titulo: 'Evento',
-      subtitulo: '',
-      fechaInicio: '',
-      fechaFin: '',
-      imagenes: { hero: url },
-      publicado: true,
-      creadoEn: new Date()
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Todo lo que tu iglesia necesita</h2>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">📅</div><h3>Eventos</h3><p>Organizá cultos, reuniones y actividades especiales con un calendario compartido.</p></div>
+        <div class="feature-card"><div class="feature-icon">🎙️</div><h3>Prédicas</h3><p>Compartí prédicas en video y audio. Tus miembros pueden verlas cuando quieran.</p></div>
+        <div class="feature-card"><div class="feature-icon">❤️</div><h3>Peticiones de Oración</h3><p>Espacio donde la congregación comparte necesidades y arma grupos de oración.</p></div>
+        <div class="feature-card"><div class="feature-icon">🌐</div><h3>Multi-Iglesia</h3><p>Cada iglesia tiene su propio espacio. Los miembros pueden conectarse a múltiples congregaciones.</p></div>
+        <div class="feature-card"><div class="feature-icon">👥</div><h3>Roles y Permisos</h3><p>Gestioná administradores, líderes y miembros con diferentes niveles de acceso.</p></div>
+        <div class="feature-card"><div class="feature-icon">⚙️</div><h3>Panel Admin</h3><p>Controlá todo desde un dashboard intuitivo y fácil de usar.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>¿Listo para conectar tu iglesia?</h2>
+      <p>Unite a iglesias que ya están transformando la forma en que se conectan con sus comunidades.</p>
+      <a class="btn btn-primary" style="background:white;color:var(--primary)" href="registro.html">Comenzar Ahora</a>
+    </div>
+  </section>
+
+  <!-- SEARCH -->
+  <section class="search-section" id="buscar">
+    <div class="container">
+      <h2 class="section-title">Encontrá tu Iglesia</h2>
+      <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad o pastor</p>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Comunidad Cristiana, Ciudad de Mendoza, Pastor Juan..." aria-label="Buscar iglesias">
+        <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
+
+        <div class="autocomplete" id="autocomplete" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+      </div>
+
+      <div id="resultados" class="search-results"></div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <section class="tabs-section" id="info">
+    <div class="tabs-wrap">
+      <div class="tabs">
+        <button class="tab-btn active" data-pane="tab-sobre">Sobre nosotros</button>
+      </div>
+
+      <div id="tab-sobre" class="tab-pane active">
+        <h3 style="margin-bottom:.6rem;">Mi Iglesia+</h3>
+        <p style="color:var(--gray);">
+          Nuestra misión es ayudar a iglesias a organizarse, comunicar y crecer con herramientas simples:
+          eventos, prédicas, peticiones de oración y un panel de administración moderno.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-founder">
+      <div class="founder-photo">
+        <img src="assets/lucas-bruz.jpg" alt="Fundador">
+      </div>
+      <div class="founder-info">
+        <h4>Lucas Bruz</h4>
+        <p>Fundador de Mi Iglesia+</p>
+      </div>
+    </div>
+    <p>&copy; 2026 Mi Iglesia+. Conectando comunidades de fe.</p>
+  </footer>
+
+  <!-- SCRIPTS (inicio Firestore + lógica búsqueda) -->
+  <script type="module">
+    import { db } from './js/firebase-init.js';
+    import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    let iglesias = [];
+
+    window.irABuscador = function(e){
+      if (e) e.preventDefault();
+      const el = document.querySelector('#buscar');
+      el?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
+    }
+
+    async function cargarIglesias(){
+      try{
+        const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
+        const snap = await getDocs(q);
+        iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+        mostrarTodasLasIglesias();
+      }catch(e){
+        console.error(e);
+        const resultados = document.getElementById('resultados');
+        if (resultados) resultados.innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verificá Firebase.</div>';
+      }
+    }
+
+    window.buscarIglesias = function(){
+      const busqueda = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const resultados = document.getElementById('resultados');
+      if (!resultados) return;
+      resultados.innerHTML = '';
+
+      const coincide = (v) => (v||'').toLowerCase().includes(busqueda);
+      const lista = !busqueda ? iglesias : iglesias.filter(i =>
+        coincide(i.nombre) || coincide(i.ciudad) || coincide(i.pastor)
+      );
+
+      if (lista.length === 0){
+        resultados.innerHTML = '<div class="no-results">No se encontraron iglesias.</div>';
+        return;
+      }
+      lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
+      ocultarSugerencias();
+    }
+
+    window.mostrarTodasLasIglesias = function(){
+      const resultados = document.getElementById('resultados');
+      if (!resultados) return;
+      resultados.innerHTML = '';
+      iglesias.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
+      ocultarSugerencias();
+    }
+
+    window.crearTarjetaIglesia = function(iglesia){
+      return `
+        <div class="church-card">
+          <h3>⛪ ${iglesia.nombre || '-'}</h3>
+          <div class="church-info"><strong>Ubicación:</strong> ${iglesia.ciudad||'-'}</div>
+          <div class="church-info"><strong>Pastor:</strong> ${iglesia.pastor||'-'}</div>
+          <div class="church-info"><strong>Miembros:</strong> ${iglesia.miembros ?? '-'}</div>
+          <div class="church-info"><strong>Teléfono:</strong> ${iglesia.telefono||'-'}</div>
+          <div class="church-info"><strong>Email:</strong> ${iglesia.emailContacto||'-'}</div>
+          <a class="btn btn-primary church-button" href="login.html">Conectar</a>
+        </div>
+      `;
+    }
+
+    const input = document.getElementById('searchInput');
+    const sug   = document.getElementById('suggestions');
+    function ocultarSugerencias(){ if (sug) sug.style.display='none'; }
+    function mostrarSugerencias(){ if (sug) sug.style.display='block'; }
+
+    function buildSugerencias(text){
+      const q = (text||'').toLowerCase().trim();
+      if (!q) { ocultarSugerencias(); return; }
+      const match = iglesias
+        .filter(i => (i.nombre||'').toLowerCase().includes(q)
+                  || (i.ciudad||'').toLowerCase().includes(q)
+                  || (i.pastor||'').toLowerCase().includes(q))
+        .slice(0,8);
+
+      if (match.length === 0){ ocultarSugerencias(); return; }
+      if (sug) {
+        sug.innerHTML = match.map(i => `
+          <div class="suggestion" data-value="${(i.nombre||'').replace(/"/g,'&quot;')}">
+            <span>${i.nombre || '-'}</span>
+            <small>${i.ciudad || ''}</small>
+          </div>
+        `).join('');
+        mostrarSugerencias();
+        [...sug.querySelectorAll('.suggestion')].forEach(el=>{
+          el.addEventListener('click', ()=>{
+            input.value = el.getAttribute('data-value') || '';
+            buscarIglesias();
+          });
+        });
+      }
+    }
+
+    input?.addEventListener('input', e=> buildSugerencias(e.target.value));
+    input?.addEventListener('keydown', e=> { if(e.key==='Escape') ocultarSugerencias(); });
+    document.addEventListener('click', e=>{
+      const auto = document.getElementById('autocomplete');
+      if (auto && !auto.contains(e.target) && e.target !== input) ocultarSugerencias();
     });
+    document.getElementById('searchInput')?.addEventListener('keypress', e=> { if(e.key==='Enter') buscarIglesias(); });
 
-    alert('Imagen subida y evento creado');
-  });
-</script>
-```
-> Mejora futura: procesar variantes (hero/mobile/square). Se puede hacer en cliente con Canvas/OffscreenCanvas o en backend con Cloud Functions/Extensions para generar WebP y tamaños automáticamente.
+    document.addEventListener('DOMContentLoaded', async () => {
+      await cargarIglesias();
+      // Los eventos destacados los carga js/eventos-publicos.js
+    });
+  </script>
 
----
-
-## 8) Lectura de eventos en el frontend (slider dinámico)
-```html
-<div id="slider-eventos"></div>
-<script type="module">
-  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { app } from './js/firebase-init.js';
-
-  const db = getFirestore(app);
-  const cont = document.getElementById('slider-eventos');
-
-  const q = query(collection(db, 'eventos'), where('publicado', '==', true));
-  const snap = await getDocs(q);
-
-  cont.innerHTML = '';
-  snap.forEach(doc => {
-    const e = doc.data();
-    cont.insertAdjacentHTML('beforeend', `
-      <figure class="slide">
-        <img src="${e.imagenes?.hero || e.imagen}" alt="${e.titulo}" loading="lazy" />
-        <figcaption>
-          <h3>${e.titulo}</h3>
-          <p>${e.subtitulo || ''}</p>
-        </figcaption>
-      </figure>
-    `);
-  });
-</script>
-```
-
----
-
-## 9) Checklist de despliegue
-- [ ] Crear `/assets/eventos/` y subir WebP.
-- [ ] Insertar snippet `<picture>` en `index.html` o componente del slider.
-- [ ] Habilitar **Firebase Storage**.
-- [ ] Ajustar **reglas** (Storage y Firestore) según roles.
-- [ ] Agregar UI de subida en el panel admin.
-- [ ] (Opcional) Automatizar generación de variantes.
-
----
-
-## 10) Próximos pasos sugeridos
-1. Confirmar medidas exactas del slider y si necesita foco en un punto específico.
-2. Subir al repo las imágenes generadas (o activar el flujo con Storage).
-3. Si se usa Storage, definir roles de admin por iglesia y el esquema Firestore.
-4. Agregar paginación/orden por fecha y flag `destacado` para curar el slider.
-
----
-
-## 11) Nota
-Este documento resume las decisiones del chat previo y entrega código reutilizable para continuar en un nuevo hilo sin pérdida de contexto.
+  <!-- Eventos destacados (listar solo approved) -->
+  <script type="module" src="js/eventos-publicos.js"></script>
+</body>
+</html>
