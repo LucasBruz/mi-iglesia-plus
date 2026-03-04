@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mi Iglesia+ | Conecta tu Comunidad de Fe</title>
 
-  <!-- Google Fonts (correcto / limpio) -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -93,7 +93,7 @@
     .chip.starter{background:#6c757d}
     .chip.pro{background:#28a745}
 
-    /* TABS (solo “Sobre nosotros”) */
+    /* TABS */
     .tabs-section{padding:3rem 1.5rem;background:var(--bg)}
     .tabs-wrap{max-width:1000px;margin:0 auto}
     .tabs{display:flex;gap:10px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
@@ -135,7 +135,7 @@
       <div class="nav-buttons">
         <a class="btn btn-secondary" href="login.html">Ingresar</a>
         <a class="btn btn-primary" href="registro.html">Comenzar</a>
-        <!-- Contacto directo por WhatsApp (pestaña nueva) -->
+        <!-- WhatsApp -->
         <a class="btn btn-wa" href="https://wa.me/5492615515707" target="_blank" rel="noopener noreferrer">Contacto</a>
       </div>
     </div>
@@ -151,13 +151,12 @@
       <p>La plataforma moderna que necesitaba tu iglesia. Gestioná eventos, compartí prédicas, administrá ofrendas y mantené unida tu congregación en un solo lugar.</p>
 
       <div class="hero-buttons">
-        <!-- Abre el buscador con scroll suave + focus -->
         <a class="btn btn-secondary" href="#buscar" onclick="irABuscador(event)">Ver Iglesias</a>
       </div>
     </div>
   </section>
 
-  <!-- PUBLICIDAD DESTACADA -->
+  <!-- EVENTOS DESTACADOS -->
   <section class="ads-section" id="publicidad">
     <div class="container">
       <h2 class="section-title" style="text-align:center">Eventos destacados</h2>
@@ -199,7 +198,7 @@
         <input type="text" id="searchInput" class="search-input" placeholder="Ej: Comunidad Cristiana, Ciudad de Mendoza, Pastor Juan..." aria-label="Buscar iglesias">
         <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
 
-        <!-- Autocomplete debajo del input -->
+        <!-- Autocomplete -->
         <div class="autocomplete" id="autocomplete" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;">
           <div class="suggestions" id="suggestions"></div>
         </div>
@@ -210,7 +209,7 @@
     </div>
   </section>
 
-  <!-- TABS: Solo “Sobre nosotros” -->
+  <!-- TABS -->
   <section class="tabs-section" id="info">
     <div class="tabs-wrap">
       <div class="tabs">
@@ -241,18 +240,18 @@
     <p>&copy; 2026 Mi Iglesia+. Conectando comunidades de fe.</p>
   </footer>
 
-  <!-- SCRIPT -->
+  <!-- SCRIPTS -->
   <script type="module">
     /* ==== FIRESTORE ==== */
     import { db } from './js/firebase-init.js';
     import {
-      collection, getDocs, query, where, orderBy, limit, getDoc, doc
+      collection, getDocs, query, where
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    /* ==== Estado === */
+    /* ==== Estado ==== */
     let iglesias = [];
 
-    /* ==== Scroll suave + focus al buscador === */
+    /* ==== Scroll suave + focus al buscador ==== */
     window.irABuscador = function(e){
       if (e) e.preventDefault();
       const el = document.querySelector('#buscar');
@@ -263,7 +262,6 @@
     /* ==== Carga inicial de iglesias registradas (activas) ==== */
     async function cargarIglesias(){
       try{
-        // Si quisieras TODAS registradas, reemplazá por: const snap = await getDocs(collection(db, 'iglesias'));
         const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
         const snap = await getDocs(q);
         iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
@@ -320,8 +318,8 @@
     const input = document.getElementById('searchInput');
     const sug   = document.getElementById('suggestions');
 
-    function ocultarSugerencias(){ sug.style.display='none'; }
-    function mostrarSugerencias(){ sug.style.display='block'; }
+    function ocultarSugerencias(){ if (sug) sug.style.display='none'; }
+    function mostrarSugerencias(){ if (sug) sug.style.display='block'; }
 
     function buildSugerencias(text){
       const q = (text||'').toLowerCase().trim();
@@ -352,91 +350,22 @@
       });
     }
 
-    input.addEventListener('input', (e)=> buildSugerencias(e.target.value));
-    input.addEventListener('keydown', (e)=> { if(e.key==='Escape') ocultarSugerencias(); });
+    input?.addEventListener('input', (e)=> buildSugerencias(e.target.value));
+    input?.addEventListener('keydown', (e)=> { if(e.key==='Escape') ocultarSugerencias(); });
     document.addEventListener('click', (e)=> {
       const auto = document.getElementById('autocomplete');
       if (auto && !auto.contains(e.target) && e.target !== input) ocultarSugerencias();
     });
-    document.getElementById('searchInput').addEventListener('keypress', function(e){ if(e.key==='Enter') buscarIglesias(); });
-
-    /* ========= PUBLICIDAD (HOME) ========= */
-    async function cargarAds(){
-      const grid = document.getElementById('adsGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      try{
-        // Intento con orden por fecha (requiere createdAt); si falla, caemos a un fetch simple
-        let ads = [];
-        try {
-          const qAds = query(
-            collection(db, 'ads'),
-            where('status','==','approved'),
-            orderBy('createdAt','desc'),
-            limit(30)
-          );
-          const snapAds = await getDocs(qAds);
-          ads = snapAds.docs.map(d => ({ id:d.id, ...d.data() }));
-        } catch(_){
-          const snapAds = await getDocs(collection(db,'ads'));
-          ads = snapAds.docs
-            .map(d => ({ id:d.id, ...d.data() }))
-            .filter(a => a.statusar por plan activo + tope de 1 para Starter
-        const starterShown = new Set();
-        const toShow = [];
-        for (const ad of ads){
-          const church = churchMap[ad.iglesiaUid];
-          const sub = church?.subscription || {};
-          const plan = (sub.priceIdOrPlanId || '').toLowerCase();
-          const active = (sub.status || '').toLowerCase() === 'active';
-          if (!active || !['starter','pro'].includes(plan)) continue;
-
-          if (plan === 'starter'){
-            if (starterShown.has(ad.iglesiaUid)) continue;
-            starterShown.add(ad.iglesiaUid);
-          }
-          toShow.push({ ad, church, plan });
-        }
-
-        if (!toShow.length){
-          grid.innerHTML = '<div class="no-results">No hay publicidades disponibles.</div>';
-          return;
-        }
-
-        // Render
-        for (const { ad, church, plan } of toShow){
-          const img    = ad.imageUrl || 'assets/placeholder-ad.jpg';
-          const title  = ad.title || (church?.nombre || 'Iglesia');
-          const href   = ad.href || 'login.html';
-          const ciudad = church?.ciudad || '';
-          const badge  = plan === 'pro' ? 'PRO' : 'Starter';
-
-          grid.insertAdjacentHTML('beforeend', `
-            ${href}
-              ${img}
-              <div class="ad-body">
-                <div class="ad-title">${title}</div>
-                <div class="ad-meta">
-                  <span class="chip ${plan}">${badge}</span>
-                  ${ciudad ? `<span>${ciudad}</span>` : ''}
-                </div>
-              </div>
-            </a>
-          `);
-        }
-      } catch (e){
-        console.error(e);
-        grid.innerHTML = '<div class="no-results">No pudimos cargar las publicidades.</div>';
-      }
-    }
+    document.getElementById('searchInput')?.addEventListener('keypress', function(e){ if(e.key==='Enter') buscarIglesias(); });
 
     /* ==== INIT ==== */
     document.addEventListener('DOMContentLoaded', async () => {
       await cargarIglesias();
-      await cargarAds();     // ← Publicidad en portada
+      // Los eventos destacados ahora se cargan desde js/eventos-publicos.js
     });
-
   </script>
+
+  <!-- Eventos destacados (listar solo aprobados) -->
+  <script src="js/eventos-publicos.js" type="module"></script>
 </body>
 </html>
