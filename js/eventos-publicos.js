@@ -1,5 +1,4 @@
-import { db } from './firebase-init.js';
-<script type="module">
+// /js/eventos-publicos.js
 import { db } from './firebase-init.js';
 import {
   collection, query, where, orderBy, getDocs
@@ -26,14 +25,12 @@ const cont = document.getElementById('adsGrid');
     snap.forEach(doc => {
       const a = doc.data();
 
-      // 1) Imagen: usa la URL EXACTA de Firestore
-      //    (asegúrate de que el campo se llame imageUrl y tenga una URL limpia de GCS)
+      // Imagen: usa la URL exacta de Firestore (campo imageUrl)
       const imgTag = a.imageUrl
         ? `<img class="ad-img" src="${a.imageUrl}" alt="${a.title || 'Evento'}" loading="lazy" decoding="async">`
         : `<div class="ad-img" aria-hidden="true"></div>`;
 
-      // 2) Envoltura: si hay href => <a> con .ad-card por dentro;
-      //               si no hay href => <div class="ad-card">.
+      // Contenido interno de la tarjeta (siempre mantiene .ad-card)
       const cardInner = `
         ${imgTag}
         <div class="ad-body">
@@ -42,9 +39,10 @@ const cont = document.getElementById('adsGrid');
         </div>
       `;
 
+      // Si existe a.href, la tarjeta completa es clickeable con <a>
       const cardHtml = a.href
         ? `
-          <a class="ad-link" href="${a.href}" target="_blank" rel="noopener">
+          <a class="ad-card-link" href="${a.href}" target="_blank" rel="noopener">
             <div class="ad-card">
               ${cardInner}
             </div>
@@ -63,4 +61,3 @@ const cont = document.getElementById('adsGrid');
     cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">No se pudieron cargar los eventos.</div>';
   }
 })();
-</script>
