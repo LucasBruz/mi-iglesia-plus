@@ -1,4 +1,3 @@
-// js/eventos-publicos.js
 import { db } from './firebase-init.js';
 import {
   collection, query, where, orderBy, getDocs
@@ -8,14 +7,12 @@ const cont = document.getElementById('adsGrid');
 
 (async () => {
   if (!cont) return;
-
   try {
     const q = query(
       collection(db, 'ads'),
       where('status', '==', 'approved'),
       orderBy('createdAt', 'desc')
     );
-
     const snap = await getDocs(q);
 
     if (snap.empty) {
@@ -26,15 +23,15 @@ const cont = document.getElementById('adsGrid');
     cont.innerHTML = '';
     snap.forEach(doc => {
       const a = doc.data();
-      const img = a.imageUrl
-        ? `${a.imageUrl}`
+      const imgTag = a.imageUrl
+        ? `<img class="ad-img" src="${a.imageUrl}" alt="${a.title || 'Evento'}" loading="lazy" decoding="async">`
         : `<div class="ad-img" aria-hidden="true"></div>`;
-      const linkOpen = a.href ? `${a.href}` : `<div class="ad-card">`;
+      const linkOpen  = a.href ? `${a.href}` : `<div class="ad-card">`;
       const linkClose = a.href ? `</a>` : `</div>`;
 
       cont.insertAdjacentHTML('beforeend', `
         ${linkOpen}
-          ${img}
+          ${imgTag}
           <div class="ad-body">
             <div class="ad-title">${a.title || 'Evento'}</div>
             <div class="ad-meta">${a.href ? 'Ver más' : ''}</div>
@@ -47,3 +44,4 @@ const cont = document.getElementById('adsGrid');
     cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">No se pudieron cargar los eventos.</div>';
   }
 })();
+``
