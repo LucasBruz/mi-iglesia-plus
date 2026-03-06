@@ -7,16 +7,13 @@ import {
 const cont = document.getElementById('adsGrid');
 
 (async () => {
-  if (!cont) {
-    console.warn("adsGrid no encontrado en el DOM");
-    return;
-  }
+  if (!cont) return;
 
-  // mensaje de carga (opcional)
+  // Mensaje de carga
   cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">Cargando eventos…</div>';
 
   try {
-    // 1) Intento con orderBy (requiere índice compuesto en Firestore)
+    // 1) Intento con orderBy (lindo si tenés índice compuesto)
     let q = query(
       collection(db, 'ads'),
       where('status', '==', 'approved'),
@@ -27,12 +24,8 @@ const cont = document.getElementById('adsGrid');
     try {
       snap = await getDocs(q);
     } catch (err) {
-      // 2) Si no existe el índice, reintento sin orderBy para no romper la UI
-      console.warn('Reintentando sin orderBy (puede faltar índice en Firestore)', err);
-      q = query(
-        collection(db, 'ads'),
-        where('status', '==', 'approved')
-      );
+      // 2) Si falta el índice, reintenta sin orderBy para no romper
+      q = query(collection(db, 'ads'), where('status', '==', 'approved'));
       snap = await getDocs(q);
     }
 
@@ -46,8 +39,9 @@ const cont = document.getElementById('adsGrid');
     snap.forEach(d => {
       const a = d.data();
 
-      // ✅ <img> correcta
       const altText = (a.title || 'Evento').replace(/"/g, '&quot;');
+
+      // ✅ <img> correcta
       const imgTag = a.imageUrl
         ? `<img class="ad-img" src="${a.imageUrl}" alt="${altText}" loading="lazy" decoding="async">`
         : `<div class="ad-img" aria-hidden="true"></div>`;
@@ -62,14 +56,13 @@ const cont = document.getElementById('adsGrid');
 
       // ✅ Envoltura correcta: <a class="ad-card" ...> ó <div class="ad-card">
       const html = a.href
-        ? `<a class="ad-card" href="${a.href}" target="_blank" rel="noopener noreferrer">${cardInner}</a>`
+        ? `<a class="ad-card" href="${a.href}" target="_blank" rel="noopener">${cardInner}</a>`
         : `<div class="ad-card">${cardInner}</div>`;
 
       cont.insertAdjacentHTML('beforeend', html);
     });
 
   } catch (e) {
-    console.error("ERROR cargando eventos destacados:", e);
     cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">No se pudieron cargar los eventos.</div>';
   }
 })();
