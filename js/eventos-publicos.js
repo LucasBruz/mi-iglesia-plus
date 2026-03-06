@@ -31,10 +31,12 @@ const cont = document.getElementById('adsGrid');
     snap.forEach(doc => {
       const a = doc.data();
 
+      // Imagen: AHORA sí es una <img> válida
       const imgTag = a.imageUrl
-        ? `<img class="ad-img" src="${a.imageUrl}" alt="${a.title || 'Evento'}">`
-        : `<div class="ad-img"></div>`;
+        ? `<img class="ad-img" src="${a.imageUrl}" alt="${a.title || 'Evento'}" loading="lazy" decoding="async">`
+        : `<div class="ad-img" aria-hidden="true"></div>`;
 
+      // Cuerpo de la tarjeta
       const cardInner = `
         ${imgTag}
         <div class="ad-body">
@@ -43,6 +45,7 @@ const cont = document.getElementById('adsGrid');
         </div>
       `;
 
+      // Si hay href, envolvemos TODO en <a>; si no, en <div>
       const cardHtml = a.href
         ? `<a class="ad-card" href="${a.href}" target="_blank" rel="noopener">${cardInner}</a>`
         : `<div class="ad-card">${cardInner}</div>`;
