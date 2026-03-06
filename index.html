@@ -349,6 +349,26 @@
     });
   </script>
 
+  <!-- 🔹 TARJETA DE PRUEBA (SIN FIRESTORE): QUITAR CUANDO VERIFIQUES -->
+  <script>
+    // INYECTAR UNA TARJETA DE PRUEBA (SIN FIRESTORE)
+    document.addEventListener('DOMContentLoaded', function () {
+      var cont = document.getElementById('adsGrid');
+      if (!cont) return;
+      var html = `
+        <div class="ad-card" style="border:1px dashed #bbb">
+          <img class="ad-img"
+               src="https://storage.googleapis.com/miiglesia-plus-storage/ads/eventos/banner_cumbre.jpg"
+               alt="Evento de prueba" loading="lazy" decoding="async">
+          <div class="ad-body">
+            <div class="ad-title">TEST — Deberías ver esta imagen</div>
+            <div class="ad-meta">Ver más</div>
+          </div>
+        </div>`;
+      cont.insertAdjacentHTML('beforeend', html);
+    });
+  </script>
+
   <!-- Eventos destacados (listar solo approved) -->
   <script type="module" src="js/eventos-publicos.js?v=7"></script>
 </body>
