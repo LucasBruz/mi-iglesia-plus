@@ -30,7 +30,6 @@ const cont = document.getElementById('adsGrid');
 
     snap.forEach(doc => {
       const a = doc.data();
-      console.log("EVENTO CARGADO:", a);
 
       const imgTag = a.imageUrl
         ? `<img class="ad-img" src="${a.imageUrl}" alt="${a.title || 'Evento'}">`
@@ -45,7 +44,7 @@ const cont = document.getElementById('adsGrid');
       `;
 
       const cardHtml = a.href
-        ? `<a href="${a.href}" class="ad-card" target="_blank" rel="noopener">${cardInner}</a>`
+        ? `<a class="ad-card" href="${a.href}" target="_blank" rel="noopener">${cardInner}</a>`
         : `<div class="ad-card">${cardInner}</div>`;
 
       cont.insertAdjacentHTML('beforeend', cardHtml);
