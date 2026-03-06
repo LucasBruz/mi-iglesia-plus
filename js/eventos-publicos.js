@@ -11,6 +11,7 @@ const cont = document.getElementById('adsGrid');
   cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">Cargando eventos…</div>';
 
   try {
+    // Solo aprobados (sin orderBy para evitar índice compuesto)
     const q = query(collection(db, 'ads'), where('status', '==', 'approved'));
     const snap = await getDocs(q);
 
@@ -26,7 +27,7 @@ const cont = document.getElementById('adsGrid');
       const src = (a.imageUrl || '').trim();
 
       const imgTag = src
-        ? `${src}`
+        ? `<img class="ad-img" src="${src}" alt="${(a.title||'Evento').replace(/"/g,'&quot;')}" loading="lazy" decoding="async">`
         : `<div class="ad-img" aria-hidden="true"></div>`;
 
       const inner = `
@@ -37,7 +38,7 @@ const cont = document.getElementById('adsGrid');
         </div>`;
 
       const html = a.href
-        ? `${a.href}${inner}</a>`
+        ? `<a class="ad-card" href="${a.href}" target="_blank" rel="noopener">${inner}</a>`
         : `<div class="ad-card">${inner}</div>`;
 
       cont.insertAdjacentHTML('beforeend', html);
