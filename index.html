@@ -165,8 +165,191 @@
   <section class="features">
     <div class="container">
       <h2 class="section-title">Todo lo que tu iglesia necesita</h2>
-      <div class="features-grid">
+    <div class="features-grid">
         <div class="feature-card"><div class="feature-icon">📅</div><h3>Eventos</h3><p>Organizá cultos, reuniones y actividades especiales con un calendario compartido.</p></div>
         <div class="feature-card"><div class="feature-icon">🎙️</div><h3>Prédicas</h3><p>Compartí prédicas en video y audio. Tus miembros pueden verlas cuando quieran.</p></div>
         <div class="feature-card"><div class="feature-icon">❤️</div><h3>Peticiones de Oración</h3><p>Espacio donde la congregación comparte necesidades y arma grupos de oración.</p></div>
         <div class="feature-card"><div class="feature-icon">🌐</div><h3>Multi-Iglesia</h3><p>Cada iglesia tiene su propio espacio. Los miembros pueden conectarse a múltiples congregaciones.</p></div>
+        <div class="feature-card"><div class="feature-icon">👥</div><h3>Roles y Permisos</h3><p>Gestioná administradores, líderes y miembros con diferentes niveles de acceso.</p></div>
+        <div class="feature-card"><div class="feature-icon">⚙️</div><h3>Panel Admin</h3><p>Controlá todo desde un dashboard intuitivo y fácil de usar.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>¿Listo para conectar tu iglesia?</h2>
+      <p>Unite a iglesias que ya están transformando la forma en que se conectan con sus comunidades.</p>
+      <a class="btn btn-primary" style="background:white;color:var(--primary)" href="registro.html">Comenzar Ahora</a>
+    </div>
+  </section>
+
+  <!-- SEARCH -->
+  <section class="search-section" id="buscar">
+    <div class="container">
+      <h2 class="section-title">Encontrá tu Iglesia</h2>
+      <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad o pastor</p>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Comunidad Cristiana, Ciudad de Mendoza, Pastor Juan..." aria-label="Buscar iglesias">
+        <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
+
+        <div class="autocomplete" id="autocomplete" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+      </div>
+
+      <div id="resultados" class="search-results"></div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <section class="tabs-section" id="info">
+    <div class="tabs-wrap">
+      <div class="tabs">
+        <button class="tab-btn active" data-pane="tab-sobre">Sobre nosotros</button>
+      </div>
+
+      <div id="tab-sobre" class="tab-pane active">
+        <h3 style="margin-bottom:.6rem;">Mi Iglesia+</h3>
+        <p style="color:var(--gray);">
+          Nuestra misión es ayudar a iglesias a organizarse, comunicar y crecer con herramientas simples:
+          eventos, prédicas, peticiones de oración y un panel de administración moderno.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-founder">
+      <div class="founder-photo">
+        <img src="assets/lucas-bruz.jpg" alt="Fundador">
+      </div>
+      <div class="founder-info">
+        <h4>Lucas Bruz</h4>
+        <p>Fundador de Mi Iglesia+</p>
+      </div>
+    </div>
+    <p>&copy; 2026 Mi Iglesia+. Conectando comunidades de fe.</p>
+  </footer>
+
+  <!-- SCRIPTS (inicio Firestore + lógica búsqueda) -->
+  <script type="module">
+    import { db } from './js/firebase-init.js';
+    import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    let iglesias = [];
+
+    window.irABuscador = function(e){
+      if (e) e.preventDefault();
+      const el = document.querySelector('#buscar');
+      el?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
+    }
+
+    async function cargarIglesias(){
+      try{
+        const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
+        const snap = await getDocs(q);
+        iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+        mostrarTodasLasIglesias();
+      }catch(e){
+        console.error(e);
+        const resultados = document.getElementById('resultados');
+        if (resultados) resultados.innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verificá Firebase.</div>';
+      }
+    }
+
+    window.buscarIglesias = function(){
+      const busqueda = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const resultados = document.getElementById('resultados');
+      if (!resultados) return;
+      resultados.innerHTML = '';
+
+      const coincide = (v) => (v||'').toLowerCase().includes(busqueda);
+      const lista = !busqueda ? iglesias : iglesias.filter(i =>
+        coincide(i.nombre) || coincide(i.ciudad) || coincide(i.pastor)
+      );
+
+      if (lista.length === 0){
+        resultados.innerHTML = '<div class="no-results">No se encontraron iglesias.</div>';
+        return;
+      }
+      lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
+      ocultarSugerencias();
+    }
+
+    window.mostrarTodasLasIglesias = function(){
+      const resultados = document.getElementById('resultados');
+      if (!resultados) return;
+      resultados.innerHTML = '';
+      iglesias.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
+      ocultarSugerencias();
+    }
+
+    window.crearTarjetaIglesia = function(iglesia){
+      return `
+        <div class="church-card">
+          <h3>⛪ ${iglesia.nombre || '-'}</h3>
+          <div class="church-info"><strong>Ubicación:</strong> ${iglesia.ciudad||'-'}</div>
+          <div class="church-info"><strong>Pastor:</strong> ${iglesia.pastor||'-'}</div>
+          <div class="church-info"><strong>Miembros:</strong> ${iglesia.miembros ?? '-'}</div>
+          <div class="church-info"><strong>Teléfono:</strong> ${iglesia.telefono||'-'}</div>
+          <div class="church-info"><strong>Email:</strong> ${iglesia.emailContacto||'-'}</div>
+          <a class="btn btn-primary church-button" href="login.html">Conectar</a>
+        </div>
+      `;
+    }
+
+    const input = document.getElementById('searchInput');
+    const sug   = document.getElementById('suggestions');
+    function ocultarSugerencias(){ if (sug) sug.style.display='none'; }
+    function mostrarSugerencias(){ if (sug) sug.style.display='block'; }
+
+    function buildSugerencias(text){
+      const q = (text||'').toLowerCase().trim();
+      if (!q) { ocultarSugerencias(); return; }
+      const match = iglesias
+        .filter(i => (i.nombre||'').toLowerCase().includes(q)
+                  || (i.ciudad||'').toLowerCase().includes(q)
+                  || (i.pastor||'').toLowerCase().includes(q))
+        .slice(0,8);
+
+      if (match.length === 0){ ocultarSugerencias(); return; }
+      if (sug) {
+        sug.innerHTML = match.map(i => `
+          <div class="suggestion" data-value="${(i.nombre||'').replace(/"/g,'&quot;')}">
+            <span>${i.nombre || '-'}</span>
+            <small>${i.ciudad || ''}</small>
+          </div>
+        `).join('');
+        mostrarSugerencias();
+        [...sug.querySelectorAll('.suggestion')].forEach(el=>{
+          el.addEventListener('click', ()=>{
+            input.value = el.getAttribute('data-value') || '';
+            buscarIglesias();
+          });
+        });
+      }
+    }
+
+    input?.addEventListener('input', e=> buildSugerencias(e.target.value));
+    input?.addEventListener('keydown', e=> { if(e.key==='Escape') ocultarSugerencias(); });
+    document.addEventListener('click', e=>{
+      const auto = document.getElementById('autocomplete');
+      if (auto && !auto.contains(e.target) && e.target !== input) ocultarSugerencias();
+    });
+    document.getElementById('searchInput')?.addEventListener('keypress', e=> { if(e.key==='Enter') buscarIglesias(); });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await cargarIglesias();
+      // Los eventos destacados los carga js/eventos-publicos.js
+    });
+  </script>
+
+  <!-- Eventos destacados (listar solo approved) -->
+  <script type="module" src="js/eventos-publicos.js?v=10"></script>
+</body>
+</
