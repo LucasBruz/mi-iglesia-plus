@@ -12,31 +12,46 @@ const cont = document.getElementById('adsGrid');
     return;
   }
 
+  // mensaje de carga (opcional)
+  cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">Cargando eventos…</div>';
+
   try {
-    const q = query(
+    // 1) Intento con orderBy (requiere índice compuesto en Firestore)
+    let q = query(
       collection(db, 'ads'),
       where('status', '==', 'approved'),
       orderBy('createdAt', 'desc')
     );
 
-    const snap = await getDocs(q);
+    let snap;
+    try {
+      snap = await getDocs(q);
+    } catch (err) {
+      // 2) Si no existe el índice, reintento sin orderBy para no romper la UI
+      console.warn('Reintentando sin orderBy (puede faltar índice en Firestore)', err);
+      q = query(
+        collection(db, 'ads'),
+        where('status', '==', 'approved')
+      );
+      snap = await getDocs(q);
+    }
 
     if (snap.empty) {
-      cont.innerHTML = '<div class="no-results" style="text-align:center;color:#666">No hay eventos destacados por ahora.</div>';
+      cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">No hay eventos destacados por ahora.</div>';
       return;
     }
 
     cont.innerHTML = '';
 
-    snap.forEach(doc => {
-      const a = doc.data();
+    snap.forEach(d => {
+      const a = d.data();
 
-      // Imagen: AHORA sí es una <img> válida
+      // ✅ <img> correcta
+      const altText = (a.title || 'Evento').replace(/"/g, '&quot;');
       const imgTag = a.imageUrl
-        ? `<img class="ad-img" src="${a.imageUrl}" alt="${a.title || 'Evento'}" loading="lazy" decoding="async">`
+        ? `<img class="ad-img" src="${a.imageUrl}" alt="${altText}" loading="lazy" decoding="async">`
         : `<div class="ad-img" aria-hidden="true"></div>`;
 
-      // Cuerpo de la tarjeta
       const cardInner = `
         ${imgTag}
         <div class="ad-body">
@@ -45,16 +60,16 @@ const cont = document.getElementById('adsGrid');
         </div>
       `;
 
-      // Si hay href, envolvemos TODO en <a>; si no, en <div>
-      const cardHtml = a.href
-        ? `<a class="ad-card" href="${a.href}" target="_blank" rel="noopener">${cardInner}</a>`
+      // ✅ Envoltura correcta: <a class="ad-card" ...> ó <div class="ad-card">
+      const html = a.href
+        ? `<a class="ad-card" href="${a.href}" target="_blank" rel="noopener noreferrer">${cardInner}</a>`
         : `<div class="ad-card">${cardInner}</div>`;
 
-      cont.insertAdjacentHTML('beforeend', cardHtml);
+      cont.insertAdjacentHTML('beforeend', html);
     });
 
   } catch (e) {
     console.error("ERROR cargando eventos destacados:", e);
-    cont.innerHTML = '<div class="no-results" style="text-align:center;color:#666">No se pudieron cargar los eventos.</div>';
+    cont.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;color:#666">No se pudieron cargar los eventos.</div>';
   }
 })();
