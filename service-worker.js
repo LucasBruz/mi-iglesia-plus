@@ -55,7 +55,7 @@ self.addEventListener('fetch', event => {
 // ---- NOTIFICACIONES PUSH ----
 self.addEventListener('push', event => {
   let data = {
-    title: 'Mi Iglesia',
+    title: 'Mi Iglesia +',
     body: 'Tenés un nuevo mensaje',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-192x192.png'
