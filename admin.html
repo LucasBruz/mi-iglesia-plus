@@ -167,7 +167,7 @@
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
     import {
       getFirestore, collection, query, where, orderBy, limit,
-      getDocs, doc, updateDoc, setDoc, addDoc, serverTimestamp
+      getDocs, doc, updateDoc, setDoc, addDoc, deleteDoc, serverTimestamp
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
     import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL }
       from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
@@ -350,6 +350,7 @@
                 <button class="ok"     data-ad-approve="${ad.id}" ${st === 'approved' ? 'disabled' : ''}>✅ Aprobar</button>
                 <button class="warn"   data-ad-draft="${ad.id}"   ${st === 'draft'    ? 'disabled' : ''}>📝 Borrador</button>
                 <button class="danger" data-ad-archive="${ad.id}" ${st === 'archived' ? 'disabled' : ''}>🗑 Archivar</button>
+                <button style="background:#7f1d1d;color:#fff;font-weight:700;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;" data-ad-delete="${ad.id}">🗑️ Eliminar</button>
               </div>
             </div>
           `);
@@ -363,6 +364,9 @@
         );
         cont.querySelectorAll('[data-ad-archive]').forEach(b =>
           b.onclick = () => setAdStatus(b.dataset.adArchive, 'archived', b)
+        );
+        cont.querySelectorAll('[data-ad-delete]').forEach(b =>
+          b.onclick = () => eliminarAd(b.dataset.adDelete, b)
         );
 
       } catch(e) {
@@ -388,6 +392,21 @@
       } catch(e) {
         console.error(e);
         alert('Error al guardar: ' + e.message);
+        btn.disabled = false;
+      }
+    }
+
+    async function eliminarAd(adId, btn) {
+      if (!confirm('¿Seguro que querés eliminar este anuncio? Esta acción no se puede deshacer.')) return;
+      btn.disabled = true;
+      btn.textContent = 'Eliminando…';
+      try {
+        await deleteDoc(doc(db, 'ads', adId));
+        toast('🗑️ Anuncio eliminado');
+        await cargarAds();
+      } catch(e) {
+        console.error(e);
+        alert('Error al eliminar: ' + e.message);
         btn.disabled = false;
       }
     }
