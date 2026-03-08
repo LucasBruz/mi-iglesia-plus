@@ -79,6 +79,39 @@
 
     </div>
 
+    <!-- ✅ NUEVO EVENTO DESTACADO -->
+    <div class="row">
+      <section class="card col" style="flex:1 1 100%">
+        <h2>➕ Cargar nuevo evento destacado</h2>
+        <p class="help">Se publica directo en el home con estado <b>aprobado</b>.</p>
+
+        <div class="grid2">
+          <div>
+            <label class="help">Título del evento *</label>
+            <input id="new_title" placeholder="Ej: Conferencia de Adoración 2026" />
+          </div>
+          <div>
+            <label class="help">Link al hacer clic (opcional)</label>
+            <input id="new_href" placeholder="https://miiglesia.online/..." />
+          </div>
+        </div>
+
+        <label class="help">URL de la imagen *</label>
+        <input id="new_imageUrl" placeholder="https://...imagen.jpg" oninput="previewImg(this.value)" />
+
+        <div id="imgPreview" style="display:none;margin-bottom:8px;">
+          <img id="imgPreviewEl" src="" alt="Preview" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid #eee"/>
+        </div>
+
+        <p class="help" style="margin-bottom:4px">💡 Para subir una imagen: usá <a href="https://imgbb.com" target="_blank">imgbb.com</a> (gratis) → subí la foto → copiá el "Direct link"</p>
+
+        <div class="actions">
+          <button class="ok" id="btnCrearAd">✅ Publicar en eventos destacados</button>
+        </div>
+        <div id="newAdMsg" class="muted" style="margin-top:8px;min-height:20px;"></div>
+      </section>
+    </div>
+
     <div class="row">
 
       <!-- Publicidades -->
@@ -356,6 +389,56 @@
       const map = { draft: 'warn', approved: 'ok', archived: 'danger' };
       return `<span class="tag ${map[st] || 'warn'}">${st}</span>`;
     }
+
+    // ======= CREAR NUEVO EVENTO DESTACADO =======
+    window.previewImg = function(url) {
+      const preview = $('imgPreview');
+      const img = $('imgPreviewEl');
+      if (url.startsWith('http')) {
+        img.src = url;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    };
+
+    $('btnCrearAd').onclick = async () => {
+      const title    = $('new_title').value.trim();
+      const href     = $('new_href').value.trim();
+      const imageUrl = $('new_imageUrl').value.trim();
+      const lbl      = $('newAdMsg');
+
+      if (!title)    { lbl.textContent = '❌ El título es obligatorio.'; return; }
+      if (!imageUrl) { lbl.textContent = '❌ La URL de imagen es obligatoria.'; return; }
+
+      $('btnCrearAd').disabled = true;
+      lbl.textContent = 'Publicando...';
+
+      try {
+        const { addDoc, collection: col } = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js');
+        await addDoc(col(db, 'ads'), {
+          title,
+          href:      href || null,
+          imageUrl,
+          iglesiaUid: 'admin',
+          status:    'approved',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        lbl.textContent = '✅ Evento publicado en el home.';
+        $('new_title').value    = '';
+        $('new_href').value     = '';
+        $('new_imageUrl').value = '';
+        $('imgPreview').style.display = 'none';
+        toast('✅ Evento destacado publicado');
+        await cargarAds();
+      } catch(e) {
+        console.error(e);
+        lbl.textContent = '❌ Error: ' + e.message;
+      } finally {
+        $('btnCrearAd').disabled = false;
+      }
+    };
 
     // ======= PLANES MANUAL =======
     $('btnSetPlan').onclick = async () => {
