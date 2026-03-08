@@ -4,10 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ingresar | Mi Iglesia+</title>
-
-  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
-
   <style>
     :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
     *{ box-sizing:border-box }
@@ -16,7 +13,7 @@
     h1{margin:0 0 16px 0}
     .small{color:#666;font-size:.92rem;margin-top:12px}
     input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
-    button{width:100%;padding:12px;border:0;border-radius:8px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    button{width:100%;padding:12px;border:0;border-radius:8px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;margin-top:6px}
     .btn-secondary{background:#fff;color:#333;border:1px solid #ddd}
     .btn-dark{background:#111;color:#fff}
     #msg{ margin-top:10px; color:#444; font-size:.92rem; min-height:1.2em; }
@@ -37,18 +34,16 @@
     <p class="small">¿No tenés cuenta? <a href="registro.html">Registrar Iglesia</a></p>
   </div>
 
-  <!-- AUTH INLINE -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import {
       getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
-      sendEmailVerification, sendPasswordResetEmail, onAuthStateChanged, signOut
+      sendEmailVerification, sendPasswordResetEmail
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
     import {
       getFirestore, doc, getDoc
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    // 🔵 PEGÁ TU MISMO firebaseConfig (el real, de la consola CDN)
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
@@ -59,19 +54,28 @@
       measurementId: "G-VEPJFQGCQB"
     };
 
+    // ✅ Email del administrador — entra directo sin necesitar iglesia
+    const ADMIN_EMAIL = "miiglesia.on@gmail.com";
+
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
 
-    const $ = (id) => document.getElementById(id);
+    const $   = (id) => document.getElementById(id);
     const msg = $('msg');
 
     async function login(){
-      const email = $('email').value.trim();
+      const email    = $('email').value.trim();
       const password = $('password').value.trim();
       try {
         msg.textContent = 'Ingresando...';
         const { user } = await signInWithEmailAndPassword(auth, email, password);
+
+        // ✅ Si es el admin, va directo al panel sin verificar iglesia
+        if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          window.location.href = 'admin.html';
+          return;
+        }
 
         if (!user.emailVerified){
           msg.innerHTML = '⚠️ Tu email no está verificado. <button id="resendBtn">Reenviar verificación</button>';
@@ -99,13 +103,14 @@
         }
 
         window.location.href = 'dashboard.html';
+
       } catch (e) {
         console.error(e);
         const map = {
-          'auth/user-not-found': 'No existe una cuenta con ese email.',
-          'auth/wrong-password': 'Contraseña incorrecta.',
+          'auth/user-not-found':    'No existe una cuenta con ese email.',
+          'auth/wrong-password':    'Contraseña incorrecta.',
           'auth/too-many-requests': 'Demasiados intentos. Probá más tarde o restablecé la contraseña.',
-          'auth/user-disabled': 'La cuenta está deshabilitada.'
+          'auth/user-disabled':     'La cuenta está deshabilitada.'
         };
         msg.textContent = '❌ ' + (map[e?.code] || e?.message || 'Error inesperado');
       }
@@ -115,13 +120,20 @@
       const provider = new GoogleAuthProvider();
       try {
         const { user } = await signInWithPopup(auth, provider);
-        // Comprobar iglesia
+
+        // ✅ Admin con Google también entra directo
+        if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          window.location.href = 'admin.html';
+          return;
+        }
+
         const snap = await getDoc(doc(db, 'iglesias', user.uid));
         if (!snap.exists()) { window.location.href = 'registro.html'; return; }
         const data = snap.data();
         if (['baneada','banneada'].includes(data.estado)){ msg.textContent = '❌ Iglesia baneada.'; return; }
         if (data.estado !== 'activa'){ msg.textContent = '⏳ Iglesia pendiente de aprobación.'; return; }
         window.location.href = 'dashboard.html';
+
       } catch (e) {
         console.error(e);
         msg.textContent = '❌ ' + (e?.message || 'Error inesperado');
