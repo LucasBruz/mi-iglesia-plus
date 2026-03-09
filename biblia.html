@@ -72,7 +72,6 @@
       <label style="font-size:.85rem;color:var(--gray);margin-bottom:4px;display:block">Versión</label>
       <select id="version">
         <option value="rv1960">Reina Valera 1960</option>
-        <option value="rv1909">Reina Valera 1909</option>
         <option value="nvi">Nueva Versión Internacional</option>
       </select>
 
@@ -105,71 +104,71 @@
     // =====================
     const LIBROS = [
       { nombre:"Génesis",        caps:50,  id:"genesis" },
-      { nombre:"Éxodo",          caps:40,  id:"exodus" },
-      { nombre:"Levítico",       caps:27,  id:"leviticus" },
-      { nombre:"Números",        caps:36,  id:"numbers" },
-      { nombre:"Deuteronomio",   caps:34,  id:"deuteronomy" },
-      { nombre:"Josué",          caps:24,  id:"joshua" },
-      { nombre:"Jueces",         caps:21,  id:"judges" },
-      { nombre:"Rut",            caps:4,   id:"ruth" },
-      { nombre:"1 Samuel",       caps:31,  id:"1+samuel" },
-      { nombre:"2 Samuel",       caps:24,  id:"2+samuel" },
-      { nombre:"1 Reyes",        caps:22,  id:"1+kings" },
-      { nombre:"2 Reyes",        caps:25,  id:"2+kings" },
-      { nombre:"1 Crónicas",     caps:29,  id:"1+chronicles" },
-      { nombre:"2 Crónicas",     caps:36,  id:"2+chronicles" },
-      { nombre:"Esdras",         caps:10,  id:"ezra" },
-      { nombre:"Nehemías",       caps:13,  id:"nehemiah" },
-      { nombre:"Ester",          caps:10,  id:"esther" },
+      { nombre:"Éxodo",          caps:40,  id:"exodo" },
+      { nombre:"Levítico",       caps:27,  id:"levitico" },
+      { nombre:"Números",        caps:36,  id:"numeros" },
+      { nombre:"Deuteronomio",   caps:34,  id:"deuteronomio" },
+      { nombre:"Josué",          caps:24,  id:"josue" },
+      { nombre:"Jueces",         caps:21,  id:"jueces" },
+      { nombre:"Rut",            caps:4,   id:"rut" },
+      { nombre:"1 Samuel",       caps:31,  id:"1samuel" },
+      { nombre:"2 Samuel",       caps:24,  id:"2samuel" },
+      { nombre:"1 Reyes",        caps:22,  id:"1reyes" },
+      { nombre:"2 Reyes",        caps:25,  id:"2reyes" },
+      { nombre:"1 Crónicas",     caps:29,  id:"1cronicas" },
+      { nombre:"2 Crónicas",     caps:36,  id:"2cronicas" },
+      { nombre:"Esdras",         caps:10,  id:"esdras" },
+      { nombre:"Nehemías",       caps:13,  id:"nehemias" },
+      { nombre:"Ester",          caps:10,  id:"ester" },
       { nombre:"Job",            caps:42,  id:"job" },
-      { nombre:"Salmos",         caps:150, id:"psalms" },
-      { nombre:"Proverbios",     caps:31,  id:"proverbs" },
-      { nombre:"Eclesiastés",    caps:12,  id:"ecclesiastes" },
-      { nombre:"Cantares",       caps:8,   id:"song+of+solomon" },
-      { nombre:"Isaías",         caps:66,  id:"isaiah" },
-      { nombre:"Jeremías",       caps:52,  id:"jeremiah" },
-      { nombre:"Lamentaciones",  caps:5,   id:"lamentations" },
-      { nombre:"Ezequiel",       caps:48,  id:"ezekiel" },
+      { nombre:"Salmos",         caps:150, id:"salmos" },
+      { nombre:"Proverbios",     caps:31,  id:"proverbios" },
+      { nombre:"Eclesiastés",    caps:12,  id:"eclesiastes" },
+      { nombre:"Cantares",       caps:8,   id:"cantares" },
+      { nombre:"Isaías",         caps:66,  id:"isaias" },
+      { nombre:"Jeremías",       caps:52,  id:"jeremias" },
+      { nombre:"Lamentaciones",  caps:5,   id:"lamentaciones" },
+      { nombre:"Ezequiel",       caps:48,  id:"ezequiel" },
       { nombre:"Daniel",         caps:12,  id:"daniel" },
-      { nombre:"Oseas",          caps:14,  id:"hosea" },
+      { nombre:"Oseas",          caps:14,  id:"oseas" },
       { nombre:"Joel",           caps:3,   id:"joel" },
       { nombre:"Amós",           caps:9,   id:"amos" },
-      { nombre:"Abdías",         caps:1,   id:"obadiah" },
-      { nombre:"Jonás",          caps:4,   id:"jonah" },
-      { nombre:"Miqueas",        caps:7,   id:"micah" },
+      { nombre:"Abdías",         caps:1,   id:"abdias" },
+      { nombre:"Jonás",          caps:4,   id:"jonas" },
+      { nombre:"Miqueas",        caps:7,   id:"miqueas" },
       { nombre:"Nahúm",          caps:3,   id:"nahum" },
-      { nombre:"Habacuc",        caps:3,   id:"habakkuk" },
-      { nombre:"Sofonías",       caps:3,   id:"zephaniah" },
-      { nombre:"Hageo",          caps:2,   id:"haggai" },
-      { nombre:"Zacarías",       caps:14,  id:"zechariah" },
-      { nombre:"Malaquías",      caps:4,   id:"malachi" },
-      { nombre:"Mateo",          caps:28,  id:"matthew" },
-      { nombre:"Marcos",         caps:16,  id:"mark" },
-      { nombre:"Lucas",          caps:24,  id:"luke" },
-      { nombre:"Juan",           caps:21,  id:"john" },
-      { nombre:"Hechos",         caps:28,  id:"acts" },
-      { nombre:"Romanos",        caps:16,  id:"romans" },
-      { nombre:"1 Corintios",    caps:16,  id:"1+corinthians" },
-      { nombre:"2 Corintios",    caps:13,  id:"2+corinthians" },
-      { nombre:"Gálatas",        caps:6,   id:"galatians" },
-      { nombre:"Efesios",        caps:6,   id:"ephesians" },
-      { nombre:"Filipenses",     caps:4,   id:"philippians" },
-      { nombre:"Colosenses",     caps:4,   id:"colossians" },
-      { nombre:"1 Tesalonicenses",caps:5,  id:"1+thessalonians" },
-      { nombre:"2 Tesalonicenses",caps:3,  id:"2+thessalonians" },
-      { nombre:"1 Timoteo",      caps:6,   id:"1+timothy" },
-      { nombre:"2 Timoteo",      caps:4,   id:"2+timothy" },
-      { nombre:"Tito",           caps:3,   id:"titus" },
-      { nombre:"Filemón",        caps:1,   id:"philemon" },
-      { nombre:"Hebreos",        caps:13,  id:"hebrews" },
-      { nombre:"Santiago",       caps:5,   id:"james" },
-      { nombre:"1 Pedro",        caps:5,   id:"1+peter" },
-      { nombre:"2 Pedro",        caps:3,   id:"2+peter" },
-      { nombre:"1 Juan",         caps:5,   id:"1+john" },
-      { nombre:"2 Juan",         caps:1,   id:"2+john" },
-      { nombre:"3 Juan",         caps:1,   id:"3+john" },
-      { nombre:"Judas",          caps:1,   id:"jude" },
-      { nombre:"Apocalipsis",    caps:22,  id:"revelation" },
+      { nombre:"Habacuc",        caps:3,   id:"habacuc" },
+      { nombre:"Sofonías",       caps:3,   id:"sofonias" },
+      { nombre:"Hageo",          caps:2,   id:"hageo" },
+      { nombre:"Zacarías",       caps:14,  id:"zacarias" },
+      { nombre:"Malaquías",      caps:4,   id:"malaquias" },
+      { nombre:"Mateo",          caps:28,  id:"mateo" },
+      { nombre:"Marcos",         caps:16,  id:"marcos" },
+      { nombre:"Lucas",          caps:24,  id:"lucas" },
+      { nombre:"Juan",           caps:21,  id:"juan" },
+      { nombre:"Hechos",         caps:28,  id:"hechos" },
+      { nombre:"Romanos",        caps:16,  id:"romanos" },
+      { nombre:"1 Corintios",    caps:16,  id:"1corintios" },
+      { nombre:"2 Corintios",    caps:13,  id:"2corintios" },
+      { nombre:"Gálatas",        caps:6,   id:"galatas" },
+      { nombre:"Efesios",        caps:6,   id:"efesios" },
+      { nombre:"Filipenses",     caps:4,   id:"filipenses" },
+      { nombre:"Colosenses",     caps:4,   id:"colosenses" },
+      { nombre:"1 Tesalonicenses",caps:5,  id:"1tesalonicenses" },
+      { nombre:"2 Tesalonicenses",caps:3,  id:"2tesalonicenses" },
+      { nombre:"1 Timoteo",      caps:6,   id:"1timoteo" },
+      { nombre:"2 Timoteo",      caps:4,   id:"2timoteo" },
+      { nombre:"Tito",           caps:3,   id:"tito" },
+      { nombre:"Filemón",        caps:1,   id:"filemon" },
+      { nombre:"Hebreos",        caps:13,  id:"hebreos" },
+      { nombre:"Santiago",       caps:5,   id:"santiago" },
+      { nombre:"1 Pedro",        caps:5,   id:"1pedro" },
+      { nombre:"2 Pedro",        caps:3,   id:"2pedro" },
+      { nombre:"1 Juan",         caps:5,   id:"1juan" },
+      { nombre:"2 Juan",         caps:1,   id:"2juan" },
+      { nombre:"3 Juan",         caps:1,   id:"3juan" },
+      { nombre:"Judas",          caps:1,   id:"judas" },
+      { nombre:"Apocalipsis",    caps:22,  id:"apocalipsis" },
     ];
 
     let libroActual = null;
@@ -230,23 +229,24 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       try {
-        const url = `https://bible-api.com/data/${version}/${libroActual.id}/${capActual}`;
+        const version = document.getElementById('version').value;
+        const url = `https://bible-api.deno.dev/api/read/${version}/${libroActual.id}/${capActual}`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error('No se pudo cargar el capítulo');
+        if (!res.ok) throw new Error('No se pudo cargar el capítulo (código ' + res.status + ')');
         const data = await res.json();
 
-        // El endpoint /data/ devuelve array de versículos directamente
-        const verses = Array.isArray(data) ? data : (data.verses || []);
+        // API devuelve { vers: [{number, verse}] }
+        const verses = data.vers || data.verses || (Array.isArray(data) ? data : []);
         if (!verses.length) {
-          contenido.innerHTML = '<p class="error-msg">No se encontraron versículos para este capítulo.</p>';
+          contenido.innerHTML = '<p class="error-msg">No se encontraron versículos. Intentá con otro libro.</p>';
           return;
         }
 
-        contenido.innerHTML = verses.map((v, i) => `
-          <div class="versiculo">
-            <span class="v-num">${v.verse || v.chapter_verse || (i+1)}</span>${(v.text || v.verse_text || '').trim()}
-          </div>
-        `).join('');
+        contenido.innerHTML = verses.map(v => {
+          const num  = v.number  ?? v.verse_number ?? v.id ?? '';
+          const text = v.verse   ?? v.text ?? v.content ?? '';
+          return `<div class="versiculo"><span class="v-num">${num}</span>${text.trim()}</div>`;
+        }).join('');
 
       } catch(e) {
         contenido.innerHTML = `<p class="error-msg">❌ Error al cargar: ${e.message}. Verificá tu conexión.</p>`;
