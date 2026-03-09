@@ -395,8 +395,41 @@
     });
   </script>
 
-  <!-- Eventos destacados -->
-  <script type="module" src="js/eventos-publicos.js?v=25"></script>
+  <!-- ✅ Eventos destacados (Firestore) -->
+  <script type="module">
+    import { db } from './js/firebase-init.js';
+    import { collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    async function cargarEventosDestacados(){
+      const grid = document.getElementById('adsGrid');
+      if (!grid) return;
+      grid.innerHTML = '<div class="ad-card" style="padding:14px"><strong>Cargando…</strong></div>';
+      try{
+        // Trae aprobados (sin orderBy para evitar índices obligatorios)
+        const q = query(collection(db,'ads'), where('status','==','approved'), limit(12));
+        const snap = await getDocs(q);
+        grid.innerHTML = '';
+        if (snap.empty){
+          grid.innerHTML = '<div class="ad-card" style="padding:14px;color:#666">No hay eventos para mostrar.</div>';
+          return;
+        }
+        snap.forEach(d => {
+          const ad = d.data();
+          const hrefOpen  = ad.href ? `<a class="ad-card" href="${ad.href}" target="_blank" rel="noopener">` : '<div class="ad-card">';
+          const hrefClose = ad.href ? '</a>' : '</div>';
+          const title = (ad.title||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const alt   = title || 'Evento destacado';
+          const img   = ad.imageUrl ? `<img class="ad-img" loading="lazy" src="${ad.imageUrl}" alt="${alt}">` : '';
+          grid.insertAdjacentHTML('beforeend', `${hrefOpen}${img}<div class="ad-body"><div class="ad-title">${title}</div><div class="ad-meta">Evento destacado</div></div>${hrefClose}`);
+        });
+      }catch(e){
+        console.error('Eventos destacados:', e);
+        grid.innerHTML = `<div class=\"ad-card\" style=\"padding:14px;color:#b91c1c\">Error al cargar: ${e.message}</div>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarEventosDestacados);
+  </script>
 
   <!-- ✅ PWA: Service Worker + Instalación + Notificaciones Push -->
   <script>
@@ -406,6 +439,9 @@
         try {
           const reg = await navigator.serviceWorker.register('/service-worker.js');
           console.log('[PWA] Service Worker registrado ✅');
+
+          // Intentar actualizar SW para evitar Home cacheado
+          try { const regs = await navigator.serviceWorker.getRegistrations(); regs.forEach(r=>r.update()); } catch(_){ }
 
           // Pedir permiso para notificaciones (después de 3 seg para no molestar al entrar)
           setTimeout(() => pedirPermisoNotificaciones(reg), 3000);
