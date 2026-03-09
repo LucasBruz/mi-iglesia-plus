@@ -230,19 +230,21 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       try {
-        const url = `https://bible-api.com/${libroActual.id}+${capActual}?translation=${version}`;
+        const url = `https://bible-api.com/data/${version}/${libroActual.id}/${capActual}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('No se pudo cargar el capítulo');
         const data = await res.json();
 
-        if (!data.verses || !data.verses.length) {
+        // El endpoint /data/ devuelve array de versículos directamente
+        const verses = Array.isArray(data) ? data : (data.verses || []);
+        if (!verses.length) {
           contenido.innerHTML = '<p class="error-msg">No se encontraron versículos para este capítulo.</p>';
           return;
         }
 
-        contenido.innerHTML = data.verses.map(v => `
+        contenido.innerHTML = verses.map((v, i) => `
           <div class="versiculo">
-            <span class="v-num">${v.verse}</span>${v.text.trim()}
+            <span class="v-num">${v.verse || v.chapter_verse || (i+1)}</span>${(v.text || v.verse_text || '').trim()}
           </div>
         `).join('');
 
