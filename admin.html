@@ -172,11 +172,13 @@
     import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL }
       from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
 
+    // ✅ CONFIG CORREGIDA: storageBucket DEBE SER *.appspot.com
+    // Además, forzamos el bucket explícitamente al inicializar Storage.
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
       projectId: "miiglesia-plus",
-      storageBucket: "miiglesia-plus.firebasestorage.app",
+      storageBucket: "miiglesia-plus.appspot.com", // <-- antes estaba mal
       messagingSenderId: "407699856167",
       appId: "1:407699856167:web:5d421d407ab7c9789aa702"
     };
@@ -187,7 +189,7 @@
     const app     = initializeApp(firebaseConfig);
     const auth    = getAuth(app);
     const db      = getFirestore(app);
-    const storage = getStorage(app);
+    const storage = getStorage(app, 'gs://miiglesia-plus.appspot.com'); // forzamos bucket correcto
 
     const $  = (id) => document.getElementById(id);
     const toast = (msg, ms=2500) => {
@@ -441,6 +443,14 @@
       if (file) subirImagen(file);
     });
 
+    function safeName(filename){
+      return filename
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-zA-Z0-9._-]/g,'_')
+        .toLowerCase();
+    }
+
     function subirImagen(file) {
       const progress = document.getElementById('uploadProgress');
       const preview  = document.getElementById('imgPreview');
@@ -450,7 +460,7 @@
       progress.style.display = 'block';
       progress.textContent   = '⏳ Subiendo imagen...';
 
-      const path = `ads/${Date.now()}_${file.name}`;
+      const path = `ads/${Date.now()}_${Math.floor(Math.random()*100000)}_${safeName(file.name)}`;
       const sRef = storageRef(storage, path);
       const task = uploadBytesResumable(sRef, file);
 
@@ -523,30 +533,10 @@
       }
     };
 
-    // ======= PLANES MANUAL =======
-    $('btnSetPlan').onclick = async () => {
-      const uid    = $('plan_uid').value.trim();
-      const planId = $('plan_planId').value;
-      const status = $('plan_status').value;
-      const lbl    = $('planMsg');
-      if (!uid) { alert('Ingresá el UID de la iglesia'); return; }
-      lbl.textContent = 'Guardando...';
-      try {
-        await setDoc(doc(db, 'iglesias', uid), {
-          subscription: {
-            provider: planId === 'free' ? 'none' : 'mercado_pago',
-            priceIdOrPlanId: planId,
-            status,
-            updatedAt: serverTimestamp()
-          }
-        }, { merge: true });
-        lbl.textContent = '✔ Plan guardado correctamente';
-        toast('✅ Plan actualizado');
-      } catch(e) {
-        console.error(e);
-        lbl.textContent = '❌ ' + (e?.message || 'Error');
-      }
-    };
+    // ======= PWA/Service Worker: intentar actualizar para evitar versión cacheada =======
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())).catch(()=>{});
+    }
 
   </script>
 </body>
