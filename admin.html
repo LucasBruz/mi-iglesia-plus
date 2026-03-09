@@ -172,24 +172,24 @@
     import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL }
       from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
 
-    // ✅ CONFIG CORREGIDA: storageBucket DEBE SER *.appspot.com
-    // Además, forzamos el bucket explícitamente al inicializar Storage.
+    // ✅ CONFIG para proyectos NUEVOS (bucket firebasestorage.app)
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
       projectId: "miiglesia-plus",
-      storageBucket: "miiglesia-plus.appspot.com", // <-- antes estaba mal
+      storageBucket: "miiglesia-plus.firebasestorage.app", // ← correcto para proyectos nuevos
       messagingSenderId: "407699856167",
       appId: "1:407699856167:web:5d421d407ab7c9789aa702"
     };
 
-    // ⚠️ Email del admin autorizado (debe coincidir con tu cuenta)
+    // ⚠️ Email del admin autorizado
     const ADMIN_EMAIL = "miiglesia.on@gmail.com";
 
     const app     = initializeApp(firebaseConfig);
     const auth    = getAuth(app);
     const db      = getFirestore(app);
-    const storage = getStorage(app, 'gs://miiglesia-plus.appspot.com'); // forzamos bucket correcto
+    // Usamos el bucket por defecto del config (también podrías forzarlo con gs://miiglesia-plus.firebasestorage.app)
+    const storage = getStorage(app);
 
     const $  = (id) => document.getElementById(id);
     const toast = (msg, ms=2500) => {
@@ -514,7 +514,7 @@
           href:      href || null,
           imageUrl,
           iglesiaUid: 'admin',
-          status:    'approved',
+          status:    'approved',   // aparece directo en el Home
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
@@ -533,11 +533,10 @@
       }
     };
 
-    // ======= PWA/Service Worker: intentar actualizar para evitar versión cacheada =======
+    // ======= PWA/Service Worker: actualizar para evitar versión cacheada =======
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())).catch(()=>{});
     }
-
   </script>
 </body>
 </html>
