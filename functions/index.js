@@ -34,7 +34,12 @@ const PLANS = ["starter", "pro"];
 const ACTIVE_STATUSES = ["draft", "approved"];
 
 // ─── MERCADO PAGO CONFIG ──────────────────────────────────────────────────────
-const MP_ACCESS_TOKEN = "APP_USR-541245658929377-030921-7a28e74e2c978d3192453d35fb732167-367955588";
+// ⚠️ No hardcodees secretos. Usá Secrets de Firebase Functions.
+//   firebase functions:secrets:set MP_ACCESS_TOKEN
+const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
+if (!MP_ACCESS_TOKEN) {
+  console.warn("MP_ACCESS_TOKEN no configurado. Definí el secreto con: firebase functions:secrets:set MP_ACCESS_TOKEN");
+}
 
 // ========================================================
 //  PUBLICIDAD - Creación con límite Starter (1 anuncio)
@@ -251,6 +256,22 @@ exports.createMpPreference = onRequest(
 exports.mpWebhook = onRequest(
   { region: "us-central1", cors: true },
   async (req, res) => {
+    // --- Compatibilidad IPN (GET) -------------------------------------------
+    // IPN envía GET con ?topic=payment&id=123...; Webhooks usan POST con JSON.
+    // Si llega un GET válido, lo "traducimos" a tu payload POST actual.
+    if (req.method === "GET") {
+      const topic = (req.query?.topic || req.query?.type || "").toString();
+      const id = (req.query?.id || req.query?.["data.id"] || "").toString();
+      if (topic === "payment" && id) {
+        req.body = { type: "payment", data: { id } };
+        req.method = "POST";
+      } else {
+        res.status(200).send("ok");
+        return;
+      }
+    }
+
+    // --- Flujo original (Webhooks POST) -------------------------------------
     if (req.method !== "POST") { res.status(200).send("ok"); return; }
 
     const { type, data } = req.body;
