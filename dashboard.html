@@ -4,249 +4,237 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Panel de Iglesia | Mi Iglesia+</title>
-
-  <!-- Tipografía -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
-
   <style>
     :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; --ok:#28a745; --warn:#ffb703; --danger:#dc3545; --muted:#888;}
     *{ box-sizing:border-box }
     body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
-    .container{max-width:1000px;margin:32px auto;padding:0 16px}
-    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:22px}
-    h1{margin:0 0 6px 0;font-size:28px}
+
+    /* ─── HEADER CON FONDO ─── */
+    .dashboard-header{
+      position:relative;
+      overflow:hidden;
+      padding:2.5rem 2rem 2rem;
+      color:#fff;
+    }
+    .dashboard-header-bg{
+      position:absolute;inset:0;
+      background-image:url('assets/fondo.png');
+      background-size:cover;background-position:center center;
+      z-index:0;
+    }
+    .dashboard-header-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.18) 50%, rgba(0,0,0,0.45) 100%);
+      z-index:1;
+    }
+    .dashboard-header-content{position:relative;z-index:2;max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+    .dashboard-header h1{margin:0 0 4px;font-size:1.8rem;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4)}
+    .dashboard-header .lead{color:rgba(255,255,255,0.85);margin:0 0 8px;font-size:.95rem}
+    .dashboard-header .muted{color:rgba(255,255,255,0.65);font-size:.85rem}
+    #status{margin-top:4px;font-size:.85rem;color:rgba(255,255,255,0.8)}
+
+    .container{max-width:1000px;margin:0 auto;padding:0 16px}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:22px;margin:16px auto;max-width:1000px}
     p.lead{color:#666;margin:0 0 16px 0}
     .muted{color:#888;font-size:.9rem}
     .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
-    button{padding:10px 14px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    button{padding:10px 14px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;font-family:Poppins}
     button.secondary{background:#111}
     button:disabled{opacity:.6;cursor:not-allowed}
     input,textarea,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
     label{display:block;margin:8px 0 4px 0;font-weight:600}
     .row{display:flex;gap:12px;flex-wrap:wrap}
     .row > div{flex:1 1 280px}
-    #status{margin-top:6px;color:#444}
     #msg{margin-top:10px;color:#444;min-height:1.2em}
 
-    /* Tabs */
-    .tabs{display:flex;gap:8px;margin:16px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
-    .tab-btn{background:#f2f2f2;color:#333;border-radius:10px 10px 0 0;border:1px solid #eee;border-bottom:0;padding:10px 14px;cursor:pointer}
+    .tabs{display:flex;gap:8px;margin:16px 0 0;border-bottom:1px solid #eee;flex-wrap:wrap;padding:0 16px}
+    .tab-btn{background:#f2f2f2;color:#333;border-radius:10px 10px 0 0;border:1px solid #eee;border-bottom:0;padding:10px 14px;cursor:pointer;font-family:Poppins;font-weight:700}
     .tab-btn.active{background:#fff;color:#000;border-bottom:1px solid #fff}
     .tab{display:none}
     .tab.active{display:block}
 
-    /* Listados */
     .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
     .item{border:1px solid #eee;border-radius:12px;padding:12px;background:#fff}
     .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff;margin-right:6px}
     .badge.pub{background:#28a745} .badge.priv{background:#6c757d}
-    iframe, audio, video{width:100%;border-radius:8px;border:0}
-    .actions{display:flex;gap:8px;margin-top:10px}
+    iframe{width:100%;border-radius:8px;border:0}
+    .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
     .danger{background:#dc3545}
 
-    /* Publicidad */
     .ad-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
     .ad-card{border:1px solid #eee;border-radius:12px;overflow:hidden;background:#fff}
     .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
     .ad-body{padding:12px}
     .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
-    .chip.starter{background:#6c757d}
-    .chip.pro{background:#28a745}
-    .chip.draft{background:#ff9800}
-    .chip.approved{background:#28a745}
-    .chip.archived{background:#6c757d}
+    .chip.starter{background:#6c757d} .chip.pro{background:#28a745}
+    .chip.draft{background:#ff9800} .chip.approved{background:#28a745} .chip.archived{background:#6c757d}
     .counter{display:flex;gap:10px;align-items:center;margin:10px 0;color:#444}
     .small{font-size:.9rem;color:#777}
 
-    /* Uploader */
     .uploader{margin-top:8px;border:1px dashed #bbb;border-radius:10px;padding:12px;background:#fff}
     .prog{margin-top:8px;height:8px;border-radius:6px;background:#f0f0f0;overflow:hidden}
     .prog > i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
     .hint{color:#888;font-size:.85rem;margin-top:6px}
+
+    /* ─── SECCIÓN LOGO ─── */
+    .logo-upload-wrap{display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;margin-top:1rem}
+    .logo-preview-box{
+      width:160px;height:160px;border-radius:16px;
+      border:2px dashed var(--border);background:#f9f9f9;
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden;flex-shrink:0;cursor:pointer;transition:border-color .2s;
+    }
+    .logo-preview-box:hover{border-color:var(--primary)}
+    .logo-preview-box img{width:100%;height:100%;object-fit:contain}
+    .logo-preview-box .placeholder{font-size:3rem;color:#ccc}
+    .logo-upload-info{flex:1;min-width:200px}
+    .logo-upload-info p{color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.6}
+    .logo-prog{margin-top:8px;height:6px;border-radius:4px;background:#f0f0f0;overflow:hidden;display:none}
+    .logo-prog i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="topbar">
-        <div>
-          <h1>Panel de Iglesia</h1>
-          <p class="lead">Editá y publicá tus <b>Prédicas</b>, <b>Eventos</b>, <b>Peticiones</b> y <b>Publicidad</b>. Requiere cuenta verificada y estado activo.</p>
-          <div class="muted">Sesión: <span id="emailLbl">—</span></div>
-          <div id="status" class="muted"></div>
-        </div>
-        <div>
-          <button id="btnLogout" class="secondary" title="Salir de la cuenta">Salir</button>
-        </div>
+
+  <!-- HEADER CON FONDO -->
+  <div class="dashboard-header">
+    <div class="dashboard-header-bg"></div>
+    <div class="dashboard-header-overlay"></div>
+    <div class="dashboard-header-content">
+      <div>
+        <h1>Panel de Iglesia</h1>
+        <p class="lead">Editá y publicá tus <b>Prédicas</b>, <b>Eventos</b>, <b>Peticiones</b> y <b>Publicidad</b>.</p>
+        <div class="muted">Sesión: <span id="emailLbl">—</span></div>
+        <div id="status"></div>
       </div>
-
-      <!-- Pestañas -->
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="tab-predicas">Prédicas</button>
-        <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
-        <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
-        <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
+      <div>
+        <button id="btnLogout" class="secondary">Salir</button>
       </div>
-
-      <!-- TAB: PRÉDICAS (YouTube) -->
-      <section id="tab-predicas" class="tab active">
-        <h2>Prédicas (YouTube)</h2>
-        <div class="row">
-          <div>
-            <label for="p_titulo">Título</label>
-            <input id="p_titulo" placeholder="Ej: Fe que mueve montañas" />
-          </div>
-          <div>
-            <label for="p_url">URL de YouTube</label>
-            <input id="p_url" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX" />
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label for="p_fecha">Fecha</label>
-            <input id="p_fecha" type="date" />
-          </div>
-          <div>
-            <label>Visibilidad</label>
-            <label><input id="p_publico" type="checkbox" checked /> Pública</label>
-          </div>
-        </div>
-        <div class="actions">
-          <button id="btnPredicaGuardar">Guardar prédica</button>
-        </div>
-        <div class="list" id="listaPredicas"></div>
-      </section>
-
-      <!-- TAB: EVENTOS -->
-      <section id="tab-eventos" class="tab">
-        <h2>Eventos</h2>
-        <div class="row">
-          <div>
-            <label for="e_titulo">Título</label>
-            <input id="e_titulo" placeholder="Vigilia de oración" />
-          </div>
-          <div>
-            <label for="e_lugar">Lugar</label>
-            <input id="e_lugar" placeholder="Templo central" />
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label for="e_inicio">Inicio</label>
-            <input id="e_inicio" type="datetime-local" />
-          </div>
-          <div>
-            <label for="e_fin">Fin</label>
-            <input id="e_fin" type="datetime-local" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="full">
-            <label for="e_desc">Descripción</label>
-            <textarea id="e_desc" rows="3" placeholder="Detalles del evento"></textarea>
-          </div>
-          <div>
-            <label>Visibilidad</label>
-            <label><input id="e_publico" type="checkbox" checked /> Público</label>
-          </div>
-        </div>
-        <div class="actions">
-          <button id="btnEventoGuardar">Guardar evento</button>
-        </div>
-        <div class="list" id="listaEventos"></div>
-      </section>
-
-      <!-- TAB: PETICIONES -->
-      <section id="tab-peticiones" class="tab">
-        <h2>Peticiones de oración</h2>
-        <div class="row">
-          <div>
-            <label for="t_titulo">Título</label>
-            <input id="t_titulo" placeholder="Oración por salud" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="full">
-            <label for="t_detalle">Detalle</label>
-            <textarea id="t_detalle" rows="3" placeholder="Describe la petición..."></textarea>
-          </div>
-          <div>
-            <label>Visibilidad</label>
-            <label><input id="t_publico" type="checkbox" /> Pública</label>
-          </div>
-        </div>
-        <div class="actions">
-          <button id="btnPeticionGuardar">Guardar petición</button>
-        </div>
-        <div class="list" id="listaPeticiones"></div>
-      </section>
-
-      <!-- TAB: PUBLICIDAD -->
-      <section id="tab-ads" class="tab">
-        <h2>Publicidad</h2>
-        <p class="small">Mostrá anuncios en la portada de Mi Iglesia+. <b>Starter:</b> 1 anuncio (borrador o aprobado). <b>Pro:</b> sin límite.</p>
-
-        <!-- Estado del plan -->
-        <div class="counter">
-          <span>Plan:</span>
-          <span id="planChip" class="chip">—</span>
-          <span id="planCount" class="small">Cargando…</span>
-        </div>
-
-        <!-- Formulario crear anuncio -->
-        <div class="row">
-          <div>
-            <label for="ad_title">Título del anuncio</label>
-            <input id="ad_title" placeholder="Ej: Reunión de jóvenes – Sábado 19 hs" />
-          </div>
-          <div>
-            <label for="ad_href">URL (opcional)</label>
-            <input id="ad_href" placeholder="https://mi-iglesia.com/landing" />
-          </div>
-        </div>
-
-        <div class="uploader">
-          <label for="ad_file"><b>Imagen del anuncio</b> (JPG/PNG, máx. 5MB, 1200×675 recomendado)</label>
-          <input id="ad_file" type="file" accept=".jpg,.jpeg,.png" />
-          <div class="prog"><i id="ad_bar"></i></div>
-          <div class="hint">La imagen se sube a Firebase Storage y se usa su URL en el anuncio.</div>
-          <div id="ad_msg" class="hint" style="min-height:18px;margin-top:6px;"></div>
-        </div>
-
-        <div class="actions" style="margin-top:10px;">
-          <button id="btnCreateAd">Crear publicidad</button>
-        </div>
-
-        <!-- Lista de anuncios -->
-        <div class="ad-grid" id="adsList"></div>
-      </section>
-
-      <p id="msg"></p>
     </div>
   </div>
 
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-perfil">🏠 Mi Iglesia</button>
+    <button class="tab-btn" data-tab="tab-predicas">Prédicas</button>
+    <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
+    <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
+    <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
+  </div>
+
+  <div style="padding:0 16px 32px">
+
+    <!-- TAB: MI IGLESIA (LOGO) -->
+    <section id="tab-perfil" class="tab card active">
+      <h2>🏠 Perfil de mi Iglesia</h2>
+      <p class="small">Personalizá cómo aparece tu iglesia en la plataforma.</p>
+
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">Logo de la iglesia</h3>
+      <div class="logo-upload-wrap">
+        <div class="logo-preview-box" id="logoPreviewBox" onclick="document.getElementById('logoInput').click()">
+          <img id="logoPreviewImg" src="" alt="" style="display:none">
+          <div class="placeholder" id="logoPlaceholder">⛪</div>
+        </div>
+        <div class="logo-upload-info">
+          <p>Tu logo aparecerá en la tarjeta de tu iglesia en el buscador del home.<br>Recomendado: imagen cuadrada, mínimo 200×200px, JPG o PNG.</p>
+          <input type="file" id="logoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="onLogoSelect(event)">
+          <button onclick="document.getElementById('logoInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir imagen</button>
+          <button id="btnGuardarLogo" onclick="guardarLogo()" disabled style="margin-left:.5rem">💾 Guardar logo</button>
+          <div class="logo-prog" id="logoProg"><i id="logoBar"></i></div>
+          <div id="logoMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: PRÉDICAS -->
+    <section id="tab-predicas" class="tab card">
+      <h2>Prédicas (YouTube)</h2>
+      <div class="row">
+        <div><label for="p_titulo">Título</label><input id="p_titulo" placeholder="Ej: Fe que mueve montañas" /></div>
+        <div><label for="p_url">URL de YouTube</label><input id="p_url" placeholder="https://www.youtube.com/watch?v=..." /></div>
+      </div>
+      <div class="row">
+        <div><label for="p_fecha">Fecha</label><input id="p_fecha" type="date" /></div>
+        <div><label>Visibilidad</label><label><input id="p_publico" type="checkbox" checked /> Pública</label></div>
+      </div>
+      <div class="actions"><button id="btnPredicaGuardar">Guardar prédica</button></div>
+      <div class="list" id="listaPredicas"></div>
+    </section>
+
+    <!-- TAB: EVENTOS -->
+    <section id="tab-eventos" class="tab card">
+      <h2>Eventos</h2>
+      <div class="row">
+        <div><label for="e_titulo">Título</label><input id="e_titulo" placeholder="Vigilia de oración" /></div>
+        <div><label for="e_lugar">Lugar</label><input id="e_lugar" placeholder="Templo central" /></div>
+      </div>
+      <div class="row">
+        <div><label for="e_inicio">Inicio</label><input id="e_inicio" type="datetime-local" /></div>
+        <div><label for="e_fin">Fin</label><input id="e_fin" type="datetime-local" /></div>
+      </div>
+      <div class="row">
+        <div><label for="e_desc">Descripción</label><textarea id="e_desc" rows="3"></textarea></div>
+        <div><label>Visibilidad</label><label><input id="e_publico" type="checkbox" checked /> Público</label></div>
+      </div>
+      <div class="actions"><button id="btnEventoGuardar">Guardar evento</button></div>
+      <div class="list" id="listaEventos"></div>
+    </section>
+
+    <!-- TAB: PETICIONES -->
+    <section id="tab-peticiones" class="tab card">
+      <h2>Peticiones de oración</h2>
+      <div class="row">
+        <div><label for="t_titulo">Título</label><input id="t_titulo" placeholder="Oración por salud" /></div>
+      </div>
+      <div class="row">
+        <div><label for="t_detalle">Detalle</label><textarea id="t_detalle" rows="3"></textarea></div>
+        <div><label>Visibilidad</label><label><input id="t_publico" type="checkbox" /> Pública</label></div>
+      </div>
+      <div class="actions"><button id="btnPeticionGuardar">Guardar petición</button></div>
+      <div class="list" id="listaPeticiones"></div>
+    </section>
+
+    <!-- TAB: PUBLICIDAD -->
+    <section id="tab-ads" class="tab card">
+      <h2>Publicidad</h2>
+      <p class="small"><b>Starter:</b> 1 anuncio. <b>Pro:</b> sin límite.</p>
+      <div class="counter">
+        <span>Plan:</span><span id="planChip" class="chip">—</span>
+        <span id="planCount" class="small">Cargando…</span>
+      </div>
+      <div class="row">
+        <div><label for="ad_title">Título del anuncio</label><input id="ad_title" placeholder="Reunión de jóvenes – Sábado 19 hs" /></div>
+        <div><label for="ad_href">URL (opcional)</label><input id="ad_href" placeholder="https://..." /></div>
+      </div>
+      <div class="uploader">
+        <label for="ad_file"><b>Imagen</b> (JPG/PNG, máx. 5MB)</label>
+        <input id="ad_file" type="file" accept=".jpg,.jpeg,.png" />
+        <div class="prog"><i id="ad_bar"></i></div>
+        <div id="ad_msg" class="hint" style="min-height:18px;margin-top:6px"></div>
+      </div>
+      <div class="actions" style="margin-top:10px"><button id="btnCreateAd">Crear publicidad</button></div>
+      <div class="ad-grid" id="adsList"></div>
+    </section>
+
+    <p id="msg"></p>
+  </div>
+
   <script type="module">
-    /* Firebase (CDN v10) */
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-    import {
-      getFirestore, doc, getDoc, collection, addDoc, serverTimestamp,
-      query, orderBy, getDocs, deleteDoc
-    } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
     import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
     import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js';
 
-    /* Config del proyecto */
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
       projectId: "miiglesia-plus",
       storageBucket: "miiglesia-plus.firebasestorage.app",
       messagingSenderId: "407699856167",
-      appId: "1:407699856167:web:5d421d407ab7c9789aa702",
-      measurementId: "G-VEPJFQGCQB"
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
     };
 
     const app  = initializeApp(firebaseConfig);
@@ -257,401 +245,266 @@
 
     const $ = (id) => document.getElementById(id);
     const msg = $('msg');
-    let uid = null;         // UID admin logueado
-    let iglesiaDoc = null;  // Datos de la iglesia
+    let uid = null;
+    let iglesiaDoc = null;
+    let selectedLogoFile = null;
 
-    /* ---------- Tabs UI ---------- */
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabs = document.querySelectorAll('.tab');
-    tabButtons.forEach(btn => {
+    /* ─── TABS ─── */
+    document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        tabButtons.forEach(b=>b.classList.remove('active'));
-        tabs.forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById(btn.dataset.tab).classList.add('active');
       });
     });
 
-    /* ---------- Helpers ---------- */
+    /* ─── HELPERS ─── */
     function youtubeIdFromUrl(url) {
-      const rx = /(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/;
-      const m = (url || '').match(rx);
+      const m = (url||'').match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
       return m ? m[1] : '';
     }
-    function ensureActiveAndVerified(user, dataIglesia) {
-      const status = $('status');
-      if (dataIglesia?.estado !== 'activa') {
-        status.textContent = '⏳ Tu iglesia está PENDIENTE. Pedí a un admin que la apruebe.';
-        disableAllForms(true);
-        return false;
-      }
-      if (!user.emailVerified) {
-        status.innerHTML = '⚠️ Verificá tu email para poder guardar. ' +
-          '<button id="btnResend" style="margin-left:6px;">Reenviar verificación</button>';
-        disableAllForms(true);
-        document.getElementById('btnResend').onclick = async () => {
-          await sendEmailVerification(user);
-          status.textContent = '📧 Verificación reenviada. Revisá tu correo.';
-        };
-        return false;
-      }
-      status.textContent = '✅ Estado: ACTIVA';
-      disableAllForms(false);
-      return true;
+    function fmtDate(d) {
+      try { return new Date(d?.seconds ? d.seconds*1000 : d).toLocaleDateString(); } catch { return ''; }
     }
     function disableAllForms(disabled) {
       ['p_titulo','p_url','p_fecha','p_publico','btnPredicaGuardar',
        'e_titulo','e_lugar','e_inicio','e_fin','e_desc','e_publico','btnEventoGuardar',
        't_titulo','t_detalle','t_publico','btnPeticionGuardar',
-       'ad_title','ad_href','ad_file','btnCreateAd'
-      ].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
-    }
-    function fmtDate(d) {
-      try { return new Date(d?.seconds ? d.seconds*1000 : d).toLocaleDateString(); }
-      catch { return ''; }
+       'ad_title','ad_href','ad_file','btnCreateAd','btnGuardarLogo'
+      ].forEach(id => { const el=$(id); if(el) el.disabled=disabled; });
     }
 
-    /* ---------- Sesión ---------- */
+    function ensureActiveAndVerified(user, dataIglesia) {
+      const status = $('status');
+      if (dataIglesia?.estado !== 'activa') {
+        status.textContent = '⏳ Tu iglesia está PENDIENTE. Pedí a un admin que la apruebe.';
+        disableAllForms(true); return false;
+      }
+      if (!user.emailVerified) {
+        status.innerHTML = '⚠️ Verificá tu email. <button id="btnResend" style="margin-left:6px;padding:4px 10px;font-size:.8rem">Reenviar</button>';
+        disableAllForms(true);
+        document.getElementById('btnResend').onclick = async () => {
+          await sendEmailVerification(user);
+          status.textContent = '📧 Verificación reenviada.';
+        };
+        return false;
+      }
+      status.textContent = '✅ ACTIVA';
+      disableAllForms(false);
+      return true;
+    }
+
+    /* ─── SESIÓN ─── */
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = 'login.html'; return; }
       uid = user.uid;
       $('emailLbl').textContent = user.email || '';
 
-      // Buscar doc de iglesia
-      const ref = doc(db, 'iglesias', uid);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) { msg.textContent = 'No se encontró tu iglesia. Registrá primero.'; disableAllForms(true); return; }
+      const snap = await getDoc(doc(db, 'iglesias', uid));
+      if (!snap.exists()) { msg.textContent = 'No se encontró tu iglesia.'; disableAllForms(true); return; }
       iglesiaDoc = snap.data();
 
+      // Cargar logo existente
+      if (iglesiaDoc.logoUrl) {
+        $('logoPreviewImg').src = iglesiaDoc.logoUrl;
+        $('logoPreviewImg').style.display = 'block';
+        $('logoPlaceholder').style.display = 'none';
+      }
+
       const ok = ensureActiveAndVerified(user, iglesiaDoc);
-
       await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones()]);
-      await initAdsTab();  // ← cargar plan/contador/anuncios
-
-      if (!ok) return;
+      await initAdsTab();
     });
 
-    $('btnLogout').addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.href = 'index.html';
-    });
+    $('btnLogout').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
 
-    /* ---------- PRÉDICAS ---------- */
+    /* ─── LOGO ─── */
+    window.onLogoSelect = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const okTypes = ['image/jpeg','image/png','image/webp'];
+      if (!okTypes.includes(file.type)) { alert('Usá JPG, PNG o WebP.'); return; }
+      if (file.size > 5*1024*1024) { alert('El archivo supera 5MB.'); return; }
+      selectedLogoFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        $('logoPreviewImg').src = ev.target.result;
+        $('logoPreviewImg').style.display = 'block';
+        $('logoPlaceholder').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+      $('btnGuardarLogo').disabled = false;
+      $('logoMsg').textContent = '✏️ ' + file.name + ' — Clic en "Guardar logo" para confirmar.';
+    };
+
+    window.guardarLogo = async function() {
+      if (!selectedLogoFile || !uid) return;
+      const btn = $('btnGuardarLogo');
+      const prog = $('logoProg');
+      const bar  = $('logoBar');
+      const msgEl = $('logoMsg');
+      btn.disabled = true;
+      btn.textContent = 'Subiendo...';
+      prog.style.display = 'block';
+
+      try {
+        const name = `logo-${Date.now()}.${selectedLogoFile.name.split('.').pop()}`;
+        const ref  = sRef(st, `logos/${uid}/${name}`);
+        const task = uploadBytesResumable(ref, selectedLogoFile, { contentType: selectedLogoFile.type });
+
+        await new Promise((resolve, reject) => {
+          task.on('state_changed',
+            snap => { bar.style.width = Math.round(snap.bytesTransferred/snap.totalBytes*100)+'%'; },
+            reject,
+            resolve
+          );
+        });
+
+        const url = await getDownloadURL(task.snapshot.ref);
+        await setDoc(doc(db, 'iglesias', uid), { logoUrl: url }, { merge: true });
+        iglesiaDoc.logoUrl = url;
+        msgEl.textContent = '✅ Logo guardado correctamente.';
+        btn.textContent = '💾 Guardar logo';
+        selectedLogoFile = null;
+      } catch(e) {
+        msgEl.textContent = '❌ Error: ' + e.message;
+        btn.disabled = false;
+        btn.textContent = '💾 Guardar logo';
+      }
+    };
+
+    /* ─── PRÉDICAS ─── */
     async function cargarPredicas() {
       const cont = $('listaPredicas'); if (!cont) return;
       cont.innerHTML = '';
-      const col = collection(db, 'iglesias', uid, 'predicas');
-      const qy = query(col, orderBy('fecha','desc'));
-      const snap = await getDocs(qy);
+      const snap = await getDocs(query(collection(db,'iglesias',uid,'predicas'), orderBy('fecha','desc')));
       if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay prédicas.</div>'; return; }
       snap.forEach(docu => {
         const d = docu.data();
         const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
         const yt = d.youtubeId ? `<iframe height="180" src="https://www.youtube.com/embed/${d.youtubeId}" allowfullscreen></iframe>` : '';
-        cont.insertAdjacentHTML('beforeend', `
-          <div class="item">
-            <div>${badge} <b>${d.titulo || '(Sin título)'}</b></div>
-            <div class="muted">${fmtDate(d.fecha)}</div>
-            ${yt}
-            <div class="actions">
-              <button class="danger" data-del="${docu.id}">Eliminar</button>
-            </div>
-          </div>
-        `);
+        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${fmtDate(d.fecha)}</div>${yt}<div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
       });
-      cont.querySelectorAll('button[data-del]').forEach(b=>{
-        b.onclick = async () => {
-          if (!confirm('¿Eliminar esta prédica?')) return;
-          await deleteDoc(doc(db, 'iglesias', uid, 'predicas', b.dataset.del));
-          await cargarPredicas();
-        };
-      });
+      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'predicas',b.dataset.del)); await cargarPredicas(); }; });
     }
     $('btnPredicaGuardar').addEventListener('click', async () => {
       try {
-        msg.textContent = 'Guardando prédica...';
-        const titulo  = $('p_titulo').value.trim();
-        const url     = $('p_url').value.trim();
-        const youtubeId = youtubeIdFromUrl(url);
-        if (!youtubeId) { msg.textContent = '❌ URL de YouTube inválida'; return; }
-        const fecha   = $('p_fecha').value ? new Date($('p_fecha').value) : new Date();
-        const publico = $('p_publico').checked;
-
-        await addDoc(collection(db, 'iglesias', uid, 'predicas'), {
-          titulo, url, youtubeId, fecha, publico, creadoPor: uid, creadoEn: serverTimestamp()
-        });
-        $('p_titulo').value = ''; $('p_url').value=''; $('p_publico').checked = true;
-        msg.textContent = '✅ Prédica guardada.';
-        await cargarPredicas();
-      } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar prédica'); }
+        const youtubeId = youtubeIdFromUrl($('p_url').value);
+        if (!youtubeId) { msg.textContent='❌ URL de YouTube inválida'; return; }
+        await addDoc(collection(db,'iglesias',uid,'predicas'), { titulo:$('p_titulo').value.trim(), url:$('p_url').value.trim(), youtubeId, fecha:new Date($('p_fecha').value)||new Date(), publico:$('p_publico').checked, creadoEn:serverTimestamp() });
+        $('p_titulo').value=''; $('p_url').value=''; $('p_publico').checked=true;
+        msg.textContent='✅ Prédica guardada.'; await cargarPredicas();
+      } catch(e) { msg.textContent='❌ '+e.message; }
     });
 
-    /* ---------- EVENTOS ---------- */
+    /* ─── EVENTOS ─── */
     async function cargarEventos() {
       const cont = $('listaEventos'); if (!cont) return;
       cont.innerHTML = '';
-      const col = collection(db, 'iglesias', uid, 'eventos');
-      const qy = query(col, orderBy('inicio','desc'));
-      const snap = await getDocs(qy);
-      if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay eventos.</div>'; return; }
+      const snap = await getDocs(query(collection(db,'iglesias',uid,'eventos'), orderBy('inicio','desc')));
+      if (snap.empty) { cont.innerHTML='<div class="muted">Aún no hay eventos.</div>'; return; }
       snap.forEach(docu => {
         const d = docu.data();
         const badge = d.publico ? '<span class="badge pub">Público</span>' : '<span class="badge priv">Privado</span>';
-        cont.insertAdjacentHTML('beforeend', `
-          <div class="item">
-            <div>${badge} <b>${d.titulo || '(Sin título)'}</b></div>
-            <div class="muted">${d.lugar || ''}</div>
-            <div class="muted">${fmtDate(d.inicio)} — ${fmtDate(d.fin)}</div>
-            <div class="muted">${d.descripcion || ''}</div>
-            <div class="actions">
-              <button class="danger" data-del="${docu.id}">Eliminar</button>
-            </div>
-          </div>
-        `);
+        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${d.lugar||''}</div><div class="muted">${fmtDate(d.inicio)}</div><div class="muted">${d.descripcion||''}</div><div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
       });
-      cont.querySelectorAll('button[data-del]').forEach(b=>{
-        b.onclick = async () => {
-          if (!confirm('¿Eliminar este evento?')) return;
-          await deleteDoc(doc(db, 'iglesias', uid, 'eventos', b.dataset.del));
-          await cargarEventos();
-        };
-      });
+      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'eventos',b.dataset.del)); await cargarEventos(); }; });
     }
     $('btnEventoGuardar').addEventListener('click', async () => {
       try {
-        msg.textContent = 'Guardando evento...';
-        const titulo = $('e_titulo').value.trim();
-        const lugar  = $('e_lugar').value.trim();
-        const inicio = $('e_inicio').value ? new Date($('e_inicio').value) : new Date();
-        const fin    = $('e_fin').value ? new Date($('e_fin').value) : inicio;
-        const descripcion = $('e_desc').value.trim();
-        const publico = $('e_publico').checked;
-
-        await addDoc(collection(db, 'iglesias', uid, 'eventos'), {
-          titulo, lugar, inicio, fin, descripcion, publico, creadoPor: uid, creadoEn: serverTimestamp()
-        });
-        $('e_titulo').value=''; $('e_lugar').value=''; $('e_inicio').value=''; $('e_fin').value='';
-        $('e_desc').value=''; $('e_publico').checked = true;
-        msg.textContent = '✅ Evento guardado.';
-        await cargarEventos();
-      } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar evento'); }
+        await addDoc(collection(db,'iglesias',uid,'eventos'), { titulo:$('e_titulo').value.trim(), lugar:$('e_lugar').value.trim(), inicio:new Date($('e_inicio').value)||new Date(), fin:new Date($('e_fin').value)||new Date(), descripcion:$('e_desc').value.trim(), publico:$('e_publico').checked, creadoEn:serverTimestamp() });
+        $('e_titulo').value=''; $('e_lugar').value=''; $('e_inicio').value=''; $('e_fin').value=''; $('e_desc').value='';
+        msg.textContent='✅ Evento guardado.'; await cargarEventos();
+      } catch(e) { msg.textContent='❌ '+e.message; }
     });
 
-    /* ---------- PETICIONES ---------- */
+    /* ─── PETICIONES ─── */
     async function cargarPeticiones() {
       const cont = $('listaPeticiones'); if (!cont) return;
       cont.innerHTML = '';
-      const col = collection(db, 'iglesias', uid, 'peticiones');
-      const qy = query(col, orderBy('fecha','desc'));
-      const snap = await getDocs(qy);
-      if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay peticiones.</div>'; return; }
-      snap.forEach(docu=>{
+      const snap = await getDocs(query(collection(db,'iglesias',uid,'peticiones'), orderBy('fecha','desc')));
+      if (snap.empty) { cont.innerHTML='<div class="muted">Aún no hay peticiones.</div>'; return; }
+      snap.forEach(docu => {
         const d = docu.data();
         const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
-        cont.insertAdjacentHTML('beforeend', `
-          <div class="item">
-            <div>${badge} <b>${d.titulo || '(Sin título)'}</b></div>
-            <div class="muted">${fmtDate(d.fecha)}</div>
-            <div class="muted">${d.detalle || ''}</div>
-            <div class="actions">
-              <button class="danger" data-del="${docu.id}">Eliminar</button>
-            </div>
-          </div>
-        `);
+        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${d.detalle||''}</div><div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
       });
-      cont.querySelectorAll('button[data-del]').forEach(b=>{
-        b.onclick = async () => {
-          if (!confirm('¿Eliminar esta petición?')) return;
-          await deleteDoc(doc(db, 'iglesias', uid, 'peticiones', b.dataset.del));
-          await cargarPeticiones();
-        };
-      });
+      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'peticiones',b.dataset.del)); await cargarPeticiones(); }; });
     }
     $('btnPeticionGuardar').addEventListener('click', async () => {
       try {
-        msg.textContent = 'Guardando petición...';
-        const titulo = $('t_titulo').value.trim();
-        const detalle= $('t_detalle').value.trim();
-        const publico= $('t_publico').checked;
-
-        await addDoc(collection(db, 'iglesias', uid, 'peticiones'), {
-          titulo, detalle, publico, fecha: new Date(), creadaPor: uid, creadoEn: serverTimestamp()
-        });
+        await addDoc(collection(db,'iglesias',uid,'peticiones'), { titulo:$('t_titulo').value.trim(), detalle:$('t_detalle').value.trim(), publico:$('t_publico').checked, fecha:new Date(), creadoEn:serverTimestamp() });
         $('t_titulo').value=''; $('t_detalle').value=''; $('t_publico').checked=false;
-        msg.textContent = '✅ Petición guardada.';
-        await cargarPeticiones();
-      } catch (e) { console.error(e); msg.textContent = '❌ ' + (e?.message || 'No se pudo guardar petición'); }
+        msg.textContent='✅ Petición guardada.'; await cargarPeticiones();
+      } catch(e) { msg.textContent='❌ '+e.message; }
     });
 
-    /* ---------- PUBLICIDAD ---------- */
-    const PLAN_LIMITS = { starter: 1, pro: Infinity };
-
+    /* ─── PUBLICIDAD ─── */
+    const PLAN_LIMITS = { starter:1, pro:Infinity };
     async function initAdsTab(){
-      // Mostrar plan + contador
       const sub = iglesiaDoc?.subscription || {};
-      const plan = (sub.priceIdOrPlanId || '').toLowerCase();
-      const status = (sub.status || '').toLowerCase();
-
-      const planChip = $('planChip');
-      const planCount= $('planCount');
-
-      if (!['starter','pro'].includes(plan) || status !== 'active') {
-        planChip.textContent = 'Sin plan activo';
-        planChip.className   = 'chip';
-        planCount.textContent= 'Para publicar anuncios, activá Starter o Pro.';
-        disableAdsForm(true);
+      const plan = (sub.priceIdOrPlanId||'').toLowerCase();
+      const status = (sub.status||'').toLowerCase();
+      const planChip=$('planChip'); const planCount=$('planCount');
+      if (!['starter','pro'].includes(plan)||status!=='active') {
+        planChip.textContent='Sin plan activo'; planChip.className='chip';
+        planCount.textContent='Para publicar anuncios, activá Starter o Pro.';
+        ['ad_title','ad_href','ad_file','btnCreateAd'].forEach(id=>{const el=$(id);if(el)el.disabled=true;});
       } else {
-        planChip.textContent = plan.toUpperCase();
-        planChip.className   = `chip ${plan}`;
-        disableAdsForm(false);
+        planChip.textContent=plan.toUpperCase(); planChip.className=`chip ${plan}`;
       }
-
-      await listarAdsYContar(plan);
+      await listarAds(plan);
       bindCreateAd(plan);
     }
 
-    function disableAdsForm(disabled){
-      ['ad_title','ad_href','ad_file','btnCreateAd'].forEach(id=>{
-        const el = $(id);
-        if (el) el.disabled = disabled;
-      });
-    }
-
-    function validarArchivo(file){
-      if (!file) return { ok:true, reason:'sin archivo (opcional)' };
-      const okTypes = ['image/jpeg','image/png'];
-      if (!okTypes.includes(file.type)) return { ok:false, reason:'Formato inválido (usa JPG/PNG).' };
-      const MAX = 5 * 1024 * 1024; // 5MB
-      if (file.size > MAX) return { ok:false, reason:'El archivo supera 5MB.' };
-      return { ok:true };
-    }
-
-    async function subirImagenAds(uid, file){
-      return new Promise((resolve, reject) => {
-        const name = `banner-${Date.now()}-${file.name}`;
-        const ref  = sRef(st, `ads/${uid}/${name}`);
-        const task = uploadBytesResumable(ref, file, { contentType:file.type });
-        const bar  = $('ad_bar'); const msg = $('ad_msg');
-
-        task.on('state_changed', (snap)=>{
-          const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-          if (bar) bar.style.width = pct + '%';
-        }, (err)=>{
-          if (msg) msg.textContent = '❌ Error subiendo imagen';
-          reject(err);
-        }, async ()=>{
-          const url = await getDownloadURL(task.snapshot.ref);
-          if (msg) msg.textContent = '✔ Imagen subida';
-          resolve(url);
-        });
-      });
-    }
-
-    async function listarAdsYContar(plan){
-      const list = $('adsList'); list.innerHTML = 'Cargando…';
-
-      // Traemos TODOS los anuncios del dueño
-      const qy = query(collection(db,'ads'));  // lectura pública permitida
-      const snap = await getDocs(qy);
-      // Filtramos por iglesiaUid == uid
-      const all = snap.docs
-        .map(d=>({ id:d.id, ...d.data() }))
-        .filter(a => a.iglesiaUid === uid);
-
-      // Contamos activos para cupo (draft + approved)
-      const activos = all.filter(a => ['draft','approved'].includes(String(a.status||'').toLowerCase()));
-      const n = activos.length;
-
-      // Mostrar contador
-      const limit = plan ? PLAN_LIMITS[plan] ?? 0 : 0;
-      const countLbl = $('planCount');
-      if (['starter','pro'].includes(plan)) {
-        if (limit === Infinity) {
-          countLbl.textContent = `Anuncios activos: ${n} / ∞`;
-        } else {
-          countLbl.textContent = `Anuncios activos: ${n} / ${limit}`;
-        }
-      }
-
-      // Render lista
-      if (all.length === 0){
-        list.innerHTML = '<div class="muted">Aún no creaste anuncios.</div>';
-        return;
-      }
-      list.innerHTML = '';
-      all.sort((a,b)=> (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
-      for (const ad of all){
-        const img = ad.imageUrl || 'assets/placeholder-ad.jpg';
-        const t   = ad.title || '(Sin título)';
-        const href= ad.href || '';
-        const st  = String(ad.status||'draft').toLowerCase();
-
-        list.insertAdjacentHTML('beforeend', `
-          <div class="ad-card">
-            <img class="ad-img" src="${img}" alt="Anuncio" />
-            <div class="ad-body">
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-                <b>${t}</b>
-                <span class="chip ${st}">${st}</span>
-              </div>
-              ${href ? `<div class="small" style="margin-top:6px;word-break:break-all;">${href}</div>` : ''}
-            </div>
-          </div>
-        `);
+    async function listarAds(plan){
+      const list=$('adsList'); list.innerHTML='Cargando…';
+      const snap=await getDocs(collection(db,'ads'));
+      const all=snap.docs.map(d=>({id:d.id,...d.data()})).filter(a=>a.iglesiaUid===uid);
+      const activos=all.filter(a=>['draft','approved'].includes((a.status||'').toLowerCase()));
+      const limit=plan?PLAN_LIMITS[plan]??0:0;
+      if(['starter','pro'].includes(plan)) $('planCount').textContent=`Anuncios activos: ${activos.length} / ${limit===Infinity?'∞':limit}`;
+      if(!all.length){list.innerHTML='<div class="muted">Aún no creaste anuncios.</div>';return;}
+      list.innerHTML='';
+      all.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      for(const ad of all){
+        const st=(ad.status||'draft').toLowerCase();
+        list.insertAdjacentHTML('beforeend',`<div class="ad-card"><img class="ad-img" src="${ad.imageUrl||'assets/placeholder-ad.jpg'}" alt="Anuncio"/><div class="ad-body"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${ad.title||'(Sin título)'}</b><span class="chip ${st}">${st}</span></div>${ad.href?`<div class="small" style="margin-top:6px;word-break:break-all">${ad.href}</div>`:''}</div></div>`);
       }
     }
 
     function bindCreateAd(plan){
-      const btn = $('btnCreateAd');
-      const titleEl = $('ad_title');
-      const hrefEl  = $('ad_href');
-      const fileEl  = $('ad_file');
-      const msgEl   = $('ad_msg');
-      const bar     = $('ad_bar');
-
-      btn.onclick = async () => {
-        if (!['starter','pro'].includes(plan)) {
-          alert('Necesitás tener plan Starter o Pro activo para crear anuncios.');
-          return;
+      $('btnCreateAd').onclick=async()=>{
+        if(!['starter','pro'].includes(plan)){alert('Necesitás plan Starter o Pro activo.');return;}
+        const title=($('ad_title').value||'').trim();
+        const href=($('ad_href').value||'').trim();
+        const file=$('ad_file').files?.[0];
+        if(!title){alert('Ingresá un título.');return;}
+        let imageUrl=null;
+        if(file){
+          if(!['image/jpeg','image/png'].includes(file.type)){alert('Usá JPG o PNG.');return;}
+          if(file.size>5*1024*1024){alert('Máx. 5MB.');return;}
+          try{
+            $('ad_msg').textContent='Subiendo imagen…';
+            await new Promise((res,rej)=>{
+              const ref=sRef(st,`ads/${uid}/banner-${Date.now()}-${file.name}`);
+              const task=uploadBytesResumable(ref,file,{contentType:file.type});
+              task.on('state_changed',s=>{$('ad_bar').style.width=Math.round(s.bytesTransferred/s.totalBytes*100)+'%';},rej,async()=>{imageUrl=await getDownloadURL(task.snapshot.ref);res();});
+            });
+            $('ad_msg').textContent='✔ Imagen subida';
+          }catch(e){$('ad_msg').textContent='❌ Error subiendo imagen';return;}
         }
-
-        const title = (titleEl.value || '').trim();
-        const href  = (hrefEl.value || '').trim();
-        const file  = fileEl.files?.[0];
-
-        if (!title) { alert('Ingresá un título.'); return; }
-
-        // Opcional: subir imagen si existe
-        let imageUrl = null;
-        if (file) {
-          const v = validarArchivo(file);
-          if (!v.ok) { alert(v.reason); return; }
-          try {
-            if (bar) bar.style.width = '0%';
-            if (msgEl) msgEl.textContent = 'Subiendo       return;
-          }
-        }
-
-        try {
-          // Llamar Function createAd (bloquea por cuota para Starter)
-          const createAd = httpsCallable(fns, 'createAd');
-          const resp = await createAd({ title, href: href || null, imageUrl });
-          console.log('Ad creado:', resp.data);
+        try{
+          const createAd=httpsCallable(fns,'createAd');
+          await createAd({title,href:href||null,imageUrl});
           alert('Publicidad creada como borrador.');
-
-          // Reset de formulario
-          titleEl.value = ''; hrefEl.value = ''; fileEl.value = '';
-          if (bar) bar.style.width = '0%';
-          if (msgEl) msgEl.textContent = '';
-
-          await listarAdsYContar(plan);
-        } catch (e) {
-          console.error(e);
-          alert(e?.message || e?.code || 'No se pudo crear la publicidad (verificá plan/estado).');
-        }
+          $('ad_title').value='';$('ad_href').value='';$('ad_file').value='';
+          $('ad_bar').style.width='0%';$('ad_msg').textContent='';
+          await listarAds(plan);
+        }catch(e){alert(e?.message||'No se pudo crear la publicidad.');}
       };
     }
-
   </script>
 </body>
 </html>
