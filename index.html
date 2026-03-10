@@ -68,15 +68,50 @@
     #install-banner p small{display:block;color:var(--gray);font-weight:400;font-size:.8rem}
     .banner-btns{display:flex;gap:.5rem}
 
-    /* HERO */
-    .hero{background:linear-gradient(135deg,#f5e6e8 0%,#fde8e8 100%);padding:5rem 2rem;text-align:center}
-    .hero-content{max-width:800px;margin:0 auto}
-    .logo-circle{width:280px;height:280px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:center}
+    /* ─── HERO CON IMAGEN DE FONDO ─── */
+    .hero{
+      position:relative;
+      padding:5rem 2rem;
+      text-align:center;
+      overflow:hidden;
+      min-height:580px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    /* Capa 1: foto de fondo oscurecida */
+    .hero::before{
+      content:'';
+      position:absolute;inset:0;
+      background-image:url('assets/fondo.png');
+      background-size:cover;
+      background-position:center top;
+      background-repeat:no-repeat;
+      filter:brightness(0.38);
+      z-index:0;
+    }
+    /* Capa 2: degradé de color de la marca */
+    .hero::after{
+      content:'';
+      position:absolute;inset:0;
+      background:linear-gradient(160deg,rgba(26,26,26,0.68) 0%,rgba(255,107,91,0.52) 100%);
+      z-index:1;
+    }
+    .hero-content{
+      position:relative;
+      z-index:2;
+      max-width:800px;
+      margin:0 auto;
+    }
+    .logo-circle{width:280px;height:280px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);border-radius:20px;backdrop-filter:blur(6px);border:2px solid rgba(255,255,255,0.18)}
     .logo-circle img{width:100%;height:100%;object-fit:contain;border-radius:20px}
-    h1{font-size:3.5rem;font-weight:800;margin-bottom:1rem;line-height:1.2}
-    h1 span{color:var(--primary)}
-    .hero p{font-size:1.1rem;color:var(--gray);margin-bottom:2rem;line-height:1.8}
+    h1{font-size:3.5rem;font-weight:800;margin-bottom:1rem;line-height:1.2;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.45)}
+    h1 span{color:#FF6B5B}
+    .hero p{font-size:1.1rem;color:rgba(255,255,255,0.88);margin-bottom:2rem;line-height:1.8;text-shadow:0 1px 6px rgba(0,0,0,0.3)}
     .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    /* Botones del hero adaptados al fondo oscuro */
+    .hero .btn-secondary{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);backdrop-filter:blur(4px)}
+    .hero .btn-secondary:hover{background:rgba(255,255,255,0.28)}
 
     /* FEATURES */
     .features{padding:4rem 2rem;background:var(--white)}
@@ -192,7 +227,7 @@
     </div>
   </div>
 
-  <!-- HERO -->
+  <!-- HERO con imagen de fondo -->
   <section class="hero" id="home">
     <div class="hero-content">
       <div class="logo-circle">
@@ -405,7 +440,6 @@
       if (!grid) return;
       grid.innerHTML = '<div class="ad-card" style="padding:14px"><strong>Cargando…</strong></div>';
       try{
-        // Trae aprobados (sin orderBy para evitar índices obligatorios)
         const q = query(collection(db,'ads'), where('status','==','approved'), limit(12));
         const snap = await getDocs(q);
         grid.innerHTML = '';
@@ -424,7 +458,7 @@
         });
       }catch(e){
         console.error('Eventos destacados:', e);
-        grid.innerHTML = `<div class=\"ad-card\" style=\"padding:14px;color:#b91c1c\">Error al cargar: ${e.message}</div>`;
+        grid.innerHTML = `<div class="ad-card" style="padding:14px;color:#b91c1c">Error al cargar: ${e.message}</div>`;
       }
     }
 
@@ -433,26 +467,19 @@
 
   <!-- ✅ PWA: Service Worker + Instalación + Notificaciones Push -->
   <script>
-    // --- 1. REGISTRAR SERVICE WORKER ---
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
         try {
           const reg = await navigator.serviceWorker.register('/service-worker.js');
           console.log('[PWA] Service Worker registrado ✅');
-
-          // Intentar actualizar SW para evitar Home cacheado
           try { const regs = await navigator.serviceWorker.getRegistrations(); regs.forEach(r=>r.update()); } catch(_){ }
-
-          // Pedir permiso para notificaciones (después de 3 seg para no molestar al entrar)
           setTimeout(() => pedirPermisoNotificaciones(reg), 3000);
-
         } catch (err) {
           console.error('[PWA] Error SW:', err);
         }
       });
     }
 
-    // --- 2. NOTIFICACIONES PUSH ---
     async function pedirPermisoNotificaciones(reg) {
       if (!('Notification' in window) || !('PushManager' in window)) return;
       if (Notification.permission === 'granted') {
@@ -467,16 +494,12 @@
 
     async function suscribirPush(reg) {
       try {
-        // ⚠️ REEMPLAZÁ con tu clave VAPID de Firebase:
-        // Firebase Console → Configuración del proyecto → Cloud Messaging → Certificados web push
         const VAPID_KEY = 'TU_VAPID_PUBLIC_KEY_DE_FIREBASE_AQUI';
-
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: vapidToUint8(VAPID_KEY)
         });
         console.log('[PWA] Push suscripto ✅', JSON.stringify(sub));
-        // Acá podrías mandar la suscripción a Firestore para guardarla
       } catch (e) {
         console.warn('[PWA] Push no disponible:', e.message);
       }
@@ -488,7 +511,6 @@
       return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     }
 
-    // --- 3. BOTÓN INSTALAR APP ---
     let deferredPrompt = null;
     const btnNav    = document.getElementById('btn-instalar');
     const banner    = document.getElementById('install-banner');
@@ -498,11 +520,7 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-
-      // Mostrar botón en la nav (escritorio)
       if (btnNav) btnNav.style.display = 'inline-block';
-
-      // Mostrar banner inferior (mobile) si no lo cerró antes
       if (!sessionStorage.getItem('pwa-banner-cerrado')) {
         if (banner) banner.style.display = 'flex';
       }
