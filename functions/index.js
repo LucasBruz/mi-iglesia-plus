@@ -3,21 +3,20 @@
 //  Incluye:
 //    - Publicidad (Starter/Pro con límite)
 //    - Admin Panel (Aprobación iglesias, ads, preonboarding, asignar planes)
+//    - Mercado Pago (pago único + suscripciones mensuales + webhooks)
 //  Admin autorizado: miiglesia.on@gmail.com
 // ==============================================
 
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onCall, HttpsError, onRequest } = require("firebase-functions/v2/https");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
 
 // =============================
-// 🔐 ADMINES DEL SISTEMA
+// 🔐 ADMINS DEL SISTEMA
 // =============================
-const ADMINS = [
-  "miiglesia.on@gmail.com"
-];
+const ADMINS = ["miiglesia.on@gmail.com"];
 
 // Helpers
 function norm(v) { return String(v || "").toLowerCase(); }
@@ -31,9 +30,11 @@ function assertAdmin(req) {
   }
 }
 
-// Planes válidos para publicidad
 const PLANS = ["starter", "pro"];
 const ACTIVE_STATUSES = ["draft", "approved"];
+
+// ─── MERCADO PAGO CONFIG ──────────────────────────────────────────────────────
+const MP_ACCESS_TOKEN = "APP_USR-541245658929377-030921-7a28e74e2c978d3192453d35fb732167-367955588";
 
 // ========================================================
 //  PUBLICIDAD - Creación con límite Starter (1 anuncio)
@@ -55,27 +56,16 @@ exports.createAd = onCall({ region: "us-central1" }, async (req) => {
   const stat = norm(sub.status);
 
   if (!PLANS.includes(plan) || stat !== "active") {
-    throw new HttpsError(
-      "permission-denied",
-      "Solo Starter/Pro ACTIVO pueden crear anuncios."
-    );
+    throw new HttpsError("permission-denied", "Solo Starter/Pro ACTIVO pueden crear anuncios.");
   }
 
-  // LÍMITE STARTER (1 activo)
   if (plan === "starter") {
-    const q = await db
-      .collection("ads")
+    const q = await db.collection("ads")
       .where("iglesiaUid", "==", uid)
       .where("status", "in", ACTIVE_STATUSES)
-      .limit(1)
-      .get();
-
-    if (!q.empty) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Tu plan STARTER solo permite 1 anuncio activo."
-      );
-    }
+      .limit(1).get();
+    if (!q.empty)
+      throw new HttpsError("failed-precondition", "Tu plan STARTER solo permite 1 anuncio activo.");
   }
 
   const payload = {
@@ -93,13 +83,12 @@ exports.createAd = onCall({ region: "us-central1" }, async (req) => {
 });
 
 // ====================================================================
-//  Trigger automático para asegurar límite Starter (seguridad extra)
+//  Trigger automático para asegurar límite Starter
 // ====================================================================
 
 exports.enforceAdQuota = onDocumentCreated("ads/{adId}", async (event) => {
   const snap = event.data;
   if (!snap) return;
-
   const ad = snap.data();
   const adRef = snap.ref;
 
@@ -109,12 +98,7 @@ exports.enforceAdQuota = onDocumentCreated("ads/{adId}", async (event) => {
 
     const igSnap = await db.doc(`iglesias/${uid}`).get();
     if (!igSnap.exists) {
-      await adRef.update({
-        status: "archived",
-        quotaViolation: true,
-        note: "iglesia inexistente",
-        updatedAt: nowTs(),
-      });
+      await adRef.update({ status: "archived", quotaViolation: true, note: "iglesia inexistente", updatedAt: nowTs() });
       return;
     }
 
@@ -123,30 +107,17 @@ exports.enforceAdQuota = onDocumentCreated("ads/{adId}", async (event) => {
     const stat = norm(sub.status);
 
     if (!PLANS.includes(plan) || stat !== "active") {
-      await adRef.update({
-        status: "archived",
-        quotaViolation: true,
-        note: "plan inactivo/no válido",
-        updatedAt: nowTs(),
-      });
+      await adRef.update({ status: "archived", quotaViolation: true, note: "plan inactivo/no válido", updatedAt: nowTs() });
       return;
     }
 
-    // Starter → aseguramos máximo 1
     if (plan === "starter") {
-      const qs = await db
-        .collection("ads")
+      const qs = await db.collection("ads")
         .where("iglesiaUid", "==", uid)
         .where("status", "in", ACTIVE_STATUSES)
         .get();
-
       if (qs.size > 1) {
-        await adRef.update({
-          status: "archived",
-          quotaViolation: true,
-          note: "starter-limit",
-          updatedAt: nowTs(),
-        });
+        await adRef.update({ status: "archived", quotaViolation: true, note: "starter-limit", updatedAt: nowTs() });
       }
     }
   } catch (e) {
@@ -158,110 +129,273 @@ exports.enforceAdQuota = onDocumentCreated("ads/{adId}", async (event) => {
 //                 PANEL ADMINISTRADOR
 // ========================================================
 
-// Ping para saber si el usuario es admin
 exports.adminPing = onCall({ region: "us-central1" }, (req) => {
   assertAdmin(req);
   return { ok: true };
 });
 
-// Aprobar o rechazar iglesia
 exports.adminApproveChurch = onCall({ region: "us-central1" }, async (req) => {
   assertAdmin(req);
-
   const { iglesiaUid, action, reason } = req.data;
   const act = norm(action);
+  if (!iglesiaUid || !["activa", "rechazada"].includes(act))
+    throw new HttpsError("invalid-argument", "Datos inválidos.");
 
-  if (!iglesiaUid || !["activa", "rechazada"].includes(act)) {
+  const patch = { estado: act, updatedAt: nowTs() };
+  if (act === "rechazada") patch.rejectedReason = reason || null;
+  else patch.approvedAt = nowTs();
+
+  await db.doc(`iglesias/${iglesiaUid}`).set(patch, { merge: true });
+  return { ok: true };
+});
+
+exports.adminSetPreonboardingPaid = onCall({ region: "us-central1" }, async (req) => {
+  assertAdmin(req);
+  const { iglesiaUid, paid, rejected } = req.data;
+  if (!iglesiaUid || typeof paid !== "boolean")
+    throw new HttpsError("invalid-argument", "Datos inválidos.");
+
+  const patch = { paid, updatedAt: nowTs() };
+  if (rejected) patch.rejected = true;
+  await db.doc(`preonboarding/${iglesiaUid}`).set(patch, { merge: true });
+  return { ok: true };
+});
+
+exports.adminSetAdStatus = onCall({ region: "us-central1" }, async (req) => {
+  assertAdmin(req);
+  const { adId, status } = req.data;
+  const st = norm(status);
+  if (!adId || !["approved", "archived", "draft"].includes(st))
+    throw new HttpsError("invalid-argument", "Estado inválido.");
+  await db.doc(`ads/${adId}`).update({ status: st, updatedAt: nowTs() });
+  return { ok: true };
+});
+
+exports.adminSetSubscription = onCall({ region: "us-central1" }, async (req) => {
+  assertAdmin(req);
+  const { iglesiaUid, planId, status } = req.data;
+  const p = norm(planId);
+  const s = norm(status);
+
+  if (!iglesiaUid || !["free", "starter", "pro"].includes(p) ||
+      !["active", "past_due", "canceled", "incomplete"].includes(s)) {
     throw new HttpsError("invalid-argument", "Datos inválidos.");
   }
 
-  const ref = db.doc(`iglesias/${iglesiaUid}`);
-  const patch = {
-    estado: act,
-    updatedAt: nowTs(),
-  };
+  await db.doc(`iglesias/${iglesiaUid}`).set({
+    subscription: {
+      provider: p === "free" ? "none" : "mercado_pago",
+      priceIdOrPlanId: p,
+      status: s,
+      updatedAt: nowTs(),
+    }
+  }, { merge: true });
 
-  if (act === "rechazada") {
-    patch.rejectedReason = reason || null;
-  } else {
-    patch.approvedAt = nowTs();
-  }
-
-  await ref.set(patch, { merge: true });
   return { ok: true };
 });
 
-// Marcar preonboarding pagado/rechazado
-exports.adminSetPreonboardingPaid = onCall(
-  { region: "us-central1" },
-  async (req) => {
-    assertAdmin(req);
+// ========================================================
+//  MERCADO PAGO - Pago único $50.000
+// ========================================================
 
-    const { iglesiaUid, paid, rejected } = req.data;
-    if (!iglesiaUid || typeof paid !== "boolean")
-      throw new HttpsError("invalid-argument", "Datos inválidos.");
+exports.createMpPreference = onRequest(
+  { region: "us-central1", cors: ["https://www.miiglesia.online", "https://miiglesia.online"] },
+  async (req, res) => {
+    if (req.method === "OPTIONS") { res.status(204).send(""); return; }
+    if (req.method !== "POST") { res.status(405).send("Method Not Allowed"); return; }
 
-    const ref = db.doc(`preonboarding/${iglesiaUid}`);
-    const patch = {
-      paid,
-      updatedAt: nowTs(),
-    };
+    const { uid, email } = req.body;
+    if (!uid || !email) { res.status(400).json({ error: "uid y email requeridos" }); return; }
 
-    if (rejected) patch.rejected = true;
+    try {
+      const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${MP_ACCESS_TOKEN}`
+        },
+        body: JSON.stringify({
+          items: [{
+            id: "activacion-miiglesia",
+            title: "Activación Mi Iglesia+",
+            quantity: 1,
+            unit_price: 50000,
+            currency_id: "ARS"
+          }],
+          payer: { email },
+          external_reference: uid,
+          back_urls: {
+            success: "https://www.miiglesia.online/pago-ok.html",
+            failure: "https://www.miiglesia.online/pago-error.html",
+            pending: "https://www.miiglesia.online/pago-pendiente.html"
+          },
+          auto_return: "approved",
+          notification_url: "https://us-central1-miiglesia-plus.cloudfunctions.net/mpWebhook"
+        })
+      });
 
-    await ref.set(patch, { merge: true });
-    return { ok: true };
+      const data = await response.json();
+      if (!data.id) throw new Error(JSON.stringify(data));
+      res.json({ preferenceId: data.id });
+    } catch (e) {
+      console.error("createMpPreference error:", e);
+      res.status(500).json({ error: e.message });
+    }
   }
 );
 
-// Cambiar estado de publicidad
-exports.adminSetAdStatus = onCall({ region: "us-central1" }, async (req) => {
-  assertAdmin(req);
+// ========================================================
+//  MERCADO PAGO - Webhook pago único
+// ========================================================
 
-  const { adId, status } = req.data;
-  const st = norm(status);
+exports.mpWebhook = onRequest(
+  { region: "us-central1", cors: true },
+  async (req, res) => {
+    if (req.method !== "POST") { res.status(200).send("ok"); return; }
 
-  if (!adId || !["approved", "archived", "draft"].includes(st))
-    throw new HttpsError("invalid-argument", "Estado inválido.");
+    const { type, data } = req.body;
 
-  const ref = db.doc(`ads/${adId}`);
-  await ref.update({ status: st, updatedAt: nowTs() });
+    try {
+      await db.collection("mp_webhook_logs").add({
+        scope: type || "unknown",
+        body: req.body,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
 
-  return { ok: true };
-});
+      if (type === "payment") {
+        const paymentId = data?.id;
+        if (!paymentId) { res.status(200).send("ok"); return; }
 
-// Asignar plan manualmente
-exports.adminSetSubscription = onCall(
-  { region: "us-central1" },
-  async (req) => {
-    assertAdmin(req);
+        const payResp = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+          headers: { "Authorization": `Bearer ${MP_ACCESS_TOKEN}` }
+        });
+        const payment = await payResp.json();
 
-    const { iglesiaUid, planId, status } = req.data;
-    const p = norm(planId);
-    const s = norm(status);
+        const status = payment.status;
+        const uid    = payment.external_reference;
 
-    if (
-      !iglesiaUid ||
-      !["free", "starter", "pro"].includes(p) ||
-      !["active", "past_due", "canceled", "incomplete"].includes(s)
-    ) {
-      throw new HttpsError("invalid-argument", "Datos inválidos.");
+        if (uid) {
+          await db.doc(`preonboarding/${uid}`).set({
+            paid: status === "approved",
+            method: "mercadopago",
+            mpPaymentId: String(paymentId),
+            mpStatus: status,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+
+          if (status === "approved") {
+            await db.doc(`iglesias/${uid}`).set({
+              estado: "activa",
+              activadoEn: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          }
+        }
+      }
+      res.status(200).send("ok");
+    } catch (e) {
+      console.error("mpWebhook error:", e);
+      res.status(200).send("ok");
     }
+  }
+);
 
-    const ref = db.doc(`iglesias/${iglesiaUid}`);
+// ========================================================
+//  MERCADO PAGO - Crear suscripción mensual (preapproval)
+// ========================================================
 
-    await ref.set(
-      {
-        subscription: {
-          provider: p === "free" ? "none" : "mercado_pago",
-          priceIdOrPlanId: p,
-          status: s,
-          updatedAt: nowTs(),
+exports.createMpSubscription = onRequest(
+  { region: "us-central1", cors: ["https://www.miiglesia.online", "https://miiglesia.online"] },
+  async (req, res) => {
+    if (req.method === "OPTIONS") { res.status(204).send(""); return; }
+    if (req.method !== "POST") { res.status(405).send("Method Not Allowed"); return; }
+
+    const { uid, email, plan } = req.body;
+    if (!uid || !email || !plan) { res.status(400).json({ error: "uid, email y plan requeridos" }); return; }
+
+    const precios = { starter: 10000, pro: 30000 };
+    const precio  = precios[plan.toLowerCase()];
+    if (!precio) { res.status(400).json({ error: "plan inválido" }); return; }
+
+    try {
+      const response = await fetch("https://api.mercadopago.com/preapproval", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${MP_ACCESS_TOKEN}`
         },
-      },
-      { merge: true }
-    );
+        body: JSON.stringify({
+          reason: `Mi Iglesia+ Plan ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
+          auto_recurring: {
+            frequency: 1,
+            frequency_type: "months",
+            transaction_amount: precio,
+            currency_id: "ARS"
+          },
+          payer_email: email,
+          external_reference: `${uid}|${plan}`,
+          back_url: "https://www.miiglesia.online/pago-ok.html",
+          notification_url: "https://us-central1-miiglesia-plus.cloudfunctions.net/mpSubscriptionWebhook"
+        })
+      });
 
-    return { ok: true };
+      const data = await response.json();
+      if (data.init_point) {
+        res.json({ initPoint: data.init_point, subscriptionId: data.id });
+      } else {
+        throw new Error(JSON.stringify(data));
+      }
+    } catch (e) {
+      console.error("createMpSubscription error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  }
+);
+
+// ========================================================
+//  MERCADO PAGO - Webhook suscripciones
+// ========================================================
+
+exports.mpSubscriptionWebhook = onRequest(
+  { region: "us-central1", cors: true },
+  async (req, res) => {
+    if (req.method !== "POST") { res.status(200).send("ok"); return; }
+
+    try {
+      const { type, data } = req.body;
+
+      await db.collection("mp_webhook_logs").add({
+        scope: `subscription_${type || "unknown"}`,
+        body: req.body,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      if (type === "subscription_preapproval") {
+        const subId = data?.id;
+        if (!subId) { res.status(200).send("ok"); return; }
+
+        const subResp = await fetch(`https://api.mercadopago.com/preapproval/${subId}`, {
+          headers: { "Authorization": `Bearer ${MP_ACCESS_TOKEN}` }
+        });
+        const sub = await subResp.json();
+
+        const [uid, plan] = (sub.external_reference || "|").split("|");
+        if (!uid) { res.status(200).send("ok"); return; }
+
+        const status = sub.status;
+
+        await db.doc(`iglesias/${uid}`).set({
+          subscription: {
+            priceIdOrPlanId: plan || "starter",
+            status: status === "authorized" ? "active" : status,
+            subscriptionId: subId,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          }
+        }, { merge: true });
+      }
+      res.status(200).send("ok");
+    } catch (e) {
+      console.error("mpSubscriptionWebhook error:", e);
+      res.status(200).send("ok");
+    }
   }
 );
