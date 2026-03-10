@@ -1,123 +1,300 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pagar Registro | Mi Iglesia+</title>
-
-  <!-- GOOGLE FONTS (forma correcta / limpia) -->
-  https://fonts.googleapis.com
-  https://fonts.gstatic.com
-  https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Activar cuenta | Mi Iglesia+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
   <style>
-    :root{ --bg:#f5f5f5; --card:#fff; --text:#1a1a1a; --muted:#666; --primary:#ff6b5b; --border:#eee; --dark:#111;}
-    *{ box-sizing:border-box }
-    body{
-      margin:0; padding:0; font-family:Poppins, sans-serif; color:var(--text);
-      background:var(--bg); min-height:100vh; display:flex; justify-content:center; align-items:center;
+    :root { --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e8e8e8; --bg:#fafafa; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:Poppins,sans-serif; background:var(--bg); color:var(--dark); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; }
+
+    .logo { font-weight:800; font-size:1.2rem; text-decoration:none; color:var(--dark); margin-bottom:1.5rem; }
+    .logo span { color:var(--primary); }
+
+    .card {
+      background:#fff; border-radius:24px; padding:2.5rem;
+      max-width:500px; width:100%;
+      box-shadow:0 8px 40px rgba(0,0,0,.08);
     }
-    .card{
-      width:100%; max-width:520px; background:var(--card); border:1px solid var(--border);
-      border-radius:18px; padding:28px; box-shadow:0 4px 18px rgba(0,0,0,.06);
+
+    .precio-hero {
+      text-align:center; margin-bottom:2rem;
+      padding-bottom:1.5rem; border-bottom:1px solid var(--border);
     }
-    h1{ margin:0 0 8px; font-size:26px; font-weight:800; text-align:center; }
-    p{ margin:0 0 16px; color:var(--muted); text-align:center; }
-    .price{ font-size:30px; font-weight:800; color:var(--primary); margin:10px 0 18px; text-align:center; }
-    .section-title{ font-weight:800; margin:18px 0 10px; }
-    .bank-box{
-      background:#fafafa; border:1px solid var(--border); border-radius:12px; padding:16px;
+    .precio-hero h1 { font-size:1.5rem; font-weight:800; margin-bottom:.4rem; }
+    .precio-hero .monto { font-size:3rem; font-weight:800; color:var(--primary); }
+    .precio-hero .monto small { font-size:1.2rem; color:var(--gray); font-weight:400; }
+    .precio-hero p { color:var(--gray); font-size:.9rem; margin-top:.4rem; }
+
+    .tabs { display:flex; gap:.5rem; margin-bottom:1.5rem; }
+    .tab {
+      flex:1; padding:.8rem; border-radius:12px; border:2px solid var(--border);
+      background:#fff; font-family:Poppins; font-weight:700; font-size:.9rem;
+      cursor:pointer; transition:all .2s; text-align:center;
     }
-    .bank-row{ display:flex; gap:12px; margin:8px 0; align-items:center; }
-    .label{ min-width:90px; color:#333; font-weight:600; }
-    .val{ word-break: break-all; }
-    .btn{
-      width:100%; border:0; border-radius:12px; padding:14px; font-weight:700; color:#fff;
-      background:var(--primary); cursor:pointer; transition:opacity .2s ease; margin-top:12px;
+    .tab.active { border-color:var(--primary); background:#fff5f5; color:var(--primary); }
+
+    .panel { display:none; }
+    .panel.active { display:block; }
+
+    /* MP */
+    #mp-btn-container { margin-top:1rem; }
+    .cho-container button { width:100% !important; border-radius:12px !important; font-family:Poppins !important; }
+
+    /* TRANSFERENCIA */
+    .cbu-box {
+      background:#f9f9f9; border:1px solid var(--border); border-radius:12px;
+      padding:1.2rem 1.5rem; margin-bottom:1.2rem;
     }
-    .btn:hover{ opacity:.9; }
-    .btn-dark{ background:var(--dark); }
-    .hint{ color:#888; font-size:13px; margin-top:6px; }
-    .or{ text-align:center; color:#999; margin:16px 0; }
+    .cbu-box h3 { font-size:1rem; font-weight:700; margin-bottom:.8rem; }
+    .cbu-row { display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--border); }
+    .cbu-row:last-child { border-bottom:none; }
+    .cbu-label { color:var(--gray); font-size:.85rem; }
+    .cbu-value { font-weight:700; font-size:.9rem; display:flex; align-items:center; gap:.5rem; }
+    .copy-btn { background:none; border:none; cursor:pointer; font-size:1rem; opacity:.6; }
+    .copy-btn:hover { opacity:1; }
+
+    .upload-area {
+      border:2px dashed var(--border); border-radius:12px; padding:1.5rem;
+      text-align:center; cursor:pointer; transition:all .2s; margin-bottom:1rem;
+    }
+    .upload-area:hover, .upload-area.drag { border-color:var(--primary); background:#fff5f5; }
+    .upload-area p { color:var(--gray); font-size:.9rem; margin:.5rem 0 0; }
+    .upload-area .icon { font-size:2rem; }
+    #preview-img { max-width:100%; border-radius:8px; margin-top:.8rem; display:none; }
+
+    .btn {
+      display:block; width:100%; padding:.9rem; border:0; border-radius:12px;
+      font-family:Poppins; font-weight:700; font-size:1rem; cursor:pointer;
+      text-decoration:none; transition:all .3s; text-align:center;
+    }
+    .btn-primary { background:var(--primary); color:#fff; }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(255,107,91,.3); }
+    .btn-primary:disabled { background:#ccc; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    .toast {
+      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
+      background:#1a1a1a; color:#fff; padding:.8rem 1.5rem; border-radius:12px;
+      font-size:.9rem; font-weight:600; opacity:0; transition:opacity .3s;
+      pointer-events:none; z-index:999;
+    }
+    .toast.show { opacity:1; }
+
+    .note { font-size:.82rem; color:var(--gray); margin-top:.8rem; text-align:center; line-height:1.5; }
+    .loading-mp { text-align:center; color:var(--gray); font-size:.9rem; padding:1rem 0; }
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>Pago de registro</h1>
-    <p>Antes de registrar tu iglesia, aboná el pago único.</p>
-    <div class="price">AR$ 50.000</div>
 
-    <!-- Si más adelante activás Mercado Pago, podés dejar este botón u ocultarlo
-    <button id="btnMP" class="btn">Pagar con Mercado Pago</button>
-    <div class="or">— o —</div>
-    -->
+  <a class="logo" href="index.html">Mi <span>Iglesia+</span></a>
 
-    <div class="section-title">Transferencia bancaria</div>
-    <div class="bank-box">
-      <div class="bank-row"><div class="label">Alias:</div><div class="val">miiglesia.online</div></div>
-      <div class="bank-row"><div class="label">CBU:</div><div class="val">1430001713001593460017</div></div>
-      <div class="bank-row"><div class="label">Titular:</div><div class="val">Lucas Ezequiel Bruz Calderon</div></div>
-      <p class="hint">Hacé la transferencia y luego confirmá con el botón de abajo. Podés enviar el comprobante por WhatsApp o email.</p>
+  <div class="card">
+    <div class="precio-hero">
+      <h1>Activar Mi Iglesia+</h1>
+      <div class="monto">$50.000 <small>ARS</small></div>
+      <p>Pago único · Activa tu cuenta para elegir plan mensual</p>
     </div>
 
-    <button id="btnTransfer" class="btn btn-dark">Ya hice la transferencia</button>
-  </main>
+    <div class="tabs">
+      <button class="tab active" onclick="setTab('mp')">💳 Mercado Pago</button>
+      <button class="tab" onclick="setTab('transferencia')">🏦 Transferencia</button>
+    </div>
 
-  <!-- LÓGICA -->
+    <!-- PANEL MERCADO PAGO -->
+    <div class="panel active" id="panel-mp">
+      <p style="color:var(--gray);font-size:.9rem;margin-bottom:1rem;">Pagá con tarjeta, débito, saldo MP o cualquier método disponible.</p>
+      <div class="loading-mp" id="mp-loading">⏳ Cargando checkout...</div>
+      <div id="mp-btn-container"></div>
+      <p class="note">Serás redirigido a Mercado Pago para completar el pago de forma segura.</p>
+    </div>
+
+    <!-- PANEL TRANSFERENCIA -->
+    <div class="panel" id="panel-transferencia">
+      <div class="cbu-box">
+        <h3>🏦 Datos para transferir</h3>
+        <div class="cbu-row">
+          <span class="cbu-label">Titular</span>
+          <span class="cbu-value">Lucas Ezequiel Bruz Calderon</span>
+        </div>
+        <div class="cbu-row">
+          <span class="cbu-label">Banco</span>
+          <span class="cbu-value">Brubank</span>
+        </div>
+        <div class="cbu-row">
+          <span class="cbu-label">CBU</span>
+          <span class="cbu-value">
+            1430001713001593460017
+            <button class="copy-btn" onclick="copiar('1430001713001593460017')" title="Copiar">📋</button>
+          </span>
+        </div>
+        <div class="cbu-row">
+          <span class="cbu-label">Alias</span>
+          <span class="cbu-value">
+            miiglesia.online
+            <button class="copy-btn" onclick="copiar('miiglesia.online')" title="Copiar">📋</button>
+          </span>
+        </div>
+        <div class="cbu-row">
+          <span class="cbu-label">Monto</span>
+          <span class="cbu-value" style="color:var(--primary)">$50.000</span>
+        </div>
+        <div class="cbu-row">
+          <span class="cbu-label">Concepto</span>
+          <span class="cbu-value" id="conceptoVal">
+            <span id="conceptoTxt">MiIglesia activación</span>
+            <button class="copy-btn" onclick="copiar('MiIglesia activacion')" title="Copiar">📋</button>
+          </span>
+        </div>
+      </div>
+
+      <p style="font-weight:700;font-size:.9rem;margin-bottom:.8rem;">📎 Subí el comprobante</p>
+      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+        <div class="icon">📄</div>
+        <p>Clic o arrastrá tu comprobante acá</p>
+        <p style="font-size:.8rem;">JPG, PNG o PDF</p>
+        <img id="preview-img" src="" alt="preview">
+      </div>
+      <input type="file" id="fileInput" accept="image/*,application/pdf" style="display:none" onchange="onFileSelect(event)">
+
+      <button class="btn btn-primary" id="btnEnviar" onclick="enviarComprobante()" disabled>
+        Enviar comprobante
+      </button>
+      <p class="note">Tu pago será verificado por el equipo de Mi Iglesia+ en un plazo de 24-48 hs. Te avisaremos por email.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
   <script type="module">
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, serverTimestamp }
-      from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
 
-    const auth = getAuth();
-    const db   = getFirestore();
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus-storage.appspot.com",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    };
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        location.href = "login.html";
-        return;
+    const app     = initializeApp(firebaseConfig);
+    const auth    = getAuth(app);
+    const db      = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentUser = null;
+    let selectedFile = null;
+
+    // Actualizar concepto con email del usuario
+    onAuthStateChanged(auth, async user => {
+      if (!user) { location.href = 'login.html'; return; }
+      currentUser = user;
+
+      // Concepto personalizado con email
+      const concepto = `MiIglesia ${user.email.split('@')[0]}`;
+      document.getElementById('conceptoTxt').textContent = concepto;
+
+      // Crear preferencia de pago en MP via Cloud Function
+      try {
+        const resp = await fetch('https://us-central1-miiglesia-plus.cloudfunctions.net/createMpPreference', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid, email: user.email })
+        });
+        const data = await resp.json();
+        document.getElementById('mp-loading').style.display = 'none';
+
+        const mp = new MercadoPago('APP_USR-2e35e26a-38b4-4bfc-95dd-f0425cdc144e', { locale: 'es-AR' });
+        mp.bricks().create('wallet', 'mp-btn-container', {
+          initialization: { preferenceId: data.preferenceId }
+        });
+      } catch(e) {
+        document.getElementById('mp-loading').textContent = '⚠️ No se pudo cargar el checkout. Usá la opción de transferencia.';
       }
-
-      // Confirmación de transferencia (registra intención)
-      document.getElementById("btnTransfer").onclick = async () => {
-        try {
-          await setDoc(doc(db, "preonboarding", user.uid), {
-            paid: false,
-            method: "bank",
-            comprobanteUrl: null,   // si más adelante subís archivo, guardás la URL
-            updatedAt: serverTimestamp()
-          }, { merge: true });
-
-          alert("✔ Transferencia registrada. En breve será verificada.");
-          // Queda esperando verificación manual en pago-ok.html
-          location.href = "pago-ok.html";
-        } catch (e) {
-          console.error(e);
-          alert("No se pudo registrar la transferencia. Intentalo nuevamente.");
-        }
-      };
-
-      // Habilitá Mercado Pago cuando quieras:
-      /*
-      document.getElementById("btnMP").onclick = async () => {
-        try {
-          const r = await fetch("https://us-central1-miiglesia-plus.cloudfunctions.net/mpCreatePreference", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ uid: user.uid })
-          });
-          const d = await r.json();
-          if (d.error) { alert(d.error); return; }
-          const url = d.init_point || d.sandbox_init_point || d.url;
-          if (!url) { alert("No se recibió URL de pago."); return; }
-          window.location.href = url;
-        } catch (e) {
-          console.error(e);
-          alert("No se pudo iniciar el pago. Intentalo nuevamente.");
-        }
-      };
-      */
     });
+
+    // Drag & drop
+    const uploadArea = document.getElementById('uploadArea');
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag'); });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag'));
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadArea.classList.remove('drag');
+      const file = e.dataTransfer.files[0];
+      if (file) processFile(file);
+    });
+
+    window.onFileSelect = function(e) {
+      const file = e.target.files[0];
+      if (file) processFile(file);
+    };
+
+    function processFile(file) {
+      selectedFile = file;
+      document.getElementById('btnEnviar').disabled = false;
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.getElementById('preview-img');
+          img.src = e.target.result;
+          img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        document.getElementById('preview-img').style.display = 'none';
+        uploadArea.querySelector('p').textContent = `✅ ${file.name}`;
+      }
+    }
+
+    window.enviarComprobante = async function() {
+      if (!selectedFile || !currentUser) return;
+      const btn = document.getElementById('btnEnviar');
+      btn.disabled = true;
+      btn.textContent = 'Subiendo...';
+      try {
+        const storageRef = ref(storage, `comprobantes/${currentUser.uid}_${Date.now()}`);
+        await uploadBytes(storageRef, selectedFile);
+        const url = await getDownloadURL(storageRef);
+        await setDoc(doc(db, 'preonboarding', currentUser.uid), {
+          paid: false,
+          method: 'transferencia',
+          comprobanteUrl: url,
+          email: currentUser.email,
+          createdAt: serverTimestamp()
+        }, { merge: true });
+        showToast('✅ Comprobante enviado. Te avisamos en 24-48 hs.');
+        btn.textContent = '✅ Enviado';
+      } catch(e) {
+        showToast('❌ Error al subir. Intentá de nuevo.');
+        btn.disabled = false;
+        btn.textContent = 'Enviar comprobante';
+      }
+    };
+
+    window.copiar = function(texto) {
+      navigator.clipboard.writeText(texto).then(() => showToast('📋 Copiado al portapapeles'));
+    };
+
+    window.setTab = function(tab) {
+      document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='mp')||(i===1&&tab==='transferencia')));
+      document.getElementById('panel-mp').classList.toggle('active', tab === 'mp');
+      document.getElementById('panel-transferencia').classList.toggle('active', tab === 'transferencia');
+    };
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
   </script>
 </body>
 </html>
