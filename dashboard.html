@@ -74,7 +74,9 @@
     .counter{display:flex;gap:10px;align-items:center;margin:10px 0;color:#444}
     .small{font-size:.9rem;color:#777}
 
-    .plan-card{border:1px solid #eee;border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+    .tag-dash{display:inline-flex;align-items:center;padding:.3rem .75rem;border-radius:999px;background:#f0f0f0;color:#444;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid #ddd;transition:all .15s;user-select:none}
+    .tag-dash:hover{background:#ffe4e1;border-color:var(--primary);color:var(--primary)}
+    .tag-dash.activo{background:var(--primary);color:#fff;border-color:var(--primary)}border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
     .plan-header{padding:1.2rem;text-align:center}
     .plan-nombre{font-size:1.1rem;font-weight:800;letter-spacing:.05em}
     .plan-precio{font-size:1.8rem;font-weight:800;margin-top:.3rem}
@@ -171,9 +173,35 @@
         <div><label>Horarios de culto</label><textarea id="ig_horarios" rows="3" placeholder="Ej: Domingos 10hs y 19hs, Miércoles 20hs"></textarea></div>
       </div>
 
+      <!-- TAGS -->
+      <h3 style="margin:1.5rem 0 .3rem;font-size:1rem">🏷️ Palabras clave (tags)</h3>
+      <p class="small" style="margin-bottom:.7rem">Ayudan a que te encuentren más fácil en el buscador. Hacé clic para agregar o quitar.</p>
+      <div id="tagsDisponibles" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">
+        <!-- Se generan por JS -->
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <input id="tagCustomInput" placeholder="Agregar tag personalizado..." style="flex:1;min-width:180px;max-width:300px;padding:8px 12px;font-size:.88rem">
+        <button onclick="agregarTagCustom()" style="padding:8px 14px;font-size:.85rem">+ Agregar</button>
+      </div>
+      <div style="margin-top:.6rem;font-size:.82rem;color:#888">Tags seleccionados: <span id="tagsSeleccionados" style="font-weight:700;color:var(--primary)">ninguno</span></div>
+
       <!-- UBICACIÓN -->
       <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📍 Ubicación</h3>
       <div class="row">
+        <div>
+          <label>Provincia</label>
+          <select id="ig_provincia">
+            <option value="">— Seleccioná una provincia —</option>
+            <option>Buenos Aires</option><option>CABA</option><option>Catamarca</option>
+            <option>Chaco</option><option>Chubut</option><option>Córdoba</option>
+            <option>Corrientes</option><option>Entre Ríos</option><option>Formosa</option>
+            <option>Jujuy</option><option>La Pampa</option><option>La Rioja</option>
+            <option>Mendoza</option><option>Misiones</option><option>Neuquén</option>
+            <option>Río Negro</option><option>Salta</option><option>San Juan</option>
+            <option>San Luis</option><option>Santa Cruz</option><option>Santa Fe</option>
+            <option>Santiago del Estero</option><option>Tierra del Fuego</option><option>Tucumán</option>
+          </select>
+        </div>
         <div><label>Dirección completa</label><input id="ig_direccion" placeholder="Ej: Av. San Martín 1234, Mendoza"></div>
       </div>
       <div id="mapaPreview" style="margin-top:10px;border-radius:10px;overflow:hidden;border:1px solid #ddd;height:200px;display:none">
@@ -452,6 +480,9 @@
       if (!snap.exists()) { msg.textContent = 'No se encontró tu iglesia.'; disableAllForms(true); return; }
       iglesiaDoc = snap.data();
 
+      // Cargar tags
+      renderTags(iglesiaDoc.tags || []);
+
       // Cargar logo existente
       if (iglesiaDoc.logoUrl) {
         $('logoPreviewImg').src = iglesiaDoc.logoUrl;
@@ -463,6 +494,7 @@
       if (iglesiaDoc.descripcion) $('ig_descripcion').value = iglesiaDoc.descripcion;
       if (iglesiaDoc.horarios)    $('ig_horarios').value    = iglesiaDoc.horarios;
       if (iglesiaDoc.direccion)   $('ig_direccion').value   = iglesiaDoc.direccion;
+      if (iglesiaDoc.provincia)   $('ig_provincia').value   = iglesiaDoc.provincia;
 
       // Cargar ofrendas
       const of = iglesiaDoc.ofrendas || {};
@@ -518,7 +550,9 @@
         const data = {
           descripcion: ($('ig_descripcion').value||'').trim(),
           horarios:    ($('ig_horarios').value||'').trim(),
+          provincia:   ($('ig_provincia').value||'').trim(),
           direccion:   ($('ig_direccion').value||'').trim(),
+          tags:        tagsSeleccionados,
           ofrendas: {
             activo:       $('of_activo').checked,
             descripcion:  ($('of_descripcion').value||'').trim(),
@@ -541,6 +575,56 @@
       btn.disabled = false;
       btn.textContent = '💾 Guardar cambios';
     });
+
+    /* ─── TAGS ─── */
+    const TAGS_PREDEFINIDOS = ['Jóvenes','Familiar','Alabanza','Evangelismo','Niños','Español','Online','Bautista','Pentecostal','Evangélica','Metodista','Adventista','Católica','Comunidad','Oración','Misiones','Discipulado','Adoración'];
+    let tagsSeleccionados = [];
+
+    function renderTags(tagsActuales) {
+      tagsSeleccionados = [...(tagsActuales||[])];
+      const cont = $('tagsDisponibles');
+      if (!cont) return;
+
+      // Unir predefinidos + los que ya tiene la iglesia
+      const todos = [...new Set([...TAGS_PREDEFINIDOS, ...tagsSeleccionados])];
+
+      cont.innerHTML = todos.map(tag => {
+        const activo = tagsSeleccionados.includes(tag);
+        return `<span class="tag-dash ${activo?'activo':''}" data-tag="${tag}" onclick="toggleTag('${tag}')">${tag}</span>`;
+      }).join('');
+
+      actualizarLabelTags();
+    }
+
+    window.toggleTag = function(tag) {
+      const idx = tagsSeleccionados.indexOf(tag);
+      if (idx === -1) tagsSeleccionados.push(tag);
+      else tagsSeleccionados.splice(idx,1);
+      const chip = document.querySelector(`.tag-dash[data-tag="${tag}"]`);
+      if (chip) chip.classList.toggle('activo');
+      actualizarLabelTags();
+    };
+
+    window.agregarTagCustom = function() {
+      const input = $('tagCustomInput');
+      const val = (input.value||'').trim();
+      if (!val) return;
+      if (!tagsSeleccionados.includes(val)) {
+        tagsSeleccionados.push(val);
+        // Agregar chip al DOM
+        const cont = $('tagsDisponibles');
+        cont.insertAdjacentHTML('beforeend', `<span class="tag-dash activo" data-tag="${val}" onclick="toggleTag('${val}')">${val}</span>`);
+      }
+      input.value = '';
+      actualizarLabelTags();
+    };
+
+    $('tagCustomInput')?.addEventListener('keypress', e => { if(e.key==='Enter') agregarTagCustom(); });
+
+    function actualizarLabelTags() {
+      const lbl = $('tagsSeleccionados');
+      if (lbl) lbl.textContent = tagsSeleccionados.length ? tagsSeleccionados.join(', ') : 'ninguno';
+    }
 
     /* ─── LOGO ─── */
     window.onLogoSelect = function(e) {
