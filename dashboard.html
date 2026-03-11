@@ -74,7 +74,16 @@
     .counter{display:flex;gap:10px;align-items:center;margin:10px 0;color:#444}
     .small{font-size:.9rem;color:#777}
 
-    .uploader{margin-top:8px;border:1px dashed #bbb;border-radius:10px;padding:12px;background:#fff}
+    .plan-card{border:1px solid #eee;border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+    .plan-header{padding:1.2rem;text-align:center}
+    .plan-nombre{font-size:1.1rem;font-weight:800;letter-spacing:.05em}
+    .plan-precio{font-size:1.8rem;font-weight:800;margin-top:.3rem}
+    .plan-precio span{font-size:.9rem;font-weight:400;opacity:.8}
+    .plan-features{list-style:none;padding:1rem 1.2rem;flex:1;font-size:.88rem;line-height:2}
+    .plan-btn{margin:.8rem 1.2rem 1.2rem;padding:.7rem;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;font-family:Poppins;font-size:.9rem;transition:opacity .2s}
+    .plan-btn:hover{opacity:.85}
+    .plan-btn:disabled{opacity:.4;cursor:not-allowed}
+    .plan-card.activo{outline:3px solid var(--primary)}
     .prog{margin-top:8px;height:8px;border-radius:6px;background:#f0f0f0;overflow:hidden}
     .prog > i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
     .hint{color:#888;font-size:.85rem;margin-top:6px}
@@ -122,6 +131,7 @@
     <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
     <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
     <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
+    <button class="tab-btn" data-tab="tab-plan">💳 Plan</button>
   </div>
 
   <div style="padding:0 16px 32px">
@@ -271,6 +281,88 @@
       </div>
       <div class="actions" style="margin-top:10px"><button id="btnCreateAd">Crear publicidad</button></div>
       <div class="ad-grid" id="adsList"></div>
+    </section>
+
+    <!-- TAB: PLAN -->
+    <section id="tab-plan" class="tab card">
+      <h2>💳 Mi Plan</h2>
+      <p class="small">Administrá tu suscripción y cambiá de plan cuando quieras.</p>
+
+      <!-- Estado actual -->
+      <div id="planActualBox" style="background:#f9f9f9;border:1px solid #eee;border-radius:12px;padding:1.2rem;margin:1rem 0">
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div id="planIconBig" style="font-size:2.5rem">⏳</div>
+          <div>
+            <div style="font-size:1.1rem;font-weight:800" id="planNombreActual">Cargando…</div>
+            <div style="color:#888;font-size:.85rem;margin-top:2px" id="planEstadoActual"></div>
+          </div>
+        </div>
+        <div id="planBeneficiosActual" style="margin-top:1rem;font-size:.88rem;color:#555;line-height:1.8"></div>
+      </div>
+
+      <!-- Planes disponibles -->
+      <h3 style="font-size:1rem;margin:1.5rem 0 .8rem">Planes disponibles</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem">
+
+        <!-- FREE -->
+        <div class="plan-card" id="pc-free">
+          <div class="plan-header" style="background:#f5f5f5">
+            <div class="plan-nombre">FREE</div>
+            <div class="plan-precio">$0 <span>/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>✅ Página pública de la iglesia</li>
+            <li>✅ Eventos y prédicas básicas</li>
+            <li>✅ Peticiones de oración</li>
+            <li>❌ Sin publicidad</li>
+            <li>❌ Sin ofrendas online</li>
+          </ul>
+          <button class="plan-btn" data-plan="free" onclick="cambiarPlan('free')">Seleccionar</button>
+        </div>
+
+        <!-- STARTER -->
+        <div class="plan-card" id="pc-starter">
+          <div class="plan-header" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+            <div class="plan-nombre" style="color:#fff">STARTER</div>
+            <div class="plan-precio" style="color:#fff">$10.000 <span>/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>✅ Todo lo de FREE</li>
+            <li>✅ 1 anuncio destacado</li>
+            <li>✅ Sección de ofrendas</li>
+            <li>✅ Soporte prioritario</li>
+            <li>❌ Máx. 1 admin</li>
+          </ul>
+          <button class="plan-btn" data-plan="starter" onclick="cambiarPlan('starter')" style="background:linear-gradient(135deg,#667eea,#764ba2)">Seleccionar</button>
+        </div>
+
+        <!-- PRO -->
+        <div class="plan-card" id="pc-pro" style="border:2px solid var(--primary);position:relative">
+          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:2px 14px;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap">⭐ MÁS POPULAR</div>
+          <div class="plan-header" style="background:linear-gradient(135deg,#FF6B5B,#e63946)">
+            <div class="plan-nombre" style="color:#fff">PRO</div>
+            <div class="plan-precio" style="color:#fff">$30.000 <span>/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>✅ Todo lo de Starter</li>
+            <li>✅ Anuncios ilimitados</li>
+            <li>✅ Hasta 5 administradores</li>
+            <li>✅ Estadísticas de visitas</li>
+            <li>✅ Soporte prioritario 24/7</li>
+          </ul>
+          <button class="plan-btn" data-plan="pro" onclick="cambiarPlan('pro')" style="background:linear-gradient(135deg,#FF6B5B,#e63946)">Seleccionar</button>
+        </div>
+
+      </div>
+
+      <!-- Historial de pagos -->
+      <h3 style="font-size:1rem;margin:1.5rem 0 .8rem">📋 Historial de pagos</h3>
+      <div id="historialPagos" style="font-size:.88rem;color:#888">Cargando…</div>
+
+      <!-- WhatsApp para cambiar plan -->
+      <div style="margin-top:1.5rem;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:1rem;font-size:.88rem">
+        💬 ¿Necesitás ayuda con tu plan? <a href="https://wa.me/5492615515707?text=Hola,%20necesito%20ayuda%20con%20mi%20plan%20en%20Mi%20Iglesia+" target="_blank" style="color:#16a34a;font-weight:700">Contactanos por WhatsApp</a>
+      </div>
     </section>
 
     <p id="msg"></p>
@@ -636,6 +728,74 @@
         }catch(e){alert(e?.message||'No se pudo crear la publicidad.');}
       };
     }
+
+    /* ─── PLAN ─── */
+    const PLANES_INFO = {
+      free:    { nombre:'FREE',    icon:'🆓', precio:'$0/mes',      color:'#555', beneficios:['Página pública','Eventos y prédicas','Peticiones de oración'] },
+      starter: { nombre:'STARTER', icon:'⭐', precio:'$10.000/mes', color:'#764ba2', beneficios:['Todo lo de FREE','1 anuncio destacado','Sección de ofrendas'] },
+      pro:     { nombre:'PRO',     icon:'🚀', precio:'$30.000/mes', color:'#FF6B5B', beneficios:['Todo lo de Starter','Anuncios ilimitados','Hasta 5 admins','Estadísticas'] },
+    };
+
+    function renderPlanActual() {
+      const sub   = iglesiaDoc?.subscription || {};
+      const plan  = (sub.priceIdOrPlanId||'free').toLowerCase();
+      const status= (sub.status||'').toLowerCase();
+      const info  = PLANES_INFO[plan] || PLANES_INFO.free;
+
+      $('planIconBig').textContent     = info.icon;
+      $('planNombreActual').textContent = `Plan ${info.nombre} — ${info.precio}`;
+      $('planEstadoActual').textContent = status === 'active' ? '✅ Activo' : status ? `Estado: ${status}` : '✅ Activo';
+      $('planBeneficiosActual').innerHTML = info.beneficios.map(b=>`<span style="margin-right:1rem">✔ ${b}</span>`).join('');
+
+      // Marcar plan activo en las cards
+      ['free','starter','pro'].forEach(p => {
+        const card = $(`pc-${p}`);
+        const btn  = card?.querySelector('.plan-btn');
+        if (p === plan) {
+          card?.classList.add('activo');
+          if (btn) { btn.textContent = '✓ Plan actual'; btn.disabled = true; }
+        } else {
+          card?.classList.remove('activo');
+          if (btn) { btn.textContent = 'Seleccionar'; btn.disabled = false; }
+        }
+      });
+
+      // Historial
+      const hist = $('historialPagos');
+      if (sub.subscriptionId) {
+        hist.innerHTML = `<div style="background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:10px;line-height:1.8">
+          <div>📌 ID suscripción: <code>${sub.subscriptionId}</code></div>
+          <div>📦 Plan: <b>${info.nombre}</b></div>
+          <div>🔄 Estado: <b>${sub.status||'—'}</b></div>
+        </div>`;
+      } else {
+        hist.innerHTML = '<div style="color:#aaa">Sin historial de pagos registrado.</div>';
+      }
+    }
+
+    window.cambiarPlan = async function(nuevoPlan) {
+      const planActual = (iglesiaDoc?.subscription?.priceIdOrPlanId||'free').toLowerCase();
+      if (nuevoPlan === planActual) return;
+
+      if (nuevoPlan === 'free') {
+        if (!confirm('¿Querés bajar al plan FREE? Perderás tus beneficios actuales.')) return;
+        try {
+          await setDoc(doc(db,'iglesias',uid), { subscription:{ priceIdOrPlanId:'free', status:'active', subscriptionId:null } }, { merge:true });
+          iglesiaDoc.subscription = { priceIdOrPlanId:'free', status:'active', subscriptionId:null };
+          renderPlanActual();
+          alert('✅ Cambiaste al plan FREE.');
+        } catch(e) { alert('Error: ' + e.message); }
+        return;
+      }
+
+      // Para Starter o Pro → redirigir al flujo de pago
+      const planNombre = nuevoPlan === 'starter' ? 'Starter ($10.000/mes)' : 'Pro ($30.000/mes)';
+      if (!confirm(`¿Querés cambiar al plan ${planNombre}?\n\nSerás redirigido al proceso de pago.`)) return;
+      window.location.href = `suscripcion.html?plan=${nuevoPlan}`;
+    };
+
+    // Inicializar tab plan cuando se carga
+    document.querySelector('[data-tab="tab-plan"]').addEventListener('click', renderPlanActual);
   </script>
 </body>
 </html>
