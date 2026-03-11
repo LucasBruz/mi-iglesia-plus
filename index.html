@@ -233,6 +233,18 @@
     </div>
   </div>
 
+  <!-- ✅ Banner de actualización disponible -->
+  <div id="update-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:1rem 1.5rem;z-index:1000;box-shadow:0 -4px 20px rgba(0,0,0,.3);justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <p style="margin:0;font-size:.95rem;font-weight:600;flex:1">
+      🆕 Nueva versión disponible
+      <small style="display:block;color:rgba(255,255,255,.6);font-weight:400;font-size:.8rem">Actualizá para ver los últimos cambios</small>
+    </p>
+    <div style="display:flex;gap:.5rem">
+      <button id="btn-actualizar" style="background:var(--primary);color:#fff;border:0;border-radius:8px;padding:.6rem 1.2rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif">🔄 Actualizar ahora</button>
+      <button onclick="document.getElementById('update-banner').style.display='none'" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.6rem 1rem;cursor:pointer;font-family:'Poppins',sans-serif">Después</button>
+    </div>
+  </div>
+
   <!-- HERO con imagen de fondo -->
   <section class="hero" id="home">
     <div class="hero-content">
@@ -547,27 +559,58 @@
     document.addEventListener('DOMContentLoaded', cargarEventosDestacados);
   </script>
 
-  <!-- ✅ PWA: Service Worker + Instalación + Notificaciones Push -->
+  <!-- ✅ PWA: Service Worker + Instalación + Actualización automática -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
         try {
           const reg = await navigator.serviceWorker.register('/service-worker.js');
           console.log('[PWA] Service Worker registrado ✅');
-          try { const regs = await navigator.serviceWorker.getRegistrations(); regs.forEach(r=>r.update()); } catch(_){ }
+
+          // ── DETECTAR NUEVA VERSIÓN DISPONIBLE ──
+          reg.addEventListener('updatefound', () => {
+            const newSW = reg.installing;
+            newSW.addEventListener('statechange', () => {
+              // Hay un SW nuevo instalado y hay uno viejo controlando la página
+              if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                mostrarBannerActualizacion(newSW);
+              }
+            });
+          });
+
+          // Verificar actualizaciones cada vez que se carga la página
+          reg.update();
+
           setTimeout(() => pedirPermisoNotificaciones(reg), 3000);
         } catch (err) {
           console.error('[PWA] Error SW:', err);
         }
       });
+
+      // Si el SW tomó control (después de actualizar), recargar la página
+      let refrescando = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refrescando) {
+          refrescando = true;
+          window.location.reload();
+        }
+      });
+    }
+
+    function mostrarBannerActualizacion(newSW) {
+      const banner = document.getElementById('update-banner');
+      if (banner) {
+        banner.style.display = 'flex';
+        document.getElementById('btn-actualizar').onclick = () => {
+          banner.style.display = 'none';
+          newSW.postMessage('skipWaiting');
+        };
+      }
     }
 
     async function pedirPermisoNotificaciones(reg) {
       if (!('Notification' in window) || !('PushManager' in window)) return;
-      if (Notification.permission === 'granted') {
-        await suscribirPush(reg);
-        return;
-      }
+      if (Notification.permission === 'granted') { await suscribirPush(reg); return; }
       if (Notification.permission === 'default') {
         const perm = await Notification.requestPermission();
         if (perm === 'granted') await suscribirPush(reg);
@@ -577,14 +620,8 @@
     async function suscribirPush(reg) {
       try {
         const VAPID_KEY = 'TU_VAPID_PUBLIC_KEY_DE_FIREBASE_AQUI';
-        const sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: vapidToUint8(VAPID_KEY)
-        });
-        console.log('[PWA] Push suscripto ✅', JSON.stringify(sub));
-      } catch (e) {
-        console.warn('[PWA] Push no disponible:', e.message);
-      }
+        await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidToUint8(VAPID_KEY) });
+      } catch (e) { console.warn('[PWA] Push no disponible:', e.message); }
     }
 
     function vapidToUint8(base64) {
@@ -596,37 +633,30 @@
     let deferredPrompt = null;
     const btnNav    = document.getElementById('btn-instalar');
     const banner    = document.getElementById('install-banner');
-    const btnBanner = document.getElementById('btn-instalar-banner');
-    const btnCerrar = document.getElementById('btn-cerrar-banner');
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       if (btnNav) btnNav.style.display = 'inline-block';
-      if (!sessionStorage.getItem('pwa-banner-cerrado')) {
-        if (banner) banner.style.display = 'flex';
-      }
+      if (!sessionStorage.getItem('pwa-banner-cerrado') && banner) banner.style.display = 'flex';
     });
 
     async function instalarApp() {
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log('[PWA] Instalación:', outcome);
+      await deferredPrompt.userChoice;
       deferredPrompt = null;
       if (btnNav) btnNav.style.display = 'none';
       if (banner) banner.style.display = 'none';
     }
 
-    btnNav?.addEventListener('click', instalarApp);
-    btnBanner?.addEventListener('click', instalarApp);
-    btnCerrar?.addEventListener('click', () => {
+    document.getElementById('btn-instalar')?.addEventListener('click', instalarApp);
+    document.getElementById('btn-instalar-banner')?.addEventListener('click', instalarApp);
+    document.getElementById('btn-cerrar-banner')?.addEventListener('click', () => {
       if (banner) banner.style.display = 'none';
       sessionStorage.setItem('pwa-banner-cerrado', '1');
     });
-
     window.addEventListener('appinstalled', () => {
-      console.log('[PWA] ¡App instalada! 🎉');
       if (btnNav) btnNav.style.display = 'none';
       if (banner) banner.style.display = 'none';
     });
