@@ -152,7 +152,8 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-    import { getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getMessaging, getToken, deleteToken } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
@@ -162,11 +163,13 @@
       messagingSenderId: "407699856167",
       appId: "1:407699856167:web:5d421d407ab7c9789aa702"
     };
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const app       = initializeApp(firebaseConfig);
+    const db        = getFirestore(app);
+    const messaging = getMessaging(app);
 
-    const params = new URLSearchParams(window.location.search);
-    const iglesiaId = params.get('id');
+    const VAPID_KEY  = 'BC3jOJ8lqkrHbiPrZ98XMeyRsmWbT4kqIjFWLIWRb2mSR8lKsIaDLNqmCnuvMFi2kpdUc59ugbKDv6bKQO2j8HE';
+    const params     = new URLSearchParams(window.location.search);
+    const iglesiaId  = params.get('id');
 
     function fmtFecha(d) {
       try {
@@ -182,6 +185,75 @@
       const q = encodeURIComponent(direccion);
       return `<iframe src="https://maps.google.com/maps?q=${q}&output=embed&z=15" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>`;
     }
+
+    // ── NOTIFICACIONES ──
+    const STORAGE_KEY = `notif_${iglesiaId}`;
+
+    function estaSuscripto() {
+      return localStorage.getItem(STORAGE_KEY) === '1';
+    }
+
+    async function toggleNotificaciones() {
+      const btn = document.getElementById('btnNotif');
+      if (!btn) return;
+      btn.disabled = true;
+
+      if (estaSuscripto()) {
+        // DESUSCRIBIR
+        try {
+          const token = localStorage.getItem(`token_${iglesiaId}`);
+          if (token) {
+            await deleteDoc(doc(db, 'suscriptores', iglesiaId, 'tokens', token));
+            await deleteToken(messaging);
+          }
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(`token_${iglesiaId}`);
+          renderBtnNotif(false);
+        } catch(e) { alert('Error al desuscribirse: ' + e.message); }
+      } else {
+        // SUSCRIBIR
+        try {
+          const perm = await Notification.requestPermission();
+          if (perm !== 'granted') {
+            alert('Necesitás dar permiso de notificaciones en tu navegador.');
+            btn.disabled = false; return;
+          }
+          const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+          if (!token) throw new Error('No se pudo obtener el token');
+
+          // Guardar en Firestore: suscriptores/{iglesiaId}/tokens/{token}
+          await setDoc(doc(db, 'suscriptores', iglesiaId, 'tokens', token), {
+            token,
+            creadoEn: new Date().toISOString(),
+            plataforma: navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop'
+          });
+
+          localStorage.setItem(STORAGE_KEY, '1');
+          localStorage.setItem(`token_${iglesiaId}`, token);
+          renderBtnNotif(true);
+          alert('✅ ¡Te suscribiste! Recibirás notificaciones de esta iglesia.');
+        } catch(e) {
+          alert('Error al suscribirse: ' + e.message);
+        }
+      }
+      btn.disabled = false;
+    }
+
+    function renderBtnNotif(suscripto) {
+      const btn = document.getElementById('btnNotif');
+      if (!btn) return;
+      if (suscripto) {
+        btn.textContent = '🔕 Desactivar notificaciones';
+        btn.style.background = 'rgba(255,255,255,0.1)';
+        btn.style.border = '1px solid rgba(255,255,255,0.3)';
+      } else {
+        btn.textContent = '🔔 Recibir notificaciones';
+        btn.style.background = 'var(--primary)';
+        btn.style.border = 'none';
+      }
+    }
+
+    window.toggleNotificaciones = toggleNotificaciones;
 
     async function render() {
       const app = document.getElementById('app');
@@ -228,7 +300,10 @@
             ${ig.telefono ? `<span class="badge">📞 ${escHtml(ig.telefono)}</span>` : ''}
             ${ig.emailContacto ? `<span class="badge">✉️ ${escHtml(ig.emailContacto)}</span>` : ''}
           </div>
-          <button class="share-btn" onclick="compartir()">🔗 Compartir esta página</button>
+          <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+            <button id="btnNotif" onclick="toggleNotificaciones()" style="padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;font-size:.88rem;color:#fff;background:var(--primary);border:none;transition:all .2s">🔔 Recibir notificaciones</button>
+            <button class="share-btn" onclick="compartir()">🔗 Compartir</button>
+          </div>
         </div>`;
 
       // ── INFO + MAPA ──
@@ -346,6 +421,9 @@
         </section>`;
 
       app.innerHTML = heroHtml + infoHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
+
+      // Inicializar estado del botón de notificaciones
+      renderBtnNotif(estaSuscripto());
     }
 
     window.compartir = function() {
@@ -360,6 +438,13 @@
     render().catch(e => {
       document.getElementById('app').innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Error al cargar</h2><p>${e.message}</p></div>`;
     });
+  </script>
+
+  <!-- SW para notificaciones en background -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(()=>{});
+    }
   </script>
 </body>
 </html>
