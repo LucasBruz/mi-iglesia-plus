@@ -105,6 +105,64 @@
     .logo-upload-info p{color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.6}
     .logo-prog{margin-top:8px;height:6px;border-radius:4px;background:#f0f0f0;overflow:hidden;display:none}
     .logo-prog i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
+
+    @media(max-width:768px){
+      /* HEADER */
+      .dashboard-header{padding:1.5rem 1rem}
+      .dashboard-header h1{font-size:1.35rem}
+      .dashboard-header .lead{font-size:.82rem}
+      .dashboard-header-content{gap:.5rem}
+      .dashboard-header-content button{padding:.5rem .9rem;font-size:.82rem}
+
+      /* TABS: scroll horizontal */
+      .tabs{
+        overflow-x:auto;flex-wrap:nowrap;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+        padding:0 12px;
+        gap:4px;
+      }
+      .tabs::-webkit-scrollbar{display:none}
+      .tab-btn{white-space:nowrap;padding:8px 12px;font-size:.82rem}
+
+      /* CARDS */
+      .card{padding:14px;margin:10px 12px;border-radius:12px}
+      .card h2{font-size:1.1rem;margin-bottom:.8rem}
+      .card h3{font-size:.95rem}
+
+      /* ROWS apiladas */
+      .row{flex-direction:column;gap:8px}
+      .row > div{flex:1 1 100%}
+
+      /* BOTONES */
+      button{padding:9px 12px;font-size:.88rem}
+      .actions{flex-direction:column}
+      .actions button{width:100%}
+
+      /* INPUTS */
+      input,textarea,select{padding:10px;font-size:.92rem}
+
+      /* LISTS de prédicas/eventos */
+      .list{grid-template-columns:1fr;gap:10px}
+      .item{padding:10px}
+
+      /* ADS grid */
+      .ad-grid{grid-template-columns:1fr}
+
+      /* PLAN cards */
+      .planes-grid{grid-template-columns:1fr;gap:10px}
+
+      /* LOGO upload */
+      .logo-upload-wrap{flex-direction:column;align-items:center;gap:1rem}
+      .logo-preview-box{width:120px;height:120px}
+
+      /* TOPBAR */
+      .topbar{flex-direction:column;align-items:stretch}
+      .topbar button{width:100%}
+
+      /* OFRENDAS checkboxes */
+      .ofrendas-checks{flex-direction:column;gap:.5rem}
+    }
   </style>
 </head>
 <body>
