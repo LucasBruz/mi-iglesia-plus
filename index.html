@@ -191,16 +191,70 @@
     .founder-info .btn{margin-top:.8rem;padding:.5rem 1.2rem;font-size:.85rem}
 
     @media(max-width:768px){
-      h1{font-size:2rem}
-      .section-title{font-size:1.8rem}
-      .logo-circle{width:200px;height:200px}
-      .nav-buttons{gap:.5rem}
-      .btn{padding:.5rem 1rem;font-size:.9rem}
-      #install-banner{display:none;flex-direction:column;text-align:center}
-      .banner-btns{justify-content:center;width:100%}
-      .footer-founder{flex-direction:column;text-align:center}
+      /* NAV mobile: logo + menú hamburguesa */
+      nav{padding:.7rem 1rem}
+      .nav-buttons{display:none}
+      .nav-buttons.open{
+        display:flex;flex-direction:column;
+        position:fixed;inset:0;top:60px;
+        background:#fff;z-index:200;
+        padding:1.5rem;gap:.8rem;
+        border-top:2px solid var(--primary);
+      }
+      .nav-buttons.open .btn{width:100%;text-align:center;padding:.85rem}
+      #hamburger{display:flex}
+
+      /* HERO */
+      .hero{padding:3rem 1.2rem;min-height:auto}
+      .logo-circle{width:130px;height:130px;margin-bottom:1.2rem}
+      h1{font-size:1.85rem}
+      .hero p{font-size:.95rem;margin-bottom:1.5rem}
+      .hero-buttons{flex-direction:column;gap:.7rem}
+      .hero-buttons .btn{width:100%;padding:.85rem}
+
+      /* FEATURES */
+      .features{padding:2.5rem 1rem}
+      .section-title{font-size:1.4rem;margin-bottom:1.2rem}
+      .features-grid{grid-template-columns:1fr;gap:1rem}
+
+      /* SEARCH */
+      .search-section{padding:2rem 1rem}
+      .search-bar-wrap{flex-direction:column;gap:.5rem}
+      .search-bar-wrap input{font-size:1rem;padding:.85rem 1rem}
+      .search-bar-wrap button{width:100%;padding:.85rem}
+
+      /* CHIPS zonas: scroll horizontal */
+      #tags-rapidos{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:.3rem;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+      #tags-rapidos::-webkit-scrollbar{display:none}
+      div[style*="tag-zona"]{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:.3rem}
+
+      /* CHURCH CARDS */
+      .churches-grid{grid-template-columns:1fr;gap:1rem;padding:0 1rem}
+      .church-card{border-radius:14px}
+
+      /* PLANES */
+      .planes-grid{grid-template-columns:1fr;gap:1rem}
+
+      /* TABS sección */
+      .tab-nav{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;gap:.4rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:.3rem}
+      .tab-nav::-webkit-scrollbar{display:none}
+
+      /* FOOTER */
+      .footer-founder{flex-direction:column;text-align:center;gap:1rem}
       .founder-info{text-align:center}
+      footer{padding:1.5rem 1rem;font-size:.82rem}
     }
+
+    /* Hamburger button */
+    #hamburger{
+      display:none;
+      flex-direction:column;gap:5px;
+      background:none;border:none;cursor:pointer;padding:.3rem;
+    }
+    #hamburger span{display:block;width:24px;height:2.5px;background:var(--dark);border-radius:2px;transition:all .3s}
+    #hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+    #hamburger.open span:nth-child(2){opacity:0}
+    #hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
   </style>
 </head>
 <body>
@@ -211,15 +265,32 @@
       <a class="logo" href="#home">
         <img src="assets/logo.png" alt="Mi Iglesia+">
       </a>
-      <div class="nav-buttons">
+      <button id="hamburger" aria-label="Menú" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-buttons" id="navButtons">
         <a class="btn btn-secondary" href="login.html">Ingresar</a>
         <a class="btn btn-primary" href="registro.html">Comenzar</a>
         <a class="btn btn-wa" href="https://wa.me/5492615515707" target="_blank" rel="noopener">Contacto</a>
-        <!-- ✅ Botón instalar app (aparece automáticamente cuando está disponible) -->
         <button id="btn-instalar" title="Instalar app en tu dispositivo">📲 Instalar App</button>
       </div>
     </div>
   </nav>
+  <script>
+    function toggleMenu(){
+      const btn = document.getElementById('hamburger');
+      const nav = document.getElementById('navButtons');
+      btn.classList.toggle('open');
+      nav.classList.toggle('open');
+    }
+    // Cerrar menú al hacer clic en un link
+    document.addEventListener('click', e => {
+      if (e.target.closest('#navButtons a')) {
+        document.getElementById('hamburger').classList.remove('open');
+        document.getElementById('navButtons').classList.remove('open');
+      }
+    });
+  </script>
 
   <!-- ✅ Banner de instalación para mobile -->
   <div id="install-banner">
