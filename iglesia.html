@@ -124,8 +124,48 @@
     @keyframes spin{to{transform:rotate(360deg)}}
 
     @media(max-width:600px){
-      .church-hero h1{font-size:1.5rem}
-      .predicas-grid{grid-template-columns:1fr}
+      /* NAV */
+      nav{padding:.7rem 1rem}
+      nav a.btn{padding:.5rem .85rem;font-size:.8rem}
+
+      /* HERO */
+      .church-hero{padding:2rem 1rem 1.5rem}
+      .church-logo{width:80px;height:80px;border-radius:14px}
+      .church-logo-placeholder{width:80px;height:80px;font-size:2rem}
+      .church-hero h1{font-size:1.35rem;margin-bottom:.3rem}
+      .church-hero .ciudad{font-size:.88rem;margin-bottom:.5rem}
+      .church-hero .pastor{font-size:.82rem;margin-bottom:1rem}
+      .hero-badges{gap:.4rem;margin-bottom:1rem}
+      .badge{font-size:.75rem;padding:.25rem .6rem}
+
+      /* BOTONES del hero */
+      #btnNotif, .share-btn{
+        padding:.55rem .9rem;font-size:.82rem
+      }
+
+      /* SECCIONES */
+      .section{padding:1.5rem .8rem}
+      .section-title{font-size:1.1rem}
+      .container{padding:0 .8rem}
+
+      /* INFO + MAPA apilados */
+      .info-mapa{grid-template-columns:1fr;gap:1rem}
+      .map-wrap{height:180px}
+
+      /* PREDICAS: 1 col */
+      .predicas-grid{grid-template-columns:1fr;gap:.8rem}
+
+      /* OFRENDAS */
+      .ofrendas-box{padding:1rem}
+      .ofrendas-metodos{gap:.5rem}
+      .metodo-chip{font-size:.8rem;padding:.4rem .7rem}
+
+      /* EVENTOS */
+      .evento-card{padding:.8rem 1rem;gap:.8rem}
+      .evento-info h4{font-size:.88rem}
+
+      /* PETICIONES */
+      .peticion-card{padding:.8rem 1rem}
     }
   </style>
 </head>
