@@ -278,6 +278,23 @@
     <!-- TAB: PETICIONES -->
     <section id="tab-peticiones" class="tab card">
       <h2>Peticiones de oración</h2>
+
+      <!-- ENVIAR NOTIFICACIÓN -->
+      <div style="background:#fff8f7;border:1px solid #ffd5d0;border-radius:12px;padding:1rem;margin-bottom:1.2rem">
+        <h3 style="font-size:.95rem;margin-bottom:.6rem">📢 Enviar notificación a suscriptores</h3>
+        <div class="row">
+          <div><label>Título</label><input id="notif_titulo" placeholder="Ej: ¡Nuevo evento este domingo!"></div>
+          <div><label>Mensaje</label><input id="notif_cuerpo" placeholder="Ej: Te esperamos a las 10hs en el templo"></div>
+        </div>
+        <div class="row" style="margin-top:.5rem">
+          <div><label>URL destino (opcional)</label><input id="notif_url" placeholder="Ej: /iglesia.html?id=..."></div>
+        </div>
+        <div class="actions" style="margin-top:.8rem">
+          <button id="btnEnviarNotif">📤 Enviar a todos los suscriptores</button>
+        </div>
+        <div id="notifMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        <div id="notifCount" class="small" style="margin-top:.3rem;color:#888"></div>
+      </div>
       <div class="row">
         <div><label for="t_titulo">Título</label><input id="t_titulo" placeholder="Oración por salud" /></div>
       </div>
@@ -519,7 +536,7 @@
       }
 
       const ok = ensureActiveAndVerified(user, iglesiaDoc);
-      await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones()]);
+      await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones(), cargarCantSuscriptores()]);
       await initAdsTab();
     });
 
@@ -812,6 +829,43 @@
         }catch(e){alert(e?.message||'No se pudo crear la publicidad.');}
       };
     }
+
+    /* ─── NOTIFICACIONES ─── */
+    async function cargarCantSuscriptores() {
+      try {
+        const snap = await getDocs(collection(db,'suscriptores',uid,'tokens'));
+        const el = $('notifCount');
+        if (el) el.textContent = `Suscriptores actuales: ${snap.size}`;
+      } catch(e) {}
+    }
+
+    $('btnEnviarNotif')?.addEventListener('click', async () => {
+      const titulo = ($('notif_titulo').value||'').trim();
+      const cuerpo = ($('notif_cuerpo').value||'').trim();
+      const url    = ($('notif_url').value||'').trim();
+      const msgEl  = $('notifMsg');
+      if (!titulo || !cuerpo) { msgEl.textContent = '❌ Completá título y mensaje.'; return; }
+
+      const btn = $('btnEnviarNotif');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      msgEl.textContent = '';
+
+      try {
+        const sendNotification = httpsCallable(fns, 'sendPushNotification');
+        const res = await sendNotification({ iglesiaId: uid, titulo, cuerpo, url: url || `/iglesia.html?id=${uid}` });
+        msgEl.textContent = `✅ Notificación enviada a ${res.data?.enviados || 0} suscriptores.`;
+        msgEl.style.color = '#16a34a';
+        $('notif_titulo').value = '';
+        $('notif_cuerpo').value = '';
+        $('notif_url').value = '';
+      } catch(e) {
+        msgEl.textContent = '❌ Error: ' + (e.message || 'No se pudo enviar');
+        msgEl.style.color = '#dc3545';
+      }
+      btn.disabled = false;
+      btn.textContent = '📤 Enviar a todos los suscriptores';
+    });
 
     /* ─── PLAN ─── */
     const PLANES_INFO = {
