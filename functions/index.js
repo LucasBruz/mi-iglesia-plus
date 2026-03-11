@@ -34,12 +34,7 @@ const PLANS = ["starter", "pro"];
 const ACTIVE_STATUSES = ["draft", "approved"];
 
 // ─── MERCADO PAGO CONFIG ──────────────────────────────────────────────────────
-// ⚠️ No hardcodees secretos. Usá Secrets de Firebase Functions.
-//   firebase functions:secrets:set MP_ACCESS_TOKEN
-const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
-if (!MP_ACCESS_TOKEN) {
-  console.warn("MP_ACCESS_TOKEN no configurado. Definí el secreto con: firebase functions:secrets:set MP_ACCESS_TOKEN");
-}
+const MP_ACCESS_TOKEN = "APP_USR-541245658929377-030921-7a28e74e2c978d3192453d35fb732167-367955588";
 
 // ========================================================
 //  PUBLICIDAD - Creación con límite Starter (1 anuncio)
@@ -256,22 +251,6 @@ exports.createMpPreference = onRequest(
 exports.mpWebhook = onRequest(
   { region: "us-central1", cors: true },
   async (req, res) => {
-    // --- Compatibilidad IPN (GET) -------------------------------------------
-    // IPN envía GET con ?topic=payment&id=123...; Webhooks usan POST con JSON.
-    // Si llega un GET válido, lo "traducimos" a tu payload POST actual.
-    if (req.method === "GET") {
-      const topic = (req.query?.topic || req.query?.type || "").toString();
-      const id = (req.query?.id || req.query?.["data.id"] || "").toString();
-      if (topic === "payment" && id) {
-        req.body = { type: "payment", data: { id } };
-        req.method = "POST";
-      } else {
-        res.status(200).send("ok");
-        return;
-      }
-    }
-
-    // --- Flujo original (Webhooks POST) -------------------------------------
     if (req.method !== "POST") { res.status(200).send("ok"); return; }
 
     const { type, data } = req.body;
@@ -418,5 +397,110 @@ exports.mpSubscriptionWebhook = onRequest(
       console.error("mpSubscriptionWebhook error:", e);
       res.status(200).send("ok");
     }
+  }
+);
+
+// ================================================================
+//  📢 ENVIAR NOTIFICACIÓN PUSH A SUSCRIPTORES DE UNA IGLESIA
+// ================================================================
+exports.sendPushNotification = onCall(
+  { region: "us-central1" },
+  async (req) => {
+    // Solo el dueño de la iglesia puede enviar notificaciones
+    if (!req.auth) throw new HttpsError("unauthenticated", "Iniciá sesión");
+
+    const { iglesiaId, titulo, cuerpo, url } = req.data;
+
+    if (!iglesiaId || !titulo || !cuerpo) {
+      throw new HttpsError("invalid-argument", "Faltan datos: iglesiaId, titulo, cuerpo");
+    }
+
+    // Verificar que el que llama es el dueño de esa iglesia
+    const isAdmin = ADMINS.includes((req.auth.token?.email || "").toLowerCase());
+    if (req.auth.uid !== iglesiaId && !isAdmin) {
+      throw new HttpsError("permission-denied", "No tenés permiso para enviar notificaciones de esta iglesia");
+    }
+
+    // Obtener todos los tokens de suscriptores
+    const tokensSnap = await db.collection(`suscriptores/${iglesiaId}/tokens`).get();
+
+    if (tokensSnap.empty) return { enviados: 0 };
+
+    const tokens = tokensSnap.docs.map(d => d.data().token).filter(Boolean);
+
+    if (!tokens.length) return { enviados: 0 };
+
+    // Obtener nombre de la iglesia para la notificación
+    const iglesiaSnap = await db.doc(`iglesias/${iglesiaId}`).get();
+    const nombreIglesia = iglesiaSnap.data()?.nombre || "Mi Iglesia+";
+    const logoUrl = iglesiaSnap.data()?.logoUrl || null;
+
+    // Enviar en lotes de 500 (límite FCM)
+    const BATCH_SIZE = 500;
+    let enviados = 0;
+    const tokensInvalidos = [];
+
+    for (let i = 0; i < tokens.length; i += BATCH_SIZE) {
+      const lote = tokens.slice(i, i + BATCH_SIZE);
+
+      const message = {
+        notification: {
+          title: `${nombreIglesia}: ${titulo}`,
+          body: cuerpo,
+          ...(logoUrl ? { imageUrl: logoUrl } : {})
+        },
+        webpush: {
+          notification: {
+            icon: logoUrl || "/icons/icon-192x192.png",
+            badge: "/icons/icon-192x192.png",
+            vibrate: [200, 100, 200],
+            click_action: url || `/iglesia.html?id=${iglesiaId}`
+          },
+          fcm_options: {
+            link: url || `/iglesia.html?id=${iglesiaId}`
+          }
+        },
+        tokens: lote
+      };
+
+      try {
+        const response = await admin.messaging().sendEachForMulticast(message);
+        enviados += response.successCount;
+
+        // Limpiar tokens inválidos
+        response.responses.forEach((r, idx) => {
+          if (!r.success) {
+            const code = r.error?.code;
+            if (code === 'messaging/invalid-registration-token' ||
+                code === 'messaging/registration-token-not-registered') {
+              tokensInvalidos.push(lote[idx]);
+            }
+          }
+        });
+      } catch(e) {
+        console.error("Error enviando lote:", e);
+      }
+    }
+
+    // Eliminar tokens inválidos de Firestore
+    if (tokensInvalidos.length) {
+      const batch = db.batch();
+      tokensInvalidos.forEach(token => {
+        batch.delete(db.doc(`suscriptores/${iglesiaId}/tokens/${token}`));
+      });
+      await batch.commit();
+      console.log(`Eliminados ${tokensInvalidos.length} tokens inválidos`);
+    }
+
+    // Guardar registro del envío
+    await db.collection(`iglesias/${iglesiaId}/notificaciones`).add({
+      titulo,
+      cuerpo,
+      url: url || null,
+      enviados,
+      creadoEn: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    return { enviados };
   }
 );
