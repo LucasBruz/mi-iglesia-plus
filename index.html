@@ -1,666 +1,450 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mi Iglesia+ | Conecta tu Comunidad de Fe</title>
-
-  <!-- ✅ PWA: Manifest y meta tags -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#FF6B5B">
-  <meta name="description" content="La plataforma moderna para tu iglesia. Gestioná eventos, prédicas y mantené conectada tu congregación.">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Mi Iglesia+">
-  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-
-  <!-- Google Fonts -->
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Mi Iglesia+ | Cargando...</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root{--primary:#FF6B5B;--dark:#1a1a1a;--gray:#666;--border:#e0e0e0;--bg:#fafafa}
     *{margin:0;padding:0;box-sizing:border-box}
-    :root{--primary:#FF6B5B;--dark:#1a1a1a;--gray:#666;--border:#e0e0e0;--white:#fff;--bg:#fafafa}
-    body{font-family:'Poppins',sans-serif;color:var(--dark);background:var(--bg);line-height:1.6}
+    body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark)}
 
     /* NAV */
-    nav{background:var(--white);padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-    .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-    .logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.3rem;color:var(--dark)}
-    .logo img{height:52px;width:52px;object-fit:contain;display:block;border-radius:0}
-    .logo-text span{color:var(--primary)}
-    .nav-buttons{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+    nav{background:#fff;padding:.8rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.1rem;color:var(--dark)}
+    .nav-logo img{height:38px;width:38px;object-fit:contain}
+    .nav-logo span{color:var(--primary)}
+    .btn{display:inline-block;padding:.6rem 1.2rem;border-radius:8px;font-weight:700;font-family:'Poppins',sans-serif;text-decoration:none;border:0;cursor:pointer;font-size:.9rem;transition:all .2s}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(255,107,91,.3)}
+    .btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary)}
 
-    /* Botones */
-    .btn{padding:.7rem 1.1rem;border:0;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .3s;display:inline-block;text-decoration:none;text-align:center}
-    .btn-secondary{background:#f0f0f0;color:var(--dark);border:1px solid var(--border)}
-    .btn-primary{background:var(--primary);color:var(--white)}
-    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,91,.3)}
-    .btn-wa{background:#25D366;color:#fff}
-
-    /* ✅ Botón instalar PWA */
-    #btn-instalar{
-      display:none;
-      background:linear-gradient(135deg,#FF6B5B,#e63946);
+    /* HERO IGLESIA */
+    .church-hero{
+      background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);
+      padding:3rem 1.5rem 2rem;
       color:#fff;
-      border:none;
-      border-radius:8px;
-      padding:.55rem 1rem;
-      font-weight:700;
-      font-family:'Poppins',sans-serif;
-      cursor:pointer;
-      font-size:.85rem;
-      animation:pulseBtn 2s infinite;
-    }
-    @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 rgba(255,107,91,.4)}50%{box-shadow:0 0 0 8px rgba(255,107,91,0)}}
-
-    /* ✅ Banner de instalación (mobile) */
-    #install-banner{
-      display:none;
-      position:fixed;bottom:0;left:0;right:0;
-      background:#fff;border-top:2px solid var(--primary);
-      padding:1rem 1.5rem;z-index:999;
-      box-shadow:0 -4px 20px rgba(0,0,0,.12);
-      justify-content:space-between;align-items:center;gap:1rem;
-    }
-    #install-banner p{font-size:.95rem;font-weight:600;flex:1}
-    #install-banner p small{display:block;color:var(--gray);font-weight:400;font-size:.8rem}
-    .banner-btns{display:flex;gap:.5rem}
-
-    /* ─── HERO CON IMAGEN DE FONDO ─── */
-    .hero{
-      position:relative;
-      padding:5rem 2rem;
       text-align:center;
-      overflow:hidden;
-      min-height:580px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    /* Capa 1: foto de fondo (ya tiene el overlay coral aplicado) */
-    .hero::before{
-      content:'';
-      position:absolute;inset:0;
-      background-image:url('assets/fondo.png');
-      background-size:cover;
-      background-position:center center;
-      background-repeat:no-repeat;
-      z-index:0;
-    }
-    /* Capa 2: oscurecer levemente solo arriba y abajo para que el texto sea legible */
-    .hero::after{
-      content:'';
-      position:absolute;inset:0;
-      background:linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.4) 100%);
-      z-index:1;
-    }
-    .hero-content{
       position:relative;
-      z-index:2;
-      max-width:800px;
-      margin:0 auto;
+      overflow:hidden;
     }
-    .logo-circle{width:220px;height:220px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.3))}
-    .logo-circle img{width:100%;height:100%;object-fit:contain;border-radius:18px}
-    h1{font-size:3.5rem;font-weight:800;margin-bottom:1rem;line-height:1.2;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.45)}
-    h1 span{color:#FF6B5B}
-    .hero p{font-size:1.1rem;color:rgba(255,255,255,0.88);margin-bottom:2rem;line-height:1.8;text-shadow:0 1px 6px rgba(0,0,0,0.3)}
-    .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-    /* Botones del hero adaptados al fondo oscuro */
-    .hero .btn-secondary{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);backdrop-filter:blur(4px)}
-    .hero .btn-secondary:hover{background:rgba(255,255,255,0.28)}
+    .church-hero::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(255,107,91,0.15) 0%,transparent 60%);
+      pointer-events:none;
+    }
+    .church-logo{
+      width:110px;height:110px;
+      border-radius:20px;
+      object-fit:contain;
+      background:#fff;
+      margin:0 auto 1.2rem;
+      display:block;
+      box-shadow:0 8px 32px rgba(0,0,0,0.4);
+      padding:6px;
+    }
+    .church-logo-placeholder{
+      width:110px;height:110px;border-radius:20px;
+      background:rgba(255,255,255,0.1);
+      margin:0 auto 1.2rem;
+      display:flex;align-items:center;justify-content:center;
+      font-size:3rem;border:2px solid rgba(255,255,255,0.2);
+    }
+    .church-hero h1{font-size:2rem;font-weight:800;margin-bottom:.4rem}
+    .church-hero .ciudad{color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:.8rem}
+    .church-hero .pastor{color:rgba(255,255,255,0.55);font-size:.9rem;margin-bottom:1.5rem}
+    .hero-badges{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+    .badge{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .8rem;border-radius:999px;font-size:.8rem;font-weight:600;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.15)}
+    .share-btn{background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);padding:.5rem 1rem;border-radius:8px;font-family:'Poppins',sans-serif;font-size:.85rem;cursor:pointer;font-weight:600;transition:background .2s}
+    .share-btn:hover{background:rgba(255,255,255,0.22)}
 
-    /* FEATURES */
-    .features{padding:4rem 2rem;background:var(--white)}
-    .container{max-width:1200px;margin:0 auto}
-    .section-title{text-align:center;font-size:2.2rem;font-weight:800;margin-bottom:2rem}
+    /* SECCIONES */
+    .container{max-width:900px;margin:0 auto;padding:0 1rem}
+    .section{padding:2rem 1rem}
+    .section-title{font-size:1.3rem;font-weight:800;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+    .section-title::after{content:'';flex:1;height:2px;background:var(--border);margin-left:.5rem}
 
-    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
-    .feature-card{background:var(--white);padding:2rem;border-radius:12px;border:1px solid var(--border);transition:all .3s;text-align:center}
-    .feature-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
-    .feature-icon{font-size:2.5rem;margin-bottom:1rem}
-    .feature-card h3{font-size:1.3rem;margin-bottom:1rem;color:var(--dark)}
-    .feature-card p{color:var(--gray);font-size:.95rem;line-height:1.6}
+    /* INFO + MAPA */
+    .info-mapa{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+    @media(max-width:640px){.info-mapa{grid-template-columns:1fr}}
+    .info-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.2rem}
+    .info-row{display:flex;align-items:flex-start;gap:.7rem;padding:.6rem 0;border-bottom:1px solid #f5f5f5;font-size:.92rem}
+    .info-row:last-child{border-bottom:0}
+    .info-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+    .info-label{color:var(--gray);font-size:.8rem}
+    .info-value{font-weight:600;color:var(--dark)}
+    .map-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);height:220px;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
+    .map-wrap iframe{width:100%;height:100%;border:0;display:block}
+    .map-placeholder{color:var(--gray);text-align:center;font-size:.9rem;padding:1rem}
 
-    /* CTA */
-    .cta{background:linear-gradient(135deg,var(--primary) 0%,#e63946 100%);color:var(--white);padding:4rem 2rem;text-align:center}
-    .cta h2{font-size:2.2rem;margin-bottom:1rem}
-    .cta p{font-size:1.05rem;margin-bottom:2rem;opacity:.95}
+    /* OFRENDAS */
+    .ofrendas-box{background:linear-gradient(135deg,#fff8f7 0%,#fff 100%);border:2px solid rgba(255,107,91,0.2);border-radius:14px;padding:1.5rem;text-align:center}
+    .ofrendas-box h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;color:var(--dark)}
+    .ofrendas-box p{color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.6}
+    .ofrendas-metodos{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem}
+    .metodo-chip{background:#fff;border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;font-size:.85rem;font-weight:600;color:var(--dark)}
+    .ofrendas-detalle{background:#f9f9f9;border-radius:10px;padding:1rem;text-align:left;font-size:.88rem;line-height:1.8;color:var(--dark)}
+    .ofrendas-detalle strong{color:var(--primary)}
 
-    /* SEARCH */
-    .search-section{padding:4rem 2rem;background:var(--white)}
-    .search-box{display:flex;gap:1rem;max-width:600px;margin:0 auto 1rem;flex-wrap:wrap;justify-content:center;position:relative}
-    .search-input{flex:1;min-width:250px;padding:1rem;border:2px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:1rem;transition:border-color .3s}
-    .search-input:focus{outline:none;border-color:var(--primary)}
-    .search-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:0 auto}
-    .church-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all .3s;cursor:pointer}
-    .church-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
-    .church-card h3{color:var(--primary);margin-bottom:1rem;font-size:1.3rem}
-    .church-info{color:var(--gray);font-size:.95rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
-    .church-info strong{color:var(--dark)}
-    .church-button{width:100%;margin-top:1rem;padding:.8rem}
-    .no-results{text-align:center;color:var(--gray);padding:2rem;grid-column:1 / -1;font-size:1.1rem}
+    /* EVENTOS */
+    .eventos-list{display:flex;flex-direction:column;gap:.8rem}
+    .evento-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem}
+    .evento-fecha{background:var(--primary);color:#fff;border-radius:10px;padding:.4rem .7rem;text-align:center;min-width:48px;flex-shrink:0}
+    .evento-fecha .dia{font-size:1.3rem;font-weight:800;line-height:1}
+    .evento-fecha .mes{font-size:.7rem;font-weight:600;text-transform:uppercase}
+    .evento-info h4{font-size:.95rem;font-weight:700;margin-bottom:.2rem}
+    .evento-info .lugar{color:var(--gray);font-size:.82rem;display:flex;align-items:center;gap:.3rem}
+    .empty-state{text-align:center;color:var(--gray);padding:2rem;background:#fff;border:1px solid var(--border);border-radius:12px;font-size:.92rem}
 
-    /* AUTOCOMPLETE */
-    .tag-chip{display:inline-flex;align-items:center;padding:.35rem .8rem;border-radius:999px;background:#f0f0f0;color:var(--dark);font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--border);font-family:'Poppins',sans-serif;transition:all .2s;user-select:none}
-    .tag-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .tag-chip.activo{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .tag-zona{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
-    .tag-zona:hover{background:#3730a3;color:#fff;border-color:#3730a3}
-    .tag-zona.activo{background:#3730a3;color:#fff;border-color:#3730a3}
-    .tag-clear{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}
-    .tag-clear:hover{background:#b91c1c;color:#fff;border-color:#b91c1c}
-    .church-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0}
-    .suggestions{display:none;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.08);overflow:hidden}
-    .suggestion{padding:.7rem 1rem;display:flex;justify-content:space-between;gap:12px;cursor:pointer}
-    .suggestion small{color:var(--gray)}
-    .suggestion:hover{background:#f8f8f8}
+    /* PRÉDICAS */
+    .predicas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .predica-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    .predica-card iframe{width:100%;aspect-ratio:16/9;display:block;border:0}
+    .predica-body{padding:.8rem}
+    .predica-body h4{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
+    .predica-body .fecha{color:var(--gray);font-size:.8rem}
 
-    /* EVENTOS DESTACADOS */
-    .ads-section{padding:3rem 2rem;background:#fff}
-    .ads-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1200px;margin:0 auto}
-    .ad-card{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:transform .2s, box-shadow .2s}
-    .ad-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
-    .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
-    .ad-body{padding:12px}
-    .ad-title{font-weight:700;margin-bottom:4px}
-    .ad-meta{color:var(--gray);font-size:.92rem;display:flex;align-items:center;gap:8px}
-    .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
-    .chip.starter{background:#6c757d}
-    .chip.pro{background:#28a745}
-
-    /* TABS */
-    .tabs-section{padding:3rem 1.5rem;background:var(--bg)}
-    .tabs-wrap{max-width:1000px;margin:0 auto}
-    .tabs{display:flex;gap:10px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
-    .tab-btn{padding:.6rem 1rem;border:1px solid var(--border);background:#fff;border-radius:999px;cursor:pointer;font-weight:700}
-    .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .tab-pane{display:none;background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;max-width:1000px;margin:0 auto}
-    .tab-pane.active{display:block}
+    /* PETICIONES */
+    .peticiones-list{display:flex;flex-direction:column;gap:.8rem}
+    .peticion-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;display:flex;gap:.8rem;align-items:flex-start}
+    .peticion-icon{font-size:1.4rem;flex-shrink:0}
+    .peticion-titulo{font-weight:700;font-size:.92rem;margin-bottom:.3rem}
+    .peticion-detalle{color:var(--gray);font-size:.85rem;line-height:1.5}
 
     /* FOOTER */
-    footer{background:var(--dark);color:rgba(255,255,255,.7);padding:2rem;text-align:center;font-size:.9rem}
-    .footer-founder{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:2rem}
-    .founder-photo{width:80px;height:80px;flex-shrink:0;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.1)}
-    .founder-photo img{width:100%;height:100%;object-fit:cover}
-    .founder-info{text-align:left}
-    .founder-info h4{margin:0;color:white;font-size:1.1rem}
-    .founder-info p{margin:.3rem 0 0 0;color:rgba(255,255,255,.7);font-size:.9rem}
-    .founder-info .btn{margin-top:.8rem;padding:.5rem 1.2rem;font-size:.85rem}
+    .page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:1.5rem;font-size:.85rem}
+    .page-footer a{color:var(--primary);text-decoration:none;font-weight:600}
 
-    @media(max-width:768px){
-      h1{font-size:2rem}
-      .section-title{font-size:1.8rem}
-      .logo-circle{width:200px;height:200px}
-      .nav-buttons{gap:.5rem}
-      .btn{padding:.5rem 1rem;font-size:.9rem}
-      #install-banner{display:none;flex-direction:column;text-align:center}
-      .banner-btns{justify-content:center;width:100%}
-      .footer-founder{flex-direction:column;text-align:center}
-      .founder-info{text-align:center}
+    /* LOADING */
+    .loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:1rem;color:var(--gray)}
+    .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:600px){
+      .church-hero h1{font-size:1.5rem}
+      .predicas-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
   <nav>
-    <div class="nav-container">
-      <a class="logo" href="#home">
-        <img src="assets/logo.png" alt="Mi Iglesia+">
-      </a>
-      <div class="nav-buttons">
-        <a class="btn btn-secondary" href="login.html">Ingresar</a>
-        <a class="btn btn-primary" href="registro.html">Comenzar</a>
-        <a class="btn btn-wa" href="https://wa.me/5492615515707" target="_blank" rel="noopener">Contacto</a>
-        <!-- ✅ Botón instalar app (aparece automáticamente cuando está disponible) -->
-        <button id="btn-instalar" title="Instalar app en tu dispositivo">📲 Instalar App</button>
-      </div>
-    </div>
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo.png" alt="Mi Iglesia+">
+      Mi <span>&nbsp;Iglesia+</span>
+    </a>
+    <a class="btn btn-primary" href="registro.html">Registrar mi iglesia</a>
   </nav>
 
-  <!-- ✅ Banner de instalación para mobile -->
-  <div id="install-banner">
-    <p>
-      📲 Instalá Mi Iglesia+ en tu celu
-      <small>Accedé rápido desde la pantalla de inicio</small>
-    </p>
-    <div class="banner-btns">
-      <button class="btn btn-primary" id="btn-instalar-banner">Instalar</button>
-      <button class="btn btn-secondary" id="btn-cerrar-banner">Ahora no</button>
+  <div id="app">
+    <div class="loading">
+      <div class="spinner"></div>
+      <span>Cargando iglesia…</span>
     </div>
   </div>
 
-  <!-- ✅ Banner de actualización disponible -->
-  <div id="update-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:1rem 1.5rem;z-index:1000;box-shadow:0 -4px 20px rgba(0,0,0,.3);justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-    <p style="margin:0;font-size:.95rem;font-weight:600;flex:1">
-      🆕 Nueva versión disponible
-      <small style="display:block;color:rgba(255,255,255,.6);font-weight:400;font-size:.8rem">Actualizá para ver los últimos cambios</small>
-    </p>
-    <div style="display:flex;gap:.5rem">
-      <button id="btn-actualizar" style="background:var(--primary);color:#fff;border:0;border-radius:8px;padding:.6rem 1.2rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif">🔄 Actualizar ahora</button>
-      <button onclick="document.getElementById('update-banner').style.display='none'" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.6rem 1rem;cursor:pointer;font-family:'Poppins',sans-serif">Después</button>
-    </div>
+  <div class="page-footer">
+    <p>Powered by <a href="index.html">Mi Iglesia+</a> · Conectando comunidades de fe</p>
   </div>
 
-  <!-- HERO con imagen de fondo -->
-  <section class="hero" id="home">
-    <div class="hero-content">
-      <div class="logo-circle">
-        <img src="assets/logo.png" alt="Mi Iglesia+">
-      </div>
-      <h1>Conectados en un solo lugar <span>como nunca antes</span></h1>
-      <p>La plataforma moderna que necesitaba tu iglesia. Gestioná eventos, compartí prédicas, administrá ofrendas y mantené conectada tu congregación.</p>
-      <div class="hero-buttons">
-        <a class="btn btn-secondary" href="#buscar" onclick="irABuscador(event)">Ver Iglesias</a>
-        <a class="btn btn-primary" href="biblia.html">📖 Leer la Biblia</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- EVENTOS DESTACADOS -->
-  <section class="ads-section" id="publicidad">
-    <div class="container">
-      <h2 class="section-title" style="text-align:center">Eventos destacados</h2>
-      <div id="adsGrid" class="ads-grid"><!-- Se completa por JS --></div>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="features">
-    <div class="container">
-      <h2 class="section-title">Todo lo que tu iglesia necesita</h2>
-      <div class="features-grid">
-        <div class="feature-card"><div class="feature-icon">📅</div><h3>Eventos</h3><p>Organizá cultos, reuniones y actividades especiales con un calendario compartido.</p></div>
-        <div class="feature-card"><div class="feature-icon">🎙️</div><h3>Prédicas</h3><p>Compartí prédicas en video y audio. Tus miembros pueden verlas cuando quieran.</p></div>
-        <div class="feature-card"><div class="feature-icon">❤️</div><h3>Peticiones de Oración</h3><p>Espacio donde la congregación comparte necesidades y arma grupos de oración.</p></div>
-        <div class="feature-card"><div class="feature-icon">🌐</div><h3>Multi-Iglesia</h3><p>Cada iglesia tiene su propio espacio. Los miembros pueden conectarse a múltiples congregaciones.</p></div>
-        <div class="feature-card"><div class="feature-icon">👥</div><h3>Roles y Permisos</h3><p>Gestioná administradores, líderes y miembros con diferentes niveles de acceso.</p></div>
-        <div class="feature-card"><div class="feature-icon">⚙️</div><h3>Panel Admin</h3><p>Controlá todo desde un dashboard intuitivo y fácil de usar.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta">
-    <div class="container">
-      <h2>¿Listo para conectar tu iglesia?</h2>
-      <p>Unite a iglesias que ya están transformando la forma en que se conectan con sus comunidades.</p>
-      <a class="btn btn-primary" style="background:white;color:var(--primary)" href="registro.html">Comenzar Ahora</a>
-    </div>
-  </section>
-
-  <!-- SEARCH -->
-  <section class="search-section" id="buscar">
-    <div class="container">
-      <h2 class="section-title">Encontrá tu Iglesia</h2>
-      <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad, pastor o palabra clave</p>
-
-      <!-- Palabras clave rápidas -->
-      <div id="tags-rapidos" style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:.7rem">
-        <span class="tag-chip" onclick="buscarPorTag('jóvenes')">🔥 Jóvenes</span>
-        <span class="tag-chip" onclick="buscarPorTag('familiar')">👨‍👩‍👧 Familiar</span>
-        <span class="tag-chip" onclick="buscarPorTag('alabanza')">🎵 Alabanza</span>
-        <span class="tag-chip" onclick="buscarPorTag('evangelismo')">📢 Evangelismo</span>
-        <span class="tag-chip" onclick="buscarPorTag('niños')">🧒 Niños</span>
-        <span class="tag-chip" onclick="buscarPorTag('online')">💻 Online</span>
-        <span class="tag-chip" onclick="buscarPorTag('bautista')">✝️ Bautista</span>
-        <span class="tag-chip" onclick="buscarPorTag('pentecostal')">🔥 Pentecostal</span>
-        <span class="tag-chip" onclick="buscarPorTag('evangelica')">📖 Evangélica</span>
-        <button class="tag-chip tag-clear" id="btnLimpiarTag" onclick="limpiarBusqueda()" style="display:none">✕ Limpiar</button>
-      </div>
-
-      <!-- Chips de zonas -->
-      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1.2rem">
-        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">📍 Zonas:</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mendoza')">Mendoza</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Buenos Aires')">Buenos Aires</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Córdoba')">Córdoba</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Rosario')">Rosario</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Tucumán')">Tucumán</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Salta')">Salta</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Neuquén')">Neuquén</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('San Juan')">San Juan</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('La Plata')">La Plata</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mar del Plata')">Mar del Plata</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Corrientes')">Corrientes</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Misiones')">Misiones</span>
-      </div>
-
-      <div class="search-box">
-        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Jóvenes, Mendoza, Pastor Juan, Bautista..." aria-label="Buscar iglesias">
-        <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
-        <div class="autocomplete" id="autocomplete" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;">
-          <div class="suggestions" id="suggestions"></div>
-        </div>
-      </div>
-      <div id="resultados" class="search-results"></div>
-    </div>
-  </section>
-
-  <!-- TABS -->
-  <section class="tabs-section" id="info">
-    <div class="tabs-wrap">
-      <div class="tabs">
-        <button class="tab-btn active" data-pane="tab-sobre">Sobre nosotros</button>
-      </div>
-      <div id="tab-sobre" class="tab-pane active">
-        <h3 style="margin-bottom:.6rem;">Mi Iglesia+</h3>
-        <p style="color:var(--gray);">
-          Nuestra misión es ayudar a iglesias a organizarse, comunicar y crecer con herramientas simples:
-          eventos, prédicas, peticiones de oración y un panel de administración moderno.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-founder">
-      <div class="founder-photo">
-        <img src="assets/lucas-bruz.jpg" alt="Fundador">
-      </div>
-      <div class="founder-info">
-        <h4>Lucas Bruz</h4>
-        <p>Fundador de Mi Iglesia+</p>
-      </div>
-    </div>
-    <p>&copy; 2026 Mi Iglesia+. Conectando comunidades de fe.</p>
-  </footer>
-
-  <!-- SCRIPTS Firebase + búsqueda (sin cambios) -->
   <script type="module">
-    import { db } from './js/firebase-init.js';
-    import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getMessaging, getToken, deleteToken } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js';
 
-    let iglesias = [];
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    };
+    const app       = initializeApp(firebaseConfig);
+    const db        = getFirestore(app);
+    const messaging = getMessaging(app);
 
-    window.irABuscador = function(e){
-      if (e) e.preventDefault();
-      document.querySelector('#buscar')?.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
+    const VAPID_KEY  = 'BC3jOJ8lqkrHbiPrZ98XMeyRsmWbT4kqIjFWLIWRb2mSR8lKsIaDLNqmCnuvMFi2kpdUc59ugbKDv6bKQO2j8HE';
+    const params     = new URLSearchParams(window.location.search);
+    const iglesiaId  = params.get('id');
+
+    function fmtFecha(d) {
+      try {
+        const fecha = d?.seconds ? new Date(d.seconds*1000) : new Date(d);
+        return { dia: fecha.getDate(), mes: fecha.toLocaleString('es',{month:'short'}), full: fecha.toLocaleDateString('es') };
+      } catch { return { dia:'?', mes:'?', full:'?' }; }
     }
 
-    async function cargarIglesias(){
-      try{
-        const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
-        const snap = await getDocs(q);
-        iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-        mostrarTodasLasIglesias();
-      }catch(e){
-        console.error(e);
-        document.getElementById('resultados').innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verificá Firebase.</div>';
+    function escHtml(s){ return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function buildMapEmbed(direccion) {
+      if (!direccion) return '';
+      const q = encodeURIComponent(direccion);
+      return `<iframe src="https://maps.google.com/maps?q=${q}&output=embed&z=15" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+    }
+
+    // ── NOTIFICACIONES ──
+    const STORAGE_KEY = `notif_${iglesiaId}`;
+
+    function estaSuscripto() {
+      return localStorage.getItem(STORAGE_KEY) === '1';
+    }
+
+    async function toggleNotificaciones() {
+      const btn = document.getElementById('btnNotif');
+      if (!btn) return;
+      btn.disabled = true;
+
+      if (estaSuscripto()) {
+        // DESUSCRIBIR
+        try {
+          const token = localStorage.getItem(`token_${iglesiaId}`);
+          if (token) {
+            await deleteDoc(doc(db, 'suscriptores', iglesiaId, 'tokens', token));
+            await deleteToken(messaging);
+          }
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(`token_${iglesiaId}`);
+          renderBtnNotif(false);
+        } catch(e) { alert('Error al desuscribirse: ' + e.message); }
+      } else {
+        // SUSCRIBIR
+        try {
+          const perm = await Notification.requestPermission();
+          if (perm !== 'granted') {
+            alert('Necesitás dar permiso de notificaciones en tu navegador.');
+            btn.disabled = false; return;
+          }
+          const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+          if (!token) throw new Error('No se pudo obtener el token');
+
+          // Guardar en Firestore: suscriptores/{iglesiaId}/tokens/{token}
+          await setDoc(doc(db, 'suscriptores', iglesiaId, 'tokens', token), {
+            token,
+            creadoEn: new Date().toISOString(),
+            plataforma: navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop'
+          });
+
+          localStorage.setItem(STORAGE_KEY, '1');
+          localStorage.setItem(`token_${iglesiaId}`, token);
+          renderBtnNotif(true);
+          alert('✅ ¡Te suscribiste! Recibirás notificaciones de esta iglesia.');
+        } catch(e) {
+          alert('Error al suscribirse: ' + e.message);
+        }
+      }
+      btn.disabled = false;
+    }
+
+    function renderBtnNotif(suscripto) {
+      const btn = document.getElementById('btnNotif');
+      if (!btn) return;
+      if (suscripto) {
+        btn.textContent = '🔕 Desactivar notificaciones';
+        btn.style.background = 'rgba(255,255,255,0.1)';
+        btn.style.border = '1px solid rgba(255,255,255,0.3)';
+      } else {
+        btn.textContent = '🔔 Recibir notificaciones';
+        btn.style.background = 'var(--primary)';
+        btn.style.border = 'none';
       }
     }
 
-    // Busca en nombre, ciudad, provincia, direccion, pastor, descripcion, horarios y tags
-    function iglesiaCoincide(iglesia, busqueda) {
-      const b = busqueda.toLowerCase().trim();
-      if (!b) return true;
-      const campos = [
-        iglesia.nombre, iglesia.ciudad, iglesia.provincia,
-        iglesia.direccion, iglesia.pastor,
-        iglesia.descripcion, iglesia.horarios,
-        ...(iglesia.tags || [])
-      ];
-      return campos.some(v => (v||'').toLowerCase().includes(b));
-    }
+    window.toggleNotificaciones = toggleNotificaciones;
 
-    window.buscarIglesias = function(){
-      const busqueda = (document.getElementById('searchInput').value || '').trim();
-      filtrarYMostrar(busqueda);
-      // Marcar chip activo si coincide
-      document.querySelectorAll('.tag-chip:not(.tag-clear)').forEach(c => {
-        c.classList.toggle('activo', c.textContent.toLowerCase().includes(busqueda.toLowerCase()) && busqueda);
-      });
-      const btnLimpiar = document.getElementById('btnLimpiarTag');
-      if (btnLimpiar) btnLimpiar.style.display = busqueda ? 'inline-flex' : 'none';
-      ocultarSugerencias();
-    }
+    async function render() {
+      const app = document.getElementById('app');
 
-    function filtrarYMostrar(busqueda) {
-      const resultados = document.getElementById('resultados');
-      resultados.innerHTML = '';
-      const lista = iglesias.filter(i => iglesiaCoincide(i, busqueda));
-      if (!lista.length){
-        resultados.innerHTML = `<div class="no-results">No se encontraron iglesias${busqueda ? ` para "<b>${busqueda}</b>"` : ''}.</div>`;
+      if (!iglesiaId) {
+        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Iglesia no encontrada</h2><p>El enlace no contiene un ID válido.</p><a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a></div>`;
         return;
       }
-      lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i, busqueda));
-    }
 
-    window.mostrarTodasLasIglesias = function(){
-      filtrarYMostrar('');
-    }
+      // Cargar datos de la iglesia
+      const snap = await getDoc(doc(db,'iglesias',iglesiaId));
+      if (!snap.exists() || snap.data().estado !== 'activa') {
+        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Iglesia no disponible</h2><p>Esta iglesia no existe o aún no está activa.</p><a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a></div>`;
+        return;
+      }
 
-    window.buscarPorTag = function(tag) {
-      const input = document.getElementById('searchInput');
-      input.value = tag;
-      document.querySelectorAll('.tag-chip:not(.tag-clear)').forEach(c => c.classList.remove('activo'));
-      event?.currentTarget?.classList?.add('activo');
-      const btnLimpiar = document.getElementById('btnLimpiarTag');
-      if (btnLimpiar) btnLimpiar.style.display = 'inline-flex';
-      filtrarYMostrar(tag);
-      ocultarSugerencias();
-      document.querySelector('#buscar')?.scrollIntoView({ behavior:'smooth' });
-    }
+      const ig = snap.data();
+      document.title = `${ig.nombre || 'Iglesia'} | Mi Iglesia+`;
 
-    window.limpiarBusqueda = function() {
-      document.getElementById('searchInput').value = '';
-      document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('activo'));
-      document.getElementById('btnLimpiarTag').style.display = 'none';
-      mostrarTodasLasIglesias();
-    }
+      // Cargar subcolecciones en paralelo
+      const [evSnap, predSnap, petSnap] = await Promise.all([
+        getDocs(query(collection(db,'iglesias',iglesiaId,'eventos'), where('publico','==',true))),
+        getDocs(query(collection(db,'iglesias',iglesiaId,'predicas'), where('publico','==',true))),
+        getDocs(query(collection(db,'iglesias',iglesiaId,'peticiones'), where('publico','==',true)))
+      ]);
 
-    window.crearTarjetaIglesia = function(iglesia, busqueda=''){
-      const logoHtml = iglesia.logoUrl
-        ? `<img src="${iglesia.logoUrl}" alt="${iglesia.nombre}" style="width:54px;height:54px;object-fit:contain;border-radius:10px;margin-bottom:.6rem;display:block">`
-        : `<div style="font-size:2rem;margin-bottom:.4rem">⛪</div>`;
+      const eventos   = evSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=> (b.inicio?.seconds||0)-(a.inicio?.seconds||0));
+      const predicas  = predSnap.docs.map(d=>({id:d.id,...d.data()}));
+      const peticiones= petSnap.docs.map(d=>({id:d.id,...d.data()}));
 
-      const tagsHtml = (iglesia.tags||[]).length
-        ? `<div class="church-tags">${iglesia.tags.map(t => {
-            const activo = busqueda && t.toLowerCase().includes(busqueda.toLowerCase());
-            return `<span class="tag-chip${activo?' activo':''}" style="font-size:.75rem;padding:.2rem .6rem" onclick="buscarPorTag('${t}')">${t}</span>`;
-          }).join('')}</div>`
-        : '';
+      // ── HERO ──
+      const logoHtml = ig.logoUrl
+        ? `<img class="church-logo" src="${escHtml(ig.logoUrl)}" alt="${escHtml(ig.nombre)}">`
+        : `<div class="church-logo-placeholder">⛪</div>`;
 
-      return `
-        <div class="church-card">
+      const heroHtml = `
+        <div class="church-hero">
           ${logoHtml}
-          <h3>${iglesia.nombre || '-'}</h3>
-          <div class="church-info"><strong>📍</strong> ${iglesia.ciudad||'-'}${iglesia.provincia ? ', '+iglesia.provincia : ''}</div>
-          <div class="church-info"><strong>🧑‍💼</strong> ${iglesia.pastor||'-'}</div>
-          ${iglesia.horarios ? `<div class="church-info"><strong>🕐</strong> ${iglesia.horarios}</div>` : ''}
-          ${tagsHtml}
-          <a class="btn btn-primary church-button" href="iglesia.html?id=${iglesia.id}">Ver Iglesia</a>
-        </div>
-      `;
-    }
+          <h1>${escHtml(ig.nombre)}</h1>
+          <div class="ciudad">📍 ${escHtml(ig.ciudad||'')}</div>
+          <div class="pastor">🧑‍💼 Pastor: ${escHtml(ig.pastor||'')}</div>
+          <div class="hero-badges">
+            ${ig.miembros ? `<span class="badge">👥 ${ig.miembros} miembros</span>` : ''}
+            ${ig.telefono ? `<span class="badge">📞 ${escHtml(ig.telefono)}</span>` : ''}
+            ${ig.emailContacto ? `<span class="badge">✉️ ${escHtml(ig.emailContacto)}</span>` : ''}
+          </div>
+          <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+            <button id="btnNotif" onclick="toggleNotificaciones()" style="padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;font-size:.88rem;color:#fff;background:var(--primary);border:none;transition:all .2s">🔔 Recibir notificaciones</button>
+            <button class="share-btn" onclick="compartir()">🔗 Compartir</button>
+          </div>
+        </div>`;
 
-    const input = document.getElementById('searchInput');
-    const sug   = document.getElementById('suggestions');
-    function ocultarSugerencias(){ if (sug) sug.style.display='none'; }
-    function mostrarSugerencias(){ if (sug) sug.style.display='block'; }
+      // ── INFO + MAPA ──
+      const mapaHtml = ig.direccion
+        ? `<div class="map-wrap">${buildMapEmbed(ig.direccion + (ig.ciudad ? ', ' + ig.ciudad : ''))}</div>`
+        : `<div class="map-wrap"><div class="map-placeholder">📍 Esta iglesia aún no cargó su dirección</div></div>`;
 
-    function buildSugerencias(text){
-      const q = (text||'').toLowerCase().trim();
-      if (!q) { ocultarSugerencias(); return; }
-      const match = iglesias
-        .filter(i => iglesiaCoincide(i, q))
-        .slice(0,8);
-      if (!match.length){ ocultarSugerencias(); return; }
-      if (sug) {
-        sug.innerHTML = match.map(i => {
-          // Buscar qué campo matcheó para mostrarlo como hint
-          const tagMatch = (i.tags||[]).find(t => t.toLowerCase().includes(q));
-          const hint = tagMatch ? `🏷️ ${tagMatch}` : (i.ciudad||'');
-          return `<div class="suggestion" data-value="${(i.nombre||'').replace(/"/g,'&quot;')}">
-            <span>${i.nombre || '-'}</span>
-            <small>${hint}</small>
-          </div>`;
-        }).join('');
-        mostrarSugerencias();
-        [...sug.querySelectorAll('.suggestion')].forEach(el=>{
-          el.addEventListener('click', ()=>{
-            input.value = el.getAttribute('data-value') || '';
-            buscarIglesias();
-          });
-        });
+      const infoHtml = `
+        <section class="section">
+          <div class="container">
+            <h2 class="section-title">ℹ️ Información</h2>
+            <div class="info-mapa">
+              <div class="info-card">
+                ${ig.nombre     ? `<div class="info-row"><span class="info-icon">⛪</span><div><div class="info-label">Nombre</div><div class="info-value">${escHtml(ig.nombre)}</div></div></div>` : ''}
+                ${ig.ciudad     ? `<div class="info-row"><span class="info-icon">📍</span><div><div class="info-label">Ciudad</div><div class="info-value">${escHtml(ig.ciudad)}</div></div></div>` : ''}
+                ${ig.direccion  ? `<div class="info-row"><span class="info-icon">🗺️</span><div><div class="info-label">Dirección</div><div class="info-value">${escHtml(ig.direccion)}</div></div></div>` : ''}
+                ${ig.pastor     ? `<div class="info-row"><span class="info-icon">🧑‍💼</span><div><div class="info-label">Pastor</div><div class="info-value">${escHtml(ig.pastor)}</div></div></div>` : ''}
+                ${ig.telefono   ? `<div class="info-row"><span class="info-icon">📞</span><div><div class="info-label">Teléfono</div><div class="info-value"><a href="tel:${escHtml(ig.telefono)}">${escHtml(ig.telefono)}</a></div></div></div>` : ''}
+                ${ig.emailContacto ? `<div class="info-row"><span class="info-icon">✉️</span><div><div class="info-label">Email</div><div class="info-value"><a href="mailto:${escHtml(ig.emailContacto)}">${escHtml(ig.emailContacto)}</a></div></div></div>` : ''}
+                ${ig.horarios   ? `<div class="info-row"><span class="info-icon">🕐</span><div><div class="info-label">Horarios</div><div class="info-value">${escHtml(ig.horarios)}</div></div></div>` : ''}
+                ${ig.descripcion? `<div class="info-row"><span class="info-icon">📝</span><div><div class="info-label">Descripción</div><div class="info-value">${escHtml(ig.descripcion)}</div></div></div>` : ''}
+              </div>
+              ${mapaHtml}
+            </div>
+          </div>
+        </section>`;
+
+      // ── OFRENDAS ──
+      let ofrendarHtml = '';
+      if (ig.ofrendas?.activo) {
+        const of = ig.ofrendas;
+        const metodos = [
+          of.mercadopago ? '<span class="metodo-chip">💳 Mercado Pago</span>' : '',
+          of.transferencia ? '<span class="metodo-chip">🏦 Transferencia</span>' : '',
+          of.efectivo ? '<span class="metodo-chip">💵 Efectivo</span>' : '',
+        ].filter(Boolean).join('');
+
+        const detalle = [
+          of.alias    ? `<div>📌 Alias: <strong>${escHtml(of.alias)}</strong></div>` : '',
+          of.cbu      ? `<div>🏦 CBU: <strong>${escHtml(of.cbu)}</strong></div>` : '',
+          of.titular  ? `<div>👤 Titular: <strong>${escHtml(of.titular)}</strong></div>` : '',
+          of.mpLink   ? `<div>🔗 <a href="${escHtml(of.mpLink)}" target="_blank" rel="noopener">Pagar con Mercado Pago</a></div>` : '',
+          of.mensaje  ? `<div style="margin-top:.5rem;font-style:italic;color:#666">"${escHtml(of.mensaje)}"</div>` : '',
+        ].filter(Boolean).join('');
+
+        ofrendarHtml = `
+          <section class="section" style="padding-top:0">
+            <div class="container">
+              <h2 class="section-title">💝 Ofrendas y Diezmos</h2>
+              <div class="ofrendas-box">
+                <h3>Apoyá a ${escHtml(ig.nombre)}</h3>
+                <p>${of.descripcion || 'Tu ofrenda ayuda a sostener el ministerio y bendecir a más personas.'}</p>
+                <div class="ofrendas-metodos">${metodos}</div>
+                ${detalle ? `<div class="ofrendas-detalle">${detalle}</div>` : ''}
+              </div>
+            </div>
+          </section>`;
       }
+
+      // ── EVENTOS ──
+      const eventosItems = eventos.length ? eventos.map(ev => {
+        const f = fmtFecha(ev.inicio);
+        return `<div class="evento-card">
+          <div class="evento-fecha"><div class="dia">${f.dia}</div><div class="mes">${f.mes}</div></div>
+          <div class="evento-info">
+            <h4>${escHtml(ev.titulo||'Evento')}</h4>
+            ${ev.lugar ? `<div class="lugar">📍 ${escHtml(ev.lugar)}</div>` : ''}
+            ${ev.descripcion ? `<div style="font-size:.82rem;color:#888;margin-top:.2rem">${escHtml(ev.descripcion)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('') : `<div class="empty-state">📅 No hay eventos próximos por ahora.</div>`;
+
+      const eventosHtml = `
+        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
+          <div class="container">
+            <h2 class="section-title">📅 Próximos Eventos</h2>
+            <div class="eventos-list">${eventosItems}</div>
+          </div>
+        </section>`;
+
+      // ── PRÉDICAS ──
+      const predicasItems = predicas.length ? predicas.map(p => `
+        <div class="predica-card">
+          <iframe src="https://www.youtube.com/embed/${escHtml(p.youtubeId)}" allowfullscreen loading="lazy"></iframe>
+          <div class="predica-body">
+            <h4>${escHtml(p.titulo||'Prédica')}</h4>
+            <div class="fecha">${fmtFecha(p.fecha).full}</div>
+          </div>
+        </div>`).join('') : `<div class="empty-state">🎙️ No hay prédicas publicadas aún.</div>`;
+
+      const predicasHtml = `
+        <section class="section">
+          <div class="container">
+            <h2 class="section-title">🎙️ Prédicas</h2>
+            <div class="predicas-grid">${predicasItems}</div>
+          </div>
+        </section>`;
+
+      // ── PETICIONES ──
+      const peticionesItems = peticiones.length ? peticiones.map(p => `
+        <div class="peticion-card">
+          <div class="peticion-icon">🙏</div>
+          <div>
+            <div class="peticion-titulo">${escHtml(p.titulo||'Petición')}</div>
+            ${p.detalle ? `<div class="peticion-detalle">${escHtml(p.detalle)}</div>` : ''}
+          </div>
+        </div>`).join('') : `<div class="empty-state">🙏 No hay peticiones públicas por ahora.</div>`;
+
+      const peticionesHtml = `
+        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
+          <div class="container">
+            <h2 class="section-title">🙏 Peticiones de Oración</h2>
+            <div class="peticiones-list">${peticionesItems}</div>
+          </div>
+        </section>`;
+
+      app.innerHTML = heroHtml + infoHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
+
+      // Inicializar estado del botón de notificaciones
+      renderBtnNotif(estaSuscripto());
     }
 
-    input?.addEventListener('input', e=> buildSugerencias(e.target.value));
-    input?.addEventListener('keydown', e=> { if(e.key==='Escape') ocultarSugerencias(); });
-    document.addEventListener('click', e=>{
-      const auto = document.getElementById('autocomplete');
-      if (auto && !auto.contains(e.target) && e.target !== input) ocultarSugerencias();
-    });
-    document.getElementById('searchInput')?.addEventListener('keypress', e=> { if(e.key==='Enter') buscarIglesias(); });
+    window.compartir = function() {
+      const url = window.location.href;
+      if (navigator.share) {
+        navigator.share({ title: document.title, url });
+      } else {
+        navigator.clipboard.writeText(url).then(()=> alert('¡Enlace copiado al portapapeles!'));
+      }
+    };
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await cargarIglesias();
+    render().catch(e => {
+      document.getElementById('app').innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Error al cargar</h2><p>${e.message}</p></div>`;
     });
   </script>
 
-  <!-- ✅ Eventos destacados (Firestore) -->
-  <script type="module">
-    import { db } from './js/firebase-init.js';
-    import { collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
-
-    async function cargarEventosDestacados(){
-      const grid = document.getElementById('adsGrid');
-      if (!grid) return;
-      grid.innerHTML = '<div class="ad-card" style="padding:14px"><strong>Cargando…</strong></div>';
-      try{
-        const q = query(collection(db,'ads'), where('status','==','approved'), limit(12));
-        const snap = await getDocs(q);
-        grid.innerHTML = '';
-        if (snap.empty){
-          grid.innerHTML = '<div class="ad-card" style="padding:14px;color:#666">No hay eventos para mostrar.</div>';
-          return;
-        }
-        snap.forEach(d => {
-          const ad = d.data();
-          const hrefOpen  = ad.href ? `<a class="ad-card" href="${ad.href}" target="_blank" rel="noopener">` : '<div class="ad-card">';
-          const hrefClose = ad.href ? '</a>' : '</div>';
-          const title = (ad.title||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-          const alt   = title || 'Evento destacado';
-          const img   = ad.imageUrl ? `<img class="ad-img" loading="lazy" src="${ad.imageUrl}" alt="${alt}">` : '';
-          grid.insertAdjacentHTML('beforeend', `${hrefOpen}${img}<div class="ad-body"><div class="ad-title">${title}</div><div class="ad-meta">Evento destacado</div></div>${hrefClose}`);
-        });
-      }catch(e){
-        console.error('Eventos destacados:', e);
-        grid.innerHTML = `<div class="ad-card" style="padding:14px;color:#b91c1c">Error al cargar: ${e.message}</div>`;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', cargarEventosDestacados);
-  </script>
-
-  <!-- ✅ PWA: Service Worker + Instalación + Actualización automática -->
+  <!-- SW para notificaciones en background -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const reg = await navigator.serviceWorker.register('/service-worker.js');
-          console.log('[PWA] Service Worker registrado ✅');
-
-          // ── DETECTAR NUEVA VERSIÓN DISPONIBLE ──
-          reg.addEventListener('updatefound', () => {
-            const newSW = reg.installing;
-            newSW.addEventListener('statechange', () => {
-              // Hay un SW nuevo instalado y hay uno viejo controlando la página
-              if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                mostrarBannerActualizacion(newSW);
-              }
-            });
-          });
-
-          // Verificar actualizaciones cada vez que se carga la página
-          reg.update();
-
-          setTimeout(() => pedirPermisoNotificaciones(reg), 3000);
-        } catch (err) {
-          console.error('[PWA] Error SW:', err);
-        }
-      });
-
-      // Si el SW tomó control (después de actualizar), recargar la página
-      let refrescando = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refrescando) {
-          refrescando = true;
-          window.location.reload();
-        }
-      });
+      navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(()=>{});
     }
-
-    function mostrarBannerActualizacion(newSW) {
-      const banner = document.getElementById('update-banner');
-      if (banner) {
-        banner.style.display = 'flex';
-        document.getElementById('btn-actualizar').onclick = () => {
-          banner.style.display = 'none';
-          newSW.postMessage('skipWaiting');
-        };
-      }
-    }
-
-    async function pedirPermisoNotificaciones(reg) {
-      if (!('Notification' in window) || !('PushManager' in window)) return;
-      if (Notification.permission === 'granted') { await suscribirPush(reg); return; }
-      if (Notification.permission === 'default') {
-        const perm = await Notification.requestPermission();
-        if (perm === 'granted') await suscribirPush(reg);
-      }
-    }
-
-    async function suscribirPush(reg) {
-      try {
-        const VAPID_KEY = 'TU_VAPID_PUBLIC_KEY_DE_FIREBASE_AQUI';
-        await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidToUint8(VAPID_KEY) });
-      } catch (e) { console.warn('[PWA] Push no disponible:', e.message); }
-    }
-
-    function vapidToUint8(base64) {
-      const pad = '='.repeat((4 - base64.length % 4) % 4);
-      const b64 = (base64 + pad).replace(/-/g, '+').replace(/_/g, '/');
-      return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-    }
-
-    let deferredPrompt = null;
-    const btnNav    = document.getElementById('btn-instalar');
-    const banner    = document.getElementById('install-banner');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (btnNav) btnNav.style.display = 'inline-block';
-      if (!sessionStorage.getItem('pwa-banner-cerrado') && banner) banner.style.display = 'flex';
-    });
-
-    async function instalarApp() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      if (btnNav) btnNav.style.display = 'none';
-      if (banner) banner.style.display = 'none';
-    }
-
-    document.getElementById('btn-instalar')?.addEventListener('click', instalarApp);
-    document.getElementById('btn-instalar-banner')?.addEventListener('click', instalarApp);
-    document.getElementById('btn-cerrar-banner')?.addEventListener('click', () => {
-      if (banner) banner.style.display = 'none';
-      sessionStorage.setItem('pwa-banner-cerrado', '1');
-    });
-    window.addEventListener('appinstalled', () => {
-      if (btnNav) btnNav.style.display = 'none';
-      if (banner) banner.style.display = 'none';
-    });
   </script>
-
 </body>
 </html>
