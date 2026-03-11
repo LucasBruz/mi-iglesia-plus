@@ -144,7 +144,15 @@
     .no-results{text-align:center;color:var(--gray);padding:2rem;grid-column:1 / -1;font-size:1.1rem}
 
     /* AUTOCOMPLETE */
-    .autocomplete{max-width:600px;margin:0 auto 2rem;}
+    .tag-chip{display:inline-flex;align-items:center;padding:.35rem .8rem;border-radius:999px;background:#f0f0f0;color:var(--dark);font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--border);font-family:'Poppins',sans-serif;transition:all .2s;user-select:none}
+    .tag-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .tag-chip.activo{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .tag-zona{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
+    .tag-zona:hover{background:#3730a3;color:#fff;border-color:#3730a3}
+    .tag-zona.activo{background:#3730a3;color:#fff;border-color:#3730a3}
+    .tag-clear{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}
+    .tag-clear:hover{background:#b91c1c;color:#fff;border-color:#b91c1c}
+    .church-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0}
     .suggestions{display:none;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.08);overflow:hidden}
     .suggestion{padding:.7rem 1rem;display:flex;justify-content:space-between;gap:12px;cursor:pointer}
     .suggestion small{color:var(--gray)}
@@ -276,9 +284,41 @@
   <section class="search-section" id="buscar">
     <div class="container">
       <h2 class="section-title">Encontrá tu Iglesia</h2>
-      <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad o pastor</p>
+      <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad, pastor o palabra clave</p>
+
+      <!-- Palabras clave rápidas -->
+      <div id="tags-rapidos" style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:.7rem">
+        <span class="tag-chip" onclick="buscarPorTag('jóvenes')">🔥 Jóvenes</span>
+        <span class="tag-chip" onclick="buscarPorTag('familiar')">👨‍👩‍👧 Familiar</span>
+        <span class="tag-chip" onclick="buscarPorTag('alabanza')">🎵 Alabanza</span>
+        <span class="tag-chip" onclick="buscarPorTag('evangelismo')">📢 Evangelismo</span>
+        <span class="tag-chip" onclick="buscarPorTag('niños')">🧒 Niños</span>
+        <span class="tag-chip" onclick="buscarPorTag('online')">💻 Online</span>
+        <span class="tag-chip" onclick="buscarPorTag('bautista')">✝️ Bautista</span>
+        <span class="tag-chip" onclick="buscarPorTag('pentecostal')">🔥 Pentecostal</span>
+        <span class="tag-chip" onclick="buscarPorTag('evangelica')">📖 Evangélica</span>
+        <button class="tag-chip tag-clear" id="btnLimpiarTag" onclick="limpiarBusqueda()" style="display:none">✕ Limpiar</button>
+      </div>
+
+      <!-- Chips de zonas -->
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1.2rem">
+        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">📍 Zonas:</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mendoza')">Mendoza</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Buenos Aires')">Buenos Aires</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Córdoba')">Córdoba</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Rosario')">Rosario</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Tucumán')">Tucumán</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Salta')">Salta</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Neuquén')">Neuquén</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('San Juan')">San Juan</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('La Plata')">La Plata</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mar del Plata')">Mar del Plata</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Corrientes')">Corrientes</span>
+        <span class="tag-chip tag-zona" onclick="buscarPorTag('Misiones')">Misiones</span>
+      </div>
+
       <div class="search-box">
-        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Comunidad Cristiana, Ciudad de Mendoza, Pastor Juan..." aria-label="Buscar iglesias">
+        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Jóvenes, Mendoza, Pastor Juan, Bautista..." aria-label="Buscar iglesias">
         <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
         <div class="autocomplete" id="autocomplete" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;">
           <div class="suggestions" id="suggestions"></div>
@@ -327,8 +367,7 @@
 
     window.irABuscador = function(e){
       if (e) e.preventDefault();
-      const el = document.querySelector('#buscar');
-      el?.scrollIntoView({ behavior: 'smooth' });
+      document.querySelector('#buscar')?.scrollIntoView({ behavior: 'smooth' });
       setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
     }
 
@@ -340,45 +379,89 @@
         mostrarTodasLasIglesias();
       }catch(e){
         console.error(e);
-        const resultados = document.getElementById('resultados');
-        if (resultados) resultados.innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verificá Firebase.</div>';
+        document.getElementById('resultados').innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verificá Firebase.</div>';
       }
+    }
+
+    // Busca en nombre, ciudad, provincia, direccion, pastor, descripcion, horarios y tags
+    function iglesiaCoincide(iglesia, busqueda) {
+      const b = busqueda.toLowerCase().trim();
+      if (!b) return true;
+      const campos = [
+        iglesia.nombre, iglesia.ciudad, iglesia.provincia,
+        iglesia.direccion, iglesia.pastor,
+        iglesia.descripcion, iglesia.horarios,
+        ...(iglesia.tags || [])
+      ];
+      return campos.some(v => (v||'').toLowerCase().includes(b));
     }
 
     window.buscarIglesias = function(){
-      const busqueda = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const busqueda = (document.getElementById('searchInput').value || '').trim();
+      filtrarYMostrar(busqueda);
+      // Marcar chip activo si coincide
+      document.querySelectorAll('.tag-chip:not(.tag-clear)').forEach(c => {
+        c.classList.toggle('activo', c.textContent.toLowerCase().includes(busqueda.toLowerCase()) && busqueda);
+      });
+      const btnLimpiar = document.getElementById('btnLimpiarTag');
+      if (btnLimpiar) btnLimpiar.style.display = busqueda ? 'inline-flex' : 'none';
+      ocultarSugerencias();
+    }
+
+    function filtrarYMostrar(busqueda) {
       const resultados = document.getElementById('resultados');
-      if (!resultados) return;
       resultados.innerHTML = '';
-      const coincide = (v) => (v||'').toLowerCase().includes(busqueda);
-      const lista = !busqueda ? iglesias : iglesias.filter(i =>
-        coincide(i.nombre) || coincide(i.ciudad) || coincide(i.pastor)
-      );
-      if (lista.length === 0){
-        resultados.innerHTML = '<div class="no-results">No se encontraron iglesias.</div>';
+      const lista = iglesias.filter(i => iglesiaCoincide(i, busqueda));
+      if (!lista.length){
+        resultados.innerHTML = `<div class="no-results">No se encontraron iglesias${busqueda ? ` para "<b>${busqueda}</b>"` : ''}.</div>`;
         return;
       }
-      lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
-      ocultarSugerencias();
+      lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i, busqueda));
     }
 
     window.mostrarTodasLasIglesias = function(){
-      const resultados = document.getElementById('resultados');
-      if (!resultados) return;
-      resultados.innerHTML = '';
-      iglesias.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i));
-      ocultarSugerencias();
+      filtrarYMostrar('');
     }
 
-    window.crearTarjetaIglesia = function(iglesia){
+    window.buscarPorTag = function(tag) {
+      const input = document.getElementById('searchInput');
+      input.value = tag;
+      document.querySelectorAll('.tag-chip:not(.tag-clear)').forEach(c => c.classList.remove('activo'));
+      event?.currentTarget?.classList?.add('activo');
+      const btnLimpiar = document.getElementById('btnLimpiarTag');
+      if (btnLimpiar) btnLimpiar.style.display = 'inline-flex';
+      filtrarYMostrar(tag);
+      ocultarSugerencias();
+      document.querySelector('#buscar')?.scrollIntoView({ behavior:'smooth' });
+    }
+
+    window.limpiarBusqueda = function() {
+      document.getElementById('searchInput').value = '';
+      document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('activo'));
+      document.getElementById('btnLimpiarTag').style.display = 'none';
+      mostrarTodasLasIglesias();
+    }
+
+    window.crearTarjetaIglesia = function(iglesia, busqueda=''){
+      const logoHtml = iglesia.logoUrl
+        ? `<img src="${iglesia.logoUrl}" alt="${iglesia.nombre}" style="width:54px;height:54px;object-fit:contain;border-radius:10px;margin-bottom:.6rem;display:block">`
+        : `<div style="font-size:2rem;margin-bottom:.4rem">⛪</div>`;
+
+      const tagsHtml = (iglesia.tags||[]).length
+        ? `<div class="church-tags">${iglesia.tags.map(t => {
+            const activo = busqueda && t.toLowerCase().includes(busqueda.toLowerCase());
+            return `<span class="tag-chip${activo?' activo':''}" style="font-size:.75rem;padding:.2rem .6rem" onclick="buscarPorTag('${t}')">${t}</span>`;
+          }).join('')}</div>`
+        : '';
+
       return `
         <div class="church-card">
-          <h3>⛪ ${iglesia.nombre || '-'}</h3>
-          <div class="church-info"><strong>Ubicación:</strong> ${iglesia.ciudad||'-'}</div>
-          <div class="church-info"><strong>Pastor:</strong> ${iglesia.pastor||'-'}</div>
-          <div class="church-info"><strong>Miembros:</strong> ${iglesia.miembros ?? '-'}</div>
-          <div class="church-info"><strong>Teléfono:</strong> ${iglesia.telefono||'-'}</div>
-          <div class="church-info"><strong>Email:</strong> ${iglesia.emailContacto||'-'}</div>
+          ${logoHtml}
+          <h3>${iglesia.nombre || '-'}</h3>
+          <div class="church-info"><strong>📍</strong> ${iglesia.ciudad||'-'}${iglesia.provincia ? ', '+iglesia.provincia : ''}</div>
+          <div class="church-info"><strong>🧑‍💼</strong> ${iglesia.pastor||'-'}</div>
+          ${iglesia.horarios ? `<div class="church-info"><strong>🕐</strong> ${iglesia.horarios}</div>` : ''}
+          ${tagsHtml}
           <a class="btn btn-primary church-button" href="iglesia.html?id=${iglesia.id}">Ver Iglesia</a>
         </div>
       `;
@@ -393,18 +476,19 @@
       const q = (text||'').toLowerCase().trim();
       if (!q) { ocultarSugerencias(); return; }
       const match = iglesias
-        .filter(i => (i.nombre||'').toLowerCase().includes(q)
-                  || (i.ciudad||'').toLowerCase().includes(q)
-                  || (i.pastor||'').toLowerCase().includes(q))
+        .filter(i => iglesiaCoincide(i, q))
         .slice(0,8);
-      if (match.length === 0){ ocultarSugerencias(); return; }
+      if (!match.length){ ocultarSugerencias(); return; }
       if (sug) {
-        sug.innerHTML = match.map(i => `
-          <div class="suggestion" data-value="${(i.nombre||'').replace(/"/g,'&quot;')}">
+        sug.innerHTML = match.map(i => {
+          // Buscar qué campo matcheó para mostrarlo como hint
+          const tagMatch = (i.tags||[]).find(t => t.toLowerCase().includes(q));
+          const hint = tagMatch ? `🏷️ ${tagMatch}` : (i.ciudad||'');
+          return `<div class="suggestion" data-value="${(i.nombre||'').replace(/"/g,'&quot;')}">
             <span>${i.nombre || '-'}</span>
-            <small>${i.ciudad || ''}</small>
-          </div>
-        `).join('');
+            <small>${hint}</small>
+          </div>`;
+        }).join('');
         mostrarSugerencias();
         [...sug.querySelectorAll('.suggestion')].forEach(el=>{
           el.addEventListener('click', ()=>{
