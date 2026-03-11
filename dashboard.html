@@ -126,19 +126,26 @@
 
   <div style="padding:0 16px 32px">
 
-    <!-- TAB: MI IGLESIA (LOGO) -->
+    <!-- TAB: MI IGLESIA -->
     <section id="tab-perfil" class="tab card active">
       <h2>🏠 Perfil de mi Iglesia</h2>
-      <p class="small">Personalizá cómo aparece tu iglesia en la plataforma.</p>
+      <p class="small">Personalizá cómo aparece tu iglesia en la plataforma y en tu página pública.</p>
 
-      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">Logo de la iglesia</h3>
+      <!-- Link a página pública -->
+      <div id="linkPublico" style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin:12px 0;font-size:.9rem;display:none">
+        🌐 Tu página pública: <a id="linkPublicoHref" href="#" target="_blank" style="color:#16a34a;font-weight:700"></a>
+        <button onclick="copiarLink()" style="background:#16a34a;padding:4px 10px;font-size:.8rem;margin-left:8px">Copiar</button>
+      </div>
+
+      <!-- LOGO -->
+      <h3 style="margin:1.2rem 0 .5rem;font-size:1rem">📸 Logo</h3>
       <div class="logo-upload-wrap">
         <div class="logo-preview-box" id="logoPreviewBox" onclick="document.getElementById('logoInput').click()">
           <img id="logoPreviewImg" src="" alt="" style="display:none">
           <div class="placeholder" id="logoPlaceholder">⛪</div>
         </div>
         <div class="logo-upload-info">
-          <p>Tu logo aparecerá en la tarjeta de tu iglesia en el buscador del home.<br>Recomendado: imagen cuadrada, mínimo 200×200px, JPG o PNG.</p>
+          <p>Aparece en el buscador y en tu página pública. Cuadrada, mín. 200×200px, JPG/PNG.</p>
           <input type="file" id="logoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="onLogoSelect(event)">
           <button onclick="document.getElementById('logoInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir imagen</button>
           <button id="btnGuardarLogo" onclick="guardarLogo()" disabled style="margin-left:.5rem">💾 Guardar logo</button>
@@ -146,6 +153,54 @@
           <div id="logoMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
         </div>
       </div>
+
+      <!-- INFO BÁSICA -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📋 Información básica</h3>
+      <div class="row">
+        <div><label>Descripción de la iglesia</label><textarea id="ig_descripcion" rows="3" placeholder="Breve descripción de tu comunidad..."></textarea></div>
+        <div><label>Horarios de culto</label><textarea id="ig_horarios" rows="3" placeholder="Ej: Domingos 10hs y 19hs, Miércoles 20hs"></textarea></div>
+      </div>
+
+      <!-- UBICACIÓN -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📍 Ubicación</h3>
+      <div class="row">
+        <div><label>Dirección completa</label><input id="ig_direccion" placeholder="Ej: Av. San Martín 1234, Mendoza"></div>
+      </div>
+      <div id="mapaPreview" style="margin-top:10px;border-radius:10px;overflow:hidden;border:1px solid #ddd;height:200px;display:none">
+        <iframe id="mapaIframe" width="100%" height="200" frameborder="0" style="border:0" loading="lazy" allowfullscreen></iframe>
+      </div>
+      <button onclick="previsualizarMapa()" style="margin-top:8px;background:#f0f0f0;color:#333;border:1px solid #ddd;font-size:.85rem;padding:6px 12px">🗺️ Ver en mapa</button>
+
+      <!-- OFRENDAS -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">💝 Ofrendas y Diezmos</h3>
+      <div style="background:#fff8f7;border:1px solid #ffd5d0;border-radius:10px;padding:14px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px">
+          <input type="checkbox" id="of_activo" style="width:18px;height:18px"> Mostrar sección de ofrendas en mi página pública
+        </label>
+        <div id="ofrendasFields">
+          <div class="row">
+            <div><label>Descripción / Mensaje</label><input id="of_descripcion" placeholder="Ej: Tu ofrenda transforma vidas..."></div>
+            <div><label>Titular de la cuenta</label><input id="of_titular" placeholder="Nombre y apellido"></div>
+          </div>
+          <div class="row">
+            <div><label>CBU</label><input id="of_cbu" placeholder="0000000000000000000000"></div>
+            <div><label>Alias</label><input id="of_alias" placeholder="mi.iglesia.alias"></div>
+          </div>
+          <div class="row">
+            <div><label>Link de Mercado Pago (opcional)</label><input id="of_mplink" placeholder="https://link.mercadopago.com.ar/..."></div>
+          </div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_mp"> Mercado Pago</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_transf"> Transferencia bancaria</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_efec"> Efectivo</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:1.2rem">
+        <button id="btnGuardarPerfil">💾 Guardar cambios</button>
+      </div>
+      <div id="perfilMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
     </section>
 
     <!-- TAB: PRÉDICAS -->
@@ -312,12 +367,88 @@
         $('logoPlaceholder').style.display = 'none';
       }
 
+      // Cargar campos de perfil
+      if (iglesiaDoc.descripcion) $('ig_descripcion').value = iglesiaDoc.descripcion;
+      if (iglesiaDoc.horarios)    $('ig_horarios').value    = iglesiaDoc.horarios;
+      if (iglesiaDoc.direccion)   $('ig_direccion').value   = iglesiaDoc.direccion;
+
+      // Cargar ofrendas
+      const of = iglesiaDoc.ofrendas || {};
+      if (of.activo)       $('of_activo').checked  = true;
+      if (of.descripcion)  $('of_descripcion').value= of.descripcion;
+      if (of.titular)      $('of_titular').value    = of.titular;
+      if (of.cbu)          $('of_cbu').value         = of.cbu;
+      if (of.alias)        $('of_alias').value       = of.alias;
+      if (of.mpLink)       $('of_mplink').value      = of.mpLink;
+      if (of.mercadopago)  $('of_mp').checked        = true;
+      if (of.transferencia)$('of_transf').checked    = true;
+      if (of.efectivo)     $('of_efec').checked      = true;
+
+      // Mostrar link público
+      const linkEl = $('linkPublico');
+      const linkHref = $('linkPublicoHref');
+      if (linkEl && linkHref) {
+        const url = `${window.location.origin}/iglesia.html?id=${uid}`;
+        linkHref.href = url;
+        linkHref.textContent = url;
+        linkEl.style.display = 'block';
+      }
+
       const ok = ensureActiveAndVerified(user, iglesiaDoc);
       await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones()]);
       await initAdsTab();
     });
 
     $('btnLogout').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+    /* ─── COPIAR LINK ─── */
+    window.copiarLink = function() {
+      const url = `${window.location.origin}/iglesia.html?id=${uid}`;
+      navigator.clipboard.writeText(url).then(()=> alert('¡Link copiado!'));
+    };
+
+    /* ─── MAPA PREVIEW ─── */
+    window.previsualizarMapa = function() {
+      const dir = ($('ig_direccion').value || '').trim();
+      if (!dir) { alert('Ingresá una dirección primero.'); return; }
+      const q = encodeURIComponent(dir);
+      $('mapaIframe').src = `https://maps.google.com/maps?q=${q}&output=embed&z=15`;
+      $('mapaPreview').style.display = 'block';
+    };
+
+    /* ─── GUARDAR PERFIL ─── */
+    $('btnGuardarPerfil').addEventListener('click', async () => {
+      const btn = $('btnGuardarPerfil');
+      const msgEl = $('perfilMsg');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+      try {
+        const data = {
+          descripcion: ($('ig_descripcion').value||'').trim(),
+          horarios:    ($('ig_horarios').value||'').trim(),
+          direccion:   ($('ig_direccion').value||'').trim(),
+          ofrendas: {
+            activo:       $('of_activo').checked,
+            descripcion:  ($('of_descripcion').value||'').trim(),
+            titular:      ($('of_titular').value||'').trim(),
+            cbu:          ($('of_cbu').value||'').trim(),
+            alias:        ($('of_alias').value||'').trim(),
+            mpLink:       ($('of_mplink').value||'').trim(),
+            mercadopago:  $('of_mp').checked,
+            transferencia:$('of_transf').checked,
+            efectivo:     $('of_efec').checked,
+          }
+        };
+        await setDoc(doc(db,'iglesias',uid), data, { merge:true });
+        msgEl.textContent = '✅ Perfil guardado correctamente.';
+        msgEl.style.color = '#16a34a';
+      } catch(e) {
+        msgEl.textContent = '❌ Error: ' + e.message;
+        msgEl.style.color = '#dc3545';
+      }
+      btn.disabled = false;
+      btn.textContent = '💾 Guardar cambios';
+    });
 
     /* ─── LOGO ─── */
     window.onLogoSelect = function(e) {
