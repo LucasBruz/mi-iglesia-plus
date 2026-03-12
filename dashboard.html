@@ -1,547 +1,224 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Panel de Iglesia | Mi Iglesia+</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Mi Iglesia+ | Cargando...</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; --ok:#28a745; --warn:#ffb703; --danger:#dc3545; --muted:#888;}
-    *{ box-sizing:border-box }
-    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
+    :root{--primary:#FF6B5B;--dark:#1a1a1a;--gray:#666;--border:#e0e0e0;--bg:#fafafa}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark)}
 
-    /* ─── HEADER CON FONDO ─── */
-    .dashboard-header{
+    /* NAV */
+    nav{background:#fff;padding:.8rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.1rem;color:var(--dark)}
+    .nav-logo img{height:38px;width:38px;object-fit:contain}
+    .nav-logo span{color:var(--primary)}
+    .btn{display:inline-block;padding:.6rem 1.2rem;border-radius:8px;font-weight:700;font-family:'Poppins',sans-serif;text-decoration:none;border:0;cursor:pointer;font-size:.9rem;transition:all .2s}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(255,107,91,.3)}
+    .btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary)}
+
+    /* HERO IGLESIA */
+    .church-hero{
+      background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);
+      padding:3rem 1.5rem 2rem;
+      color:#fff;
+      text-align:center;
       position:relative;
       overflow:hidden;
-      padding:2.5rem 2rem 2rem;
-      color:#fff;
     }
-    .dashboard-header-bg{
-      position:absolute;inset:0;
+    .church-hero::before{
+      content:'';position:absolute;inset:0;
       background-image:url('assets/fondo.png');
       background-size:cover;background-position:center center;
       z-index:0;
     }
-    .dashboard-header-overlay{
-      position:absolute;inset:0;
-      background:linear-gradient(to bottom, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.18) 50%, rgba(0,0,0,0.45) 100%);
+    .church-hero::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
       z-index:1;
     }
-    .dashboard-header-content{position:relative;z-index:2;max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
-    .dashboard-header h1{margin:0 0 4px;font-size:1.8rem;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4)}
-    .dashboard-header .lead{color:rgba(255,255,255,0.85);margin:0 0 8px;font-size:.95rem}
-    .dashboard-header .muted{color:rgba(255,255,255,0.65);font-size:.85rem}
-    #status{margin-top:4px;font-size:.85rem;color:rgba(255,255,255,0.8)}
-
-    .container{max-width:1000px;margin:0 auto;padding:0 16px}
-    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:22px;margin:16px auto;max-width:1000px}
-    p.lead{color:#666;margin:0 0 16px 0}
-    .muted{color:#888;font-size:.9rem}
-    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
-    button{padding:10px 14px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;font-family:Poppins}
-    button.secondary{background:#111}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    input,textarea,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
-    label{display:block;margin:8px 0 4px 0;font-weight:600}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .row > div{flex:1 1 280px}
-    #msg{margin-top:10px;color:#444;min-height:1.2em}
-
-    .tabs{display:flex;gap:8px;margin:16px 0 0;border-bottom:1px solid #eee;flex-wrap:wrap;padding:0 16px}
-    .tab-btn{background:#f2f2f2;color:#333;border-radius:10px 10px 0 0;border:1px solid #eee;border-bottom:0;padding:10px 14px;cursor:pointer;font-family:Poppins;font-weight:700}
-    .tab-btn.active{background:#fff;color:#000;border-bottom:1px solid #fff}
-    .tab{display:none}
-    .tab.active{display:block}
-
-    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
-    .item{border:1px solid #eee;border-radius:12px;padding:12px;background:#fff}
-    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff;margin-right:6px}
-    .badge.pub{background:#28a745} .badge.priv{background:#6c757d}
-    iframe{width:100%;border-radius:8px;border:0}
-    .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-    .danger{background:#dc3545}
-
-    .ad-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
-    .ad-card{border:1px solid #eee;border-radius:12px;overflow:hidden;background:#fff}
-    .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
-    .ad-body{padding:12px}
-    .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
-    .chip.starter{background:#6c757d} .chip.pro{background:#28a745}
-    .chip.draft{background:#ff9800} .chip.approved{background:#28a745} .chip.archived{background:#6c757d}
-    .counter{display:flex;gap:10px;align-items:center;margin:10px 0;color:#444}
-    .small{font-size:.9rem;color:#777}
-
-    .tag-dash{display:inline-flex;align-items:center;padding:.3rem .75rem;border-radius:999px;background:#f0f0f0;color:#444;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid #ddd;transition:all .15s;user-select:none}
-    .tag-dash:hover{background:#ffe4e1;border-color:var(--primary);color:var(--primary)}
-    .tag-dash.activo{background:var(--primary);color:#fff;border-color:var(--primary)}border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
-    .plan-header{padding:1.2rem;text-align:center}
-    .plan-nombre{font-size:1.1rem;font-weight:800;letter-spacing:.05em}
-    .plan-precio{font-size:1.8rem;font-weight:800;margin-top:.3rem}
-    .plan-precio span{font-size:.9rem;font-weight:400;opacity:.8}
-    .plan-features{list-style:none;padding:1rem 1.2rem;flex:1;font-size:.88rem;line-height:2}
-    .plan-btn{margin:.8rem 1.2rem 1.2rem;padding:.7rem;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;font-family:Poppins;font-size:.9rem;transition:opacity .2s}
-    .plan-btn:hover{opacity:.85}
-    .plan-btn:disabled{opacity:.4;cursor:not-allowed}
-    .plan-card.activo{outline:3px solid var(--primary)}
-    .prog{margin-top:8px;height:8px;border-radius:6px;background:#f0f0f0;overflow:hidden}
-    .prog > i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
-    .hint{color:#888;font-size:.85rem;margin-top:6px}
-
-    /* ─── SECCIÓN LOGO ─── */
-    .logo-upload-wrap{display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;margin-top:1rem}
-    .logo-preview-box{
-      width:160px;height:160px;border-radius:16px;
-      border:2px dashed var(--border);background:#f9f9f9;
+    .church-hero > *{position:relative;z-index:2}
+    .church-logo{
+      width:110px;height:110px;
+      border-radius:20px;
+      object-fit:contain;
+      background:#fff;
+      margin:0 auto 1.2rem;
+      display:block;
+      box-shadow:0 8px 32px rgba(0,0,0,0.4);
+      padding:6px;
+    }
+    .church-logo-placeholder{
+      width:110px;height:110px;border-radius:20px;
+      background:rgba(255,255,255,0.1);
+      margin:0 auto 1.2rem;
       display:flex;align-items:center;justify-content:center;
-      overflow:hidden;flex-shrink:0;cursor:pointer;transition:border-color .2s;
+      font-size:3rem;border:2px solid rgba(255,255,255,0.2);
     }
-    .logo-preview-box:hover{border-color:var(--primary)}
-    .logo-preview-box img{width:100%;height:100%;object-fit:contain}
-    .logo-preview-box .placeholder{font-size:3rem;color:#ccc}
-    .logo-upload-info{flex:1;min-width:200px}
-    .logo-upload-info p{color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.6}
-    .logo-prog{margin-top:8px;height:6px;border-radius:4px;background:#f0f0f0;overflow:hidden;display:none}
-    .logo-prog i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
+    .church-hero h1{font-size:2rem;font-weight:800;margin-bottom:.4rem}
+    .church-hero .ciudad{color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:.8rem}
+    .church-hero .pastor{color:rgba(255,255,255,0.55);font-size:.9rem;margin-bottom:1.5rem}
+    .hero-badges{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+    .badge{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .8rem;border-radius:999px;font-size:.8rem;font-weight:600;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.15)}
+    .share-btn{background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);padding:.5rem 1rem;border-radius:8px;font-family:'Poppins',sans-serif;font-size:.85rem;cursor:pointer;font-weight:600;transition:background .2s}
+    .share-btn:hover{background:rgba(255,255,255,0.22)}
 
-    /* ─── INBOX (peticiones y bautismos) ─── */
-    .inbox-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1rem 1.2rem;margin-bottom:.7rem;transition:background .2s}
-    .inbox-card:not(.leida){border-left:3px solid var(--primary);background:#fffaf9}
-    .inbox-card.leida{opacity:.7}
-    .inbox-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
-    .inbox-nombre{font-weight:700;font-size:.92rem;margin-right:.5rem}
-    .inbox-tel{font-size:.82rem;color:#888;text-decoration:none;font-weight:600}
-    .inbox-tel:hover{color:var(--primary)}
-    .inbox-fecha{font-size:.75rem;color:#aaa;white-space:nowrap}
-    .inbox-mensaje{font-size:.88rem;color:#444;line-height:1.6;background:#f9f9f9;border-radius:8px;padding:.6rem .8rem}
-    .btn-marcar{background:#e8f5e9;color:#16a34a;border:1px solid #86efac;border-radius:6px;padding:3px 8px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins}
-    .btn-wa-small{display:inline-flex;align-items:center;gap:.3rem;background:#25D366;color:#fff;border-radius:8px;padding:5px 10px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:Poppins}
-    @media(max-width:768px){.inbox-header{flex-direction:column}}
-    .galeria-item{position:relative;border-radius:10px;overflow:hidden;background:#f0f0f0;aspect-ratio:1}
-    .galeria-item img{width:100%;height:100%;object-fit:cover;display:block}
-    .galeria-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;display:flex;flex-direction:column;justify-content:space-between;padding:.5rem}
-    .galeria-item:hover .galeria-overlay{background:rgba(0,0,0,0.45)}
-    .galeria-toggle{opacity:0;transition:opacity .2s;background:rgba(255,255,255,0.9);border:0;border-radius:20px;padding:.3rem .7rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins;color:#333;align-self:flex-start}
-    .galeria-toggle.visible-on{opacity:1;background:var(--primary);color:#fff}
-    .galeria-item:hover .galeria-toggle{opacity:1}
-    .galeria-del{opacity:0;transition:opacity .2s;background:rgba(220,53,69,0.85);border:0;border-radius:20px;padding:.3rem .6rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins;color:#fff;align-self:flex-end}
-    .galeria-item:hover .galeria-del{opacity:1}
-    @media(max-width:768px){
-      .galeria-toggle,.galeria-del{opacity:1}
-      #galeriaGrid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem}
+    /* SECCIONES */
+    .container{max-width:900px;margin:0 auto;padding:0 1rem}
+    .section{padding:2rem 1rem}
+    .section-title{font-size:1.3rem;font-weight:800;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+    .section-title::after{content:'';flex:1;height:2px;background:var(--border);margin-left:.5rem}
+
+    /* INFO + MAPA */
+    .info-mapa{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+    @media(max-width:640px){.info-mapa{grid-template-columns:1fr}}
+    .info-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.2rem}
+    .info-row{display:flex;align-items:flex-start;gap:.7rem;padding:.6rem 0;border-bottom:1px solid #f5f5f5;font-size:.92rem}
+    .info-row:last-child{border-bottom:0}
+    .info-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+    .info-label{color:var(--gray);font-size:.8rem}
+    .info-value{font-weight:600;color:var(--dark)}
+    .map-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);height:220px;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
+    .map-wrap iframe{width:100%;height:100%;border:0;display:block}
+    .map-placeholder{color:var(--gray);text-align:center;font-size:.9rem;padding:1rem}
+
+    /* OFRENDAS */
+    .ofrendas-box{background:linear-gradient(135deg,#fff8f7 0%,#fff 100%);border:2px solid rgba(255,107,91,0.2);border-radius:14px;padding:1.5rem;text-align:center}
+    .ofrendas-box h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;color:var(--dark)}
+    .ofrendas-box p{color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.6}
+    .ofrendas-metodos{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem}
+    .metodo-chip{background:#fff;border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;font-size:.85rem;font-weight:600;color:var(--dark)}
+    .ofrendas-detalle{background:#f9f9f9;border-radius:10px;padding:1rem;text-align:left;font-size:.88rem;line-height:1.8;color:var(--dark)}
+    .ofrendas-detalle strong{color:var(--primary)}
+
+    /* EVENTOS */
+    .eventos-list{display:flex;flex-direction:column;gap:.8rem}
+    .evento-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem}
+    .evento-fecha{background:var(--primary);color:#fff;border-radius:10px;padding:.4rem .7rem;text-align:center;min-width:48px;flex-shrink:0}
+    .evento-fecha .dia{font-size:1.3rem;font-weight:800;line-height:1}
+    .evento-fecha .mes{font-size:.7rem;font-weight:600;text-transform:uppercase}
+    .evento-info h4{font-size:.95rem;font-weight:700;margin-bottom:.2rem}
+    .evento-info .lugar{color:var(--gray);font-size:.82rem;display:flex;align-items:center;gap:.3rem}
+    .empty-state{text-align:center;color:var(--gray);padding:2rem;background:#fff;border:1px solid var(--border);border-radius:12px;font-size:.92rem}
+
+    /* PRÉDICAS */
+    .predicas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .predica-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    .predica-card iframe{width:100%;aspect-ratio:16/9;display:block;border:0}
+    .predica-body{padding:.8rem}
+    .predica-body h4{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
+    .predica-body .fecha{color:var(--gray);font-size:.8rem}
+
+    /* FORMULARIOS PÚBLICOS */
+    .form-box{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;gap:.2rem}
+    .form-icon{font-size:2rem;margin-bottom:.3rem}
+    .form-title{font-size:1.1rem;font-weight:800;margin-bottom:.3rem}
+    .form-desc{color:var(--gray);font-size:.85rem;line-height:1.5;margin-bottom:.8rem}
+    .form-group{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.6rem}
+    .form-label{font-size:.83rem;font-weight:700;color:var(--dark)}
+    .opt{font-weight:400;color:#aaa;font-size:.78rem}
+    .form-input{width:100%;padding:.65rem .9rem;border:1px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:.88rem;color:var(--dark);transition:border-color .2s;background:#fff}
+    .form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,91,.1)}
+    .form-btn{width:100%;padding:.75rem;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;font-family:'Poppins',sans-serif;font-size:.92rem;cursor:pointer;transition:opacity .2s;margin-top:.4rem}
+    .form-btn:hover{opacity:.88}
+    .form-btn:disabled{opacity:.5;cursor:not-allowed}
+    .form-feedback{font-size:.83rem;min-height:1.2rem;margin-top:.4rem;font-weight:600}
+    @media(max-width:640px){
+      .forms-grid{grid-template-columns:1fr!important}
     }
 
-    @media(max-width:768px){
-      /* HEADER */
-      .dashboard-header{padding:1.5rem 1rem}
-      .dashboard-header h1{font-size:1.35rem}
-      .dashboard-header .lead{font-size:.82rem}
-      .dashboard-header-content{gap:.5rem}
-      .dashboard-header-content button{padding:.5rem .9rem;font-size:.82rem}
+    /* PETICIONES */
+    .peticiones-list{display:flex;flex-direction:column;gap:.8rem}
+    .peticion-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;display:flex;gap:.8rem;align-items:flex-start}
+    .peticion-icon{font-size:1.4rem;flex-shrink:0}
+    .peticion-titulo{font-weight:700;font-size:.92rem;margin-bottom:.3rem}
+    .peticion-detalle{color:var(--gray);font-size:.85rem;line-height:1.5}
 
-      /* TABS: scroll horizontal */
-      .tabs{
-        overflow-x:auto;flex-wrap:nowrap;
-        -webkit-overflow-scrolling:touch;
-        scrollbar-width:none;
-        padding:0 12px;
-        gap:4px;
+    /* FOOTER */
+    .page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:1.5rem;font-size:.85rem}
+    .page-footer a{color:var(--primary);text-decoration:none;font-weight:600}
+
+    /* LOADING */
+    .loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:1rem;color:var(--gray)}
+    .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:600px){
+      /* NAV */
+      nav{padding:.7rem 1rem}
+      nav a.btn{padding:.5rem .85rem;font-size:.8rem}
+
+      /* HERO */
+      .church-hero{padding:2rem 1rem 1.5rem}
+      .church-logo{width:80px;height:80px;border-radius:14px}
+      .church-logo-placeholder{width:80px;height:80px;font-size:2rem}
+      .church-hero h1{font-size:1.35rem;margin-bottom:.3rem}
+      .church-hero .ciudad{font-size:.88rem;margin-bottom:.5rem}
+      .church-hero .pastor{font-size:.82rem;margin-bottom:1rem}
+      .hero-badges{gap:.4rem;margin-bottom:1rem}
+      .badge{font-size:.75rem;padding:.25rem .6rem}
+
+      /* BOTONES del hero */
+      #btnNotif, .share-btn{
+        padding:.55rem .9rem;font-size:.82rem
       }
-      .tabs::-webkit-scrollbar{display:none}
-      .tab-btn{white-space:nowrap;padding:8px 12px;font-size:.82rem}
 
-      /* CARDS */
-      .card{padding:14px;margin:10px 12px;border-radius:12px}
-      .card h2{font-size:1.1rem;margin-bottom:.8rem}
-      .card h3{font-size:.95rem}
+      /* SECCIONES */
+      .section{padding:1.5rem .8rem}
+      .section-title{font-size:1.1rem}
+      .container{padding:0 .8rem}
 
-      /* ROWS apiladas */
-      .row{flex-direction:column;gap:8px}
-      .row > div{flex:1 1 100%}
+      /* INFO + MAPA apilados */
+      .info-mapa{grid-template-columns:1fr;gap:1rem}
+      .map-wrap{height:180px}
 
-      /* BOTONES */
-      button{padding:9px 12px;font-size:.88rem}
-      .actions{flex-direction:column}
-      .actions button{width:100%}
+      /* PREDICAS: 1 col */
+      .predicas-grid{grid-template-columns:1fr;gap:.8rem}
 
-      /* INPUTS */
-      input,textarea,select{padding:10px;font-size:.92rem}
+      /* OFRENDAS */
+      .ofrendas-box{padding:1rem}
+      .ofrendas-metodos{gap:.5rem}
+      .metodo-chip{font-size:.8rem;padding:.4rem .7rem}
 
-      /* LISTS de prédicas/eventos */
-      .list{grid-template-columns:1fr;gap:10px}
-      .item{padding:10px}
+      /* EVENTOS */
+      .evento-card{padding:.8rem 1rem;gap:.8rem}
+      .evento-info h4{font-size:.88rem}
 
-      /* ADS grid */
-      .ad-grid{grid-template-columns:1fr}
-
-      /* PLAN cards */
-      .planes-grid{grid-template-columns:1fr;gap:10px}
-
-      /* LOGO upload */
-      .logo-upload-wrap{flex-direction:column;align-items:center;gap:1rem}
-      .logo-preview-box{width:120px;height:120px}
-
-      /* TOPBAR */
-      .topbar{flex-direction:column;align-items:stretch}
-      .topbar button{width:100%}
-
-      /* OFRENDAS checkboxes */
-      .ofrendas-checks{flex-direction:column;gap:.5rem}
+      /* PETICIONES */
+      .peticion-card{padding:.8rem 1rem}
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER CON FONDO -->
-  <div class="dashboard-header">
-    <div class="dashboard-header-bg"></div>
-    <div class="dashboard-header-overlay"></div>
-    <div class="dashboard-header-content">
-      <div>
-        <h1>Panel de Iglesia</h1>
-        <p class="lead">Editá y publicá tus <b>Prédicas</b>, <b>Eventos</b>, <b>Peticiones</b> y <b>Publicidad</b>.</p>
-        <div class="muted">Sesión: <span id="emailLbl">—</span></div>
-        <div id="status"></div>
-      </div>
-      <div>
-        <button id="btnLogout" class="secondary">Salir</button>
-      </div>
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo.png" alt="Mi Iglesia+">
+      Mi <span>&nbsp;Iglesia+</span>
+    </a>
+    <a class="btn btn-primary" href="registro.html">Registrar mi iglesia</a>
+  </nav>
+
+  <div id="app">
+    <div class="loading">
+      <div class="spinner"></div>
+      <span>Cargando iglesia…</span>
     </div>
   </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="tab-perfil">🏠 Mi Iglesia</button>
-    <button class="tab-btn" data-tab="tab-predicas">Prédicas</button>
-    <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
-    <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
-    <button class="tab-btn" data-tab="tab-bautismos">💧 Bautismos</button>
-    <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
-    <button class="tab-btn" data-tab="tab-plan">💳 Plan</button>
-  </div>
-
-  <div style="padding:0 16px 32px">
-
-    <!-- TAB: MI IGLESIA -->
-    <section id="tab-perfil" class="tab card active">
-      <h2>🏠 Perfil de mi Iglesia</h2>
-      <p class="small">Personalizá cómo aparece tu iglesia en la plataforma y en tu página pública.</p>
-
-      <!-- Link a página pública -->
-      <div id="linkPublico" style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin:12px 0;font-size:.9rem;display:none">
-        🌐 Tu página pública: <a id="linkPublicoHref" href="#" target="_blank" style="color:#16a34a;font-weight:700"></a>
-        <button onclick="copiarLink()" style="background:#16a34a;padding:4px 10px;font-size:.8rem;margin-left:8px">Copiar</button>
-      </div>
-
-      <!-- LOGO -->
-      <h3 style="margin:1.2rem 0 .5rem;font-size:1rem">📸 Logo</h3>
-      <div class="logo-upload-wrap">
-        <div class="logo-preview-box" id="logoPreviewBox" onclick="document.getElementById('logoInput').click()">
-          <img id="logoPreviewImg" src="" alt="" style="display:none">
-          <div class="placeholder" id="logoPlaceholder">⛪</div>
-        </div>
-        <div class="logo-upload-info">
-          <p>Aparece en el buscador y en tu página pública. Cuadrada, mín. 200×200px, JPG/PNG.</p>
-          <input type="file" id="logoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="onLogoSelect(event)">
-          <button onclick="document.getElementById('logoInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir imagen</button>
-          <button id="btnGuardarLogo" onclick="guardarLogo()" disabled style="margin-left:.5rem">💾 Guardar logo</button>
-          <div class="logo-prog" id="logoProg"><i id="logoBar"></i></div>
-          <div id="logoMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
-        </div>
-      </div>
-
-      <!-- INFO BÁSICA -->
-      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📋 Información básica</h3>
-      <div class="row">
-        <div><label>Descripción de la iglesia</label><textarea id="ig_descripcion" rows="3" placeholder="Breve descripción de tu comunidad..."></textarea></div>
-        <div><label>Horarios de culto</label><textarea id="ig_horarios" rows="3" placeholder="Ej: Domingos 10hs y 19hs, Miércoles 20hs"></textarea></div>
-      </div>
-
-      <!-- TAGS -->
-      <h3 style="margin:1.5rem 0 .3rem;font-size:1rem">🏷️ Palabras clave (tags)</h3>
-      <p class="small" style="margin-bottom:.7rem">Ayudan a que te encuentren más fácil en el buscador. Hacé clic para agregar o quitar.</p>
-      <div id="tagsDisponibles" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">
-        <!-- Se generan por JS -->
-      </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-        <input id="tagCustomInput" placeholder="Agregar tag personalizado..." style="flex:1;min-width:180px;max-width:300px;padding:8px 12px;font-size:.88rem">
-        <button onclick="agregarTagCustom()" style="padding:8px 14px;font-size:.85rem">+ Agregar</button>
-      </div>
-      <div style="margin-top:.6rem;font-size:.82rem;color:#888">Tags seleccionados: <span id="tagsSeleccionados" style="font-weight:700;color:var(--primary)">ninguno</span></div>
-
-      <!-- UBICACIÓN -->
-      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📍 Ubicación</h3>
-      <div class="row">
-        <div>
-          <label>Provincia</label>
-          <select id="ig_provincia">
-            <option value="">— Seleccioná una provincia —</option>
-            <option>Buenos Aires</option><option>CABA</option><option>Catamarca</option>
-            <option>Chaco</option><option>Chubut</option><option>Córdoba</option>
-            <option>Corrientes</option><option>Entre Ríos</option><option>Formosa</option>
-            <option>Jujuy</option><option>La Pampa</option><option>La Rioja</option>
-            <option>Mendoza</option><option>Misiones</option><option>Neuquén</option>
-            <option>Río Negro</option><option>Salta</option><option>San Juan</option>
-            <option>San Luis</option><option>Santa Cruz</option><option>Santa Fe</option>
-            <option>Santiago del Estero</option><option>Tierra del Fuego</option><option>Tucumán</option>
-          </select>
-        </div>
-        <div><label>Dirección completa</label><input id="ig_direccion" placeholder="Ej: Av. San Martín 1234, Mendoza"></div>
-      </div>
-      <div id="mapaPreview" style="margin-top:10px;border-radius:10px;overflow:hidden;border:1px solid #ddd;height:200px;display:none">
-        <iframe id="mapaIframe" width="100%" height="200" frameborder="0" style="border:0" loading="lazy" allowfullscreen></iframe>
-      </div>
-      <button onclick="previsualizarMapa()" style="margin-top:8px;background:#f0f0f0;color:#333;border:1px solid #ddd;font-size:.85rem;padding:6px 12px">🗺️ Ver en mapa</button>
-
-      <!-- SITIO WEB PROPIO -->
-      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🌐 Sitio web propio</h3>
-      <div class="row">
-        <div>
-          <label>URL de su página web (opcional)</label>
-          <input id="ig_website" type="url" placeholder="https://www.miiglesia.com.ar">
-          <div class="hint">Si tu iglesia ya tiene su propio sitio, lo mostramos como enlace en tu página pública.</div>
-        </div>
-      </div>
-
-      <!-- GALERÍA DE FOTOS -->
-      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🖼️ Galería de fotos</h3>
-      <p class="small" style="margin-bottom:.8rem">Subí fotos de tu iglesia para mostrar en tu página pública. Podés elegir cuáles mostrar.</p>
-
-      <!-- Upload fotos -->
-      <div style="background:#f9f9f9;border:2px dashed #ddd;border-radius:12px;padding:1.2rem;text-align:center;cursor:pointer" onclick="document.getElementById('galeriaInput').click()" id="galeriaDropzone">
-        <div style="font-size:2rem;margin-bottom:.4rem">📷</div>
-        <div style="font-weight:700;color:#444;font-size:.92rem">Hacé clic para subir fotos</div>
-        <div class="hint">JPG/PNG · Máx. 5MB por foto · Podés subir varias a la vez</div>
-        <input type="file" id="galeriaInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="onGaleriaSelect(event)">
-      </div>
-      <div class="prog" id="galeriaProg" style="margin-top:8px;display:none"><i id="galeriaBar"></i></div>
-      <div id="galeriaMsg" class="hint" style="margin-top:6px;min-height:1rem"></div>
-
-      <!-- Grid de fotos subidas -->
-      <div id="galeriaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem;margin-top:1rem"></div>
-
-      <!-- OFRENDAS -->
-      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">💝 Ofrendas y Diezmos</h3>
-      <div style="background:#fff8f7;border:1px solid #ffd5d0;border-radius:10px;padding:14px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px">
-          <input type="checkbox" id="of_activo" style="width:18px;height:18px"> Mostrar sección de ofrendas en mi página pública
-        </label>
-        <div id="ofrendasFields">
-          <div class="row">
-            <div><label>Descripción / Mensaje</label><input id="of_descripcion" placeholder="Ej: Tu ofrenda transforma vidas..."></div>
-            <div><label>Titular de la cuenta</label><input id="of_titular" placeholder="Nombre y apellido"></div>
-          </div>
-          <div class="row">
-            <div><label>CBU</label><input id="of_cbu" placeholder="0000000000000000000000"></div>
-            <div><label>Alias</label><input id="of_alias" placeholder="mi.iglesia.alias"></div>
-          </div>
-          <div class="row">
-            <div><label>Link de Mercado Pago (opcional)</label><input id="of_mplink" placeholder="https://link.mercadopago.com.ar/..."></div>
-          </div>
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:8px">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_mp"> Mercado Pago</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_transf"> Transferencia bancaria</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_efec"> Efectivo</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="actions" style="margin-top:1.2rem">
-        <button id="btnGuardarPerfil">💾 Guardar cambios</button>
-      </div>
-      <div id="perfilMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
-    </section>
-
-    <!-- TAB: PRÉDICAS -->
-    <section id="tab-predicas" class="tab card">
-      <h2>Prédicas (YouTube)</h2>
-      <div class="row">
-        <div><label for="p_titulo">Título</label><input id="p_titulo" placeholder="Ej: Fe que mueve montañas" /></div>
-        <div><label for="p_url">URL de YouTube</label><input id="p_url" placeholder="https://www.youtube.com/watch?v=..." /></div>
-      </div>
-      <div class="row">
-        <div><label for="p_fecha">Fecha</label><input id="p_fecha" type="date" /></div>
-        <div><label>Visibilidad</label><label><input id="p_publico" type="checkbox" checked /> Pública</label></div>
-      </div>
-      <div class="actions"><button id="btnPredicaGuardar">Guardar prédica</button></div>
-      <div class="list" id="listaPredicas"></div>
-    </section>
-
-    <!-- TAB: EVENTOS -->
-    <section id="tab-eventos" class="tab card">
-      <h2>Eventos</h2>
-      <div class="row">
-        <div><label for="e_titulo">Título</label><input id="e_titulo" placeholder="Vigilia de oración" /></div>
-        <div><label for="e_lugar">Lugar</label><input id="e_lugar" placeholder="Templo central" /></div>
-      </div>
-      <div class="row">
-        <div><label for="e_inicio">Inicio</label><input id="e_inicio" type="datetime-local" /></div>
-        <div><label for="e_fin">Fin</label><input id="e_fin" type="datetime-local" /></div>
-      </div>
-      <div class="row">
-        <div><label for="e_desc">Descripción</label><textarea id="e_desc" rows="3"></textarea></div>
-        <div><label>Visibilidad</label><label><input id="e_publico" type="checkbox" checked /> Público</label></div>
-      </div>
-      <div class="actions"><button id="btnEventoGuardar">Guardar evento</button></div>
-      <div class="list" id="listaEventos"></div>
-    </section>
-
-    <!-- TAB: PETICIONES -->
-    <section id="tab-peticiones" class="tab card">
-      <h2>🙏 Peticiones de Oración</h2>
-      <p class="small">Estas peticiones son <b>privadas</b> — solo vos las podés ver. Llegaron desde tu página pública.</p>
-
-      <!-- ENVIAR NOTIFICACIÓN -->
-      <div style="background:#fff8f7;border:1px solid #ffd5d0;border-radius:12px;padding:1rem;margin-bottom:1.2rem">
-        <h3 style="font-size:.95rem;margin-bottom:.6rem">📢 Enviar notificación a suscriptores</h3>
-        <div class="row">
-          <div><label>Título</label><input id="notif_titulo" placeholder="Ej: ¡Nuevo evento este domingo!"></div>
-          <div><label>Mensaje</label><input id="notif_cuerpo" placeholder="Ej: Te esperamos a las 10hs en el templo"></div>
-        </div>
-        <div class="row" style="margin-top:.5rem">
-          <div><label>URL destino (opcional)</label><input id="notif_url" placeholder="Ej: /iglesia.html?id=..."></div>
-        </div>
-        <div class="actions" style="margin-top:.8rem">
-          <button id="btnEnviarNotif">📤 Enviar a todos los suscriptores</button>
-        </div>
-        <div id="notifMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
-        <div id="notifCount" class="small" style="margin-top:.3rem;color:#888"></div>
-      </div>
-
-      <!-- Lista de peticiones recibidas -->
-      <div class="topbar" style="margin-top:.5rem">
-        <h3 style="font-size:.95rem;margin:0">Peticiones recibidas</h3>
-        <button onclick="cargarPeticiones()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;padding:6px 12px;font-size:.82rem">🔄 Actualizar</button>
-      </div>
-      <div id="listaPeticiones" style="margin-top:.8rem"></div>
-    </section>
-
-    <!-- TAB: BAUTISMOS -->
-    <section id="tab-bautismos" class="tab card">
-      <h2>💧 Inscripciones al Bautismo</h2>
-      <p class="small">Personas que se inscribieron para bautizarse desde tu página pública.</p>
-      <div class="topbar" style="margin-top:.5rem">
-        <h3 style="font-size:.95rem;margin:0">Solicitudes recibidas</h3>
-        <button onclick="cargarBautismos()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;padding:6px 12px;font-size:.82rem">🔄 Actualizar</button>
-      </div>
-      <div id="listaBautismos" style="margin-top:.8rem"></div>
-    </section>
-
-    <!-- TAB: PUBLICIDAD -->
-    <section id="tab-ads" class="tab card">
-      <h2>Publicidad</h2>
-      <p class="small"><b>Starter:</b> 1 anuncio. <b>Pro:</b> sin límite.</p>
-      <div class="counter">
-        <span>Plan:</span><span id="planChip" class="chip">—</span>
-        <span id="planCount" class="small">Cargando…</span>
-      </div>
-      <div class="row">
-        <div><label for="ad_title">Título del anuncio</label><input id="ad_title" placeholder="Reunión de jóvenes – Sábado 19 hs" /></div>
-        <div><label for="ad_href">URL (opcional)</label><input id="ad_href" placeholder="https://..." /></div>
-      </div>
-      <div class="uploader">
-        <label for="ad_file"><b>Imagen</b> (JPG/PNG, máx. 5MB)</label>
-        <input id="ad_file" type="file" accept=".jpg,.jpeg,.png" />
-        <div class="prog"><i id="ad_bar"></i></div>
-        <div id="ad_msg" class="hint" style="min-height:18px;margin-top:6px"></div>
-      </div>
-      <div class="actions" style="margin-top:10px"><button id="btnCreateAd">Crear publicidad</button></div>
-      <div class="ad-grid" id="adsList"></div>
-    </section>
-
-    <!-- TAB: PLAN -->
-    <section id="tab-plan" class="tab card">
-      <h2>💳 Mi Plan</h2>
-      <p class="small">Administrá tu suscripción y cambiá de plan cuando quieras.</p>
-
-      <!-- Estado actual -->
-      <div id="planActualBox" style="background:#f9f9f9;border:1px solid #eee;border-radius:12px;padding:1.2rem;margin:1rem 0">
-        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-          <div id="planIconBig" style="font-size:2.5rem">⏳</div>
-          <div>
-            <div style="font-size:1.1rem;font-weight:800" id="planNombreActual">Cargando…</div>
-            <div style="color:#888;font-size:.85rem;margin-top:2px" id="planEstadoActual"></div>
-          </div>
-        </div>
-        <div id="planBeneficiosActual" style="margin-top:1rem;font-size:.88rem;color:#555;line-height:1.8"></div>
-      </div>
-
-      <!-- Planes disponibles -->
-      <h3 style="font-size:1rem;margin:1.5rem 0 .8rem">Planes disponibles</h3>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem">
-
-        <!-- FREE -->
-        <div class="plan-card" id="pc-free">
-          <div class="plan-header" style="background:#f5f5f5">
-            <div class="plan-nombre">FREE</div>
-            <div class="plan-precio">$0 <span>/mes</span></div>
-          </div>
-          <ul class="plan-features">
-            <li>✅ Página pública de la iglesia</li>
-            <li>✅ Eventos y prédicas básicas</li>
-            <li>✅ Peticiones de oración</li>
-            <li>❌ Sin publicidad</li>
-            <li>❌ Sin ofrendas online</li>
-          </ul>
-          <button class="plan-btn" data-plan="free" onclick="cambiarPlan('free')">Seleccionar</button>
-        </div>
-
-        <!-- STARTER -->
-        <div class="plan-card" id="pc-starter">
-          <div class="plan-header" style="background:linear-gradient(135deg,#667eea,#764ba2)">
-            <div class="plan-nombre" style="color:#fff">STARTER</div>
-            <div class="plan-precio" style="color:#fff">$10.000 <span>/mes</span></div>
-          </div>
-          <ul class="plan-features">
-            <li>✅ Todo lo de FREE</li>
-            <li>✅ 1 anuncio destacado</li>
-            <li>✅ Sección de ofrendas</li>
-            <li>✅ Soporte prioritario</li>
-            <li>❌ Máx. 1 admin</li>
-          </ul>
-          <button class="plan-btn" data-plan="starter" onclick="cambiarPlan('starter')" style="background:linear-gradient(135deg,#667eea,#764ba2)">Seleccionar</button>
-        </div>
-
-        <!-- PRO -->
-        <div class="plan-card" id="pc-pro" style="border:2px solid var(--primary);position:relative">
-          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:2px 14px;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap">⭐ MÁS POPULAR</div>
-          <div class="plan-header" style="background:linear-gradient(135deg,#FF6B5B,#e63946)">
-            <div class="plan-nombre" style="color:#fff">PRO</div>
-            <div class="plan-precio" style="color:#fff">$30.000 <span>/mes</span></div>
-          </div>
-          <ul class="plan-features">
-            <li>✅ Todo lo de Starter</li>
-            <li>✅ Anuncios ilimitados</li>
-            <li>✅ Hasta 5 administradores</li>
-            <li>✅ Estadísticas de visitas</li>
-            <li>✅ Soporte prioritario 24/7</li>
-          </ul>
-          <button class="plan-btn" data-plan="pro" onclick="cambiarPlan('pro')" style="background:linear-gradient(135deg,#FF6B5B,#e63946)">Seleccionar</button>
-        </div>
-
-      </div>
-
-      <!-- Historial de pagos -->
-      <h3 style="font-size:1rem;margin:1.5rem 0 .8rem">📋 Historial de pagos</h3>
-      <div id="historialPagos" style="font-size:.88rem;color:#888">Cargando…</div>
-
-      <!-- WhatsApp para cambiar plan -->
-      <div style="margin-top:1.5rem;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:1rem;font-size:.88rem">
-        💬 ¿Necesitás ayuda con tu plan? <a href="https://wa.me/5492615515707?text=Hola,%20necesito%20ayuda%20con%20mi%20plan%20en%20Mi%20Iglesia+" target="_blank" style="color:#16a34a;font-weight:700">Contactanos por WhatsApp</a>
-      </div>
-    </section>
-
-    <p id="msg"></p>
+  <div class="page-footer">
+    <p>Powered by <a href="index.html">Mi Iglesia+</a> · Conectando comunidades de fe</p>
   </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-    import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, getDocs, deleteDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
-    import { getStorage, ref as storageRef, uploadBytesResumable, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
-    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getMessaging, getToken, deleteToken } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
@@ -551,707 +228,466 @@
       messagingSenderId: "407699856167",
       appId: "1:407699856167:web:5d421d407ab7c9789aa702"
     };
+    const app       = initializeApp(firebaseConfig);
+    const db        = getFirestore(app);
+    const messaging = getMessaging(app);
 
-    const app     = initializeApp(firebaseConfig);
-    const auth    = getAuth(app);
-    const db      = getFirestore(app);
-    const storage = getStorage(app);
-    const fns     = getFunctions(app, "us-central1");
+    const VAPID_KEY  = 'BC3jOJ8lqkrHbiPrZ98XMeyRsmWbT4kqIjFWLIWRb2mSR8lKsIaDLNqmCnuvMFi2kpdUc59ugbKDv6bKQO2j8HE';
+    const params     = new URLSearchParams(window.location.search);
+    const iglesiaId  = params.get('id');
 
-    const $ = (id) => document.getElementById(id);
-    const msg = $('msg');
-    let uid = null;
-    let iglesiaDoc = null;
-    let selectedLogoFile = null;
-
-    /* ─── TABS ─── */
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-      });
-    });
-
-    /* ─── HELPERS ─── */
-    function youtubeIdFromUrl(url) {
-      const m = (url||'').match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
-      return m ? m[1] : '';
-    }
-    function fmtDate(d) {
-      try { return new Date(d?.seconds ? d.seconds*1000 : d).toLocaleDateString(); } catch { return ''; }
-    }
-    function disableAllForms(disabled) {
-      ['p_titulo','p_url','p_fecha','p_publico','btnPredicaGuardar',
-       'e_titulo','e_lugar','e_inicio','e_fin','e_desc','e_publico','btnEventoGuardar',
-       't_titulo','t_detalle','t_publico','btnPeticionGuardar',
-       'ad_title','ad_href','ad_file','btnCreateAd','btnGuardarLogo'
-      ].forEach(id => { const el=$(id); if(el) el.disabled=disabled; });
-    }
-
-    function ensureActiveAndVerified(user, dataIglesia) {
-      const status = $('status');
-      if (dataIglesia?.estado !== 'activa') {
-        status.textContent = '⏳ Tu iglesia está PENDIENTE. Pedí a un admin que la apruebe.';
-        disableAllForms(true); return false;
-      }
-      if (!user.emailVerified) {
-        status.innerHTML = '⚠️ Verificá tu email. <button id="btnResend" style="margin-left:6px;padding:4px 10px;font-size:.8rem">Reenviar</button>';
-        disableAllForms(true);
-        document.getElementById('btnResend').onclick = async () => {
-          await sendEmailVerification(user);
-          status.textContent = '📧 Verificación reenviada.';
-        };
-        return false;
-      }
-      status.textContent = '✅ ACTIVA';
-      disableAllForms(false);
-      return true;
-    }
-
-    /* ─── SESIÓN ─── */
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.href = 'login.html'; return; }
-      uid = user.uid;
-      $('emailLbl').textContent = user.email || '';
-
-      const snap = await getDoc(doc(db, 'iglesias', uid));
-      if (!snap.exists()) { msg.textContent = 'No se encontró tu iglesia.'; disableAllForms(true); return; }
-      iglesiaDoc = snap.data();
-
-      // Cargar tags
-      renderTags(iglesiaDoc.tags || []);
-
-      // Cargar logo existente
-      if (iglesiaDoc.logoUrl) {
-        $('logoPreviewImg').src = iglesiaDoc.logoUrl;
-        $('logoPreviewImg').style.display = 'block';
-        $('logoPlaceholder').style.display = 'none';
-      }
-
-      // Cargar campos de perfil
-      if (iglesiaDoc.descripcion) $('ig_descripcion').value = iglesiaDoc.descripcion;
-      if (iglesiaDoc.horarios)    $('ig_horarios').value    = iglesiaDoc.horarios;
-      if (iglesiaDoc.direccion)   $('ig_direccion').value   = iglesiaDoc.direccion;
-      if (iglesiaDoc.provincia)   $('ig_provincia').value   = iglesiaDoc.provincia;
-      if (iglesiaDoc.website)     $('ig_website').value     = iglesiaDoc.website;
-
-      // Cargar galería
-      cargarGaleria();
-
-      // Cargar ofrendas
-      const of = iglesiaDoc.ofrendas || {};
-      if (of.activo)       $('of_activo').checked  = true;
-      if (of.descripcion)  $('of_descripcion').value= of.descripcion;
-      if (of.titular)      $('of_titular').value    = of.titular;
-      if (of.cbu)          $('of_cbu').value         = of.cbu;
-      if (of.alias)        $('of_alias').value       = of.alias;
-      if (of.mpLink)       $('of_mplink').value      = of.mpLink;
-      if (of.mercadopago)  $('of_mp').checked        = true;
-      if (of.transferencia)$('of_transf').checked    = true;
-      if (of.efectivo)     $('of_efec').checked      = true;
-
-      // Mostrar link público
-      const linkEl = $('linkPublico');
-      const linkHref = $('linkPublicoHref');
-      if (linkEl && linkHref) {
-        const url = `${window.location.origin}/iglesia.html?id=${uid}`;
-        linkHref.href = url;
-        linkHref.textContent = url;
-        linkEl.style.display = 'block';
-      }
-
-      const ok = ensureActiveAndVerified(user, iglesiaDoc);
-      await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones(), cargarBautismos(), cargarCantSuscriptores()]);
-      await initAdsTab();
-    });
-
-    $('btnLogout').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
-
-    /* ─── COPIAR LINK ─── */
-    window.copiarLink = function() {
-      const url = `${window.location.origin}/iglesia.html?id=${uid}`;
-      navigator.clipboard.writeText(url).then(()=> alert('¡Link copiado!'));
-    };
-
-    /* ─── MAPA PREVIEW ─── */
-    window.previsualizarMapa = function() {
-      const dir = ($('ig_direccion').value || '').trim();
-      if (!dir) { alert('Ingresá una dirección primero.'); return; }
-      const q = encodeURIComponent(dir);
-      $('mapaIframe').src = `https://maps.google.com/maps?q=${q}&output=embed&z=15`;
-      $('mapaPreview').style.display = 'block';
-    };
-
-    /* ─── GUARDAR PERFIL ─── */
-    $('btnGuardarPerfil').addEventListener('click', async () => {
-      const btn = $('btnGuardarPerfil');
-      const msgEl = $('perfilMsg');
-      btn.disabled = true;
-      btn.textContent = 'Guardando...';
+    function fmtFecha(d) {
       try {
-        const data = {
-          descripcion: ($('ig_descripcion').value||'').trim(),
-          horarios:    ($('ig_horarios').value||'').trim(),
-          provincia:   ($('ig_provincia').value||'').trim(),
-          direccion:   ($('ig_direccion').value||'').trim(),
-          website:     ($('ig_website').value||'').trim(),
-          tags:        tagsSeleccionados,
-          ofrendas: {
-            activo:       $('of_activo').checked,
-            descripcion:  ($('of_descripcion').value||'').trim(),
-            titular:      ($('of_titular').value||'').trim(),
-            cbu:          ($('of_cbu').value||'').trim(),
-            alias:        ($('of_alias').value||'').trim(),
-            mpLink:       ($('of_mplink').value||'').trim(),
-            mercadopago:  $('of_mp').checked,
-            transferencia:$('of_transf').checked,
-            efectivo:     $('of_efec').checked,
+        const fecha = d?.seconds ? new Date(d.seconds*1000) : new Date(d);
+        return { dia: fecha.getDate(), mes: fecha.toLocaleString('es',{month:'short'}), full: fecha.toLocaleDateString('es') };
+      } catch { return { dia:'?', mes:'?', full:'?' }; }
+    }
+
+    function escHtml(s){ return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function buildMapEmbed(direccion) {
+      if (!direccion) return '';
+      const q = encodeURIComponent(direccion);
+      return `<iframe src="https://maps.google.com/maps?q=${q}&output=embed&z=15" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+    }
+
+    // ── NOTIFICACIONES ──
+    const STORAGE_KEY = `notif_${iglesiaId}`;
+
+    function estaSuscripto() {
+      return localStorage.getItem(STORAGE_KEY) === '1';
+    }
+
+    async function toggleNotificaciones() {
+      const btn = document.getElementById('btnNotif');
+      if (!btn) return;
+      btn.disabled = true;
+
+      if (estaSuscripto()) {
+        // DESUSCRIBIR
+        try {
+          const token = localStorage.getItem(`token_${iglesiaId}`);
+          if (token) {
+            await deleteDoc(doc(db, 'suscriptores', iglesiaId, 'tokens', token));
+            await deleteToken(messaging);
           }
-        };
-        await setDoc(doc(db,'iglesias',uid), data, { merge:true });
-        msgEl.textContent = '✅ Perfil guardado correctamente.';
-        msgEl.style.color = '#16a34a';
-      } catch(e) {
-        msgEl.textContent = '❌ Error: ' + e.message;
-        msgEl.style.color = '#dc3545';
-      }
-      btn.disabled = false;
-      btn.textContent = '💾 Guardar cambios';
-    });
-
-    /* ─── TAGS ─── */
-    const TAGS_PREDEFINIDOS = ['Jóvenes','Familiar','Alabanza','Evangelismo','Niños','Español','Online','Bautista','Pentecostal','Evangélica','Metodista','Adventista','Católica','Comunidad','Oración','Misiones','Discipulado','Adoración'];
-    let tagsSeleccionados = [];
-
-    function renderTags(tagsActuales) {
-      tagsSeleccionados = [...(tagsActuales||[])];
-      const cont = $('tagsDisponibles');
-      if (!cont) return;
-
-      // Unir predefinidos + los que ya tiene la iglesia
-      const todos = [...new Set([...TAGS_PREDEFINIDOS, ...tagsSeleccionados])];
-
-      cont.innerHTML = todos.map(tag => {
-        const activo = tagsSeleccionados.includes(tag);
-        return `<span class="tag-dash ${activo?'activo':''}" data-tag="${tag}" onclick="toggleTag('${tag}')">${tag}</span>`;
-      }).join('');
-
-      actualizarLabelTags();
-    }
-
-    window.toggleTag = function(tag) {
-      const idx = tagsSeleccionados.indexOf(tag);
-      if (idx === -1) tagsSeleccionados.push(tag);
-      else tagsSeleccionados.splice(idx,1);
-      const chip = document.querySelector(`.tag-dash[data-tag="${tag}"]`);
-      if (chip) chip.classList.toggle('activo');
-      actualizarLabelTags();
-    };
-
-    window.agregarTagCustom = function() {
-      const input = $('tagCustomInput');
-      const val = (input.value||'').trim();
-      if (!val) return;
-      if (!tagsSeleccionados.includes(val)) {
-        tagsSeleccionados.push(val);
-        // Agregar chip al DOM
-        const cont = $('tagsDisponibles');
-        cont.insertAdjacentHTML('beforeend', `<span class="tag-dash activo" data-tag="${val}" onclick="toggleTag('${val}')">${val}</span>`);
-      }
-      input.value = '';
-      actualizarLabelTags();
-    };
-
-    $('tagCustomInput')?.addEventListener('keypress', e => { if(e.key==='Enter') agregarTagCustom(); });
-
-    function actualizarLabelTags() {
-      const lbl = $('tagsSeleccionados');
-      if (lbl) lbl.textContent = tagsSeleccionados.length ? tagsSeleccionados.join(', ') : 'ninguno';
-    }
-
-    /* ─── LOGO ─── */
-    window.onLogoSelect = function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const okTypes = ['image/jpeg','image/png','image/webp'];
-      if (!okTypes.includes(file.type)) { alert('Usá JPG, PNG o WebP.'); return; }
-      if (file.size > 5*1024*1024) { alert('El archivo supera 5MB.'); return; }
-      selectedLogoFile = file;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        $('logoPreviewImg').src = ev.target.result;
-        $('logoPreviewImg').style.display = 'block';
-        $('logoPlaceholder').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-      $('btnGuardarLogo').disabled = false;
-      $('logoMsg').textContent = '✏️ ' + file.name + ' — Clic en "Guardar logo" para confirmar.';
-    };
-
-    window.guardarLogo = async function() {
-      if (!selectedLogoFile || !uid) return;
-      const btn = $('btnGuardarLogo');
-      const prog = $('logoProg');
-      const bar  = $('logoBar');
-      const msgEl = $('logoMsg');
-      btn.disabled = true;
-      btn.textContent = 'Subiendo...';
-      prog.style.display = 'block';
-
-      try {
-        const name = `logo-${Date.now()}.${selectedLogoFile.name.split('.').pop()}`;
-        const ref  = storageRef(storage, `logos/${uid}/${name}`);
-        const task = uploadBytesResumable(ref, selectedLogoFile, { contentType: selectedLogoFile.type });
-
-        await new Promise((resolve, reject) => {
-          task.on('state_changed',
-            snap => { bar.style.width = Math.round(snap.bytesTransferred/snap.totalBytes*100)+'%'; },
-            reject,
-            resolve
-          );
-        });
-
-        const url = await getDownloadURL(task.snapshot.ref);
-        await setDoc(doc(db, 'iglesias', uid), { logoUrl: url }, { merge: true });
-        iglesiaDoc.logoUrl = url;
-        msgEl.textContent = '✅ Logo guardado correctamente.';
-        btn.textContent = '💾 Guardar logo';
-        selectedLogoFile = null;
-      } catch(e) {
-        msgEl.textContent = '❌ Error: ' + e.message;
-        btn.disabled = false;
-        btn.textContent = '💾 Guardar logo';
-      }
-    };
-
-    /* ─── PRÉDICAS ─── */
-    async function cargarPredicas() {
-      const cont = $('listaPredicas'); if (!cont) return;
-      cont.innerHTML = '';
-      const snap = await getDocs(query(collection(db,'iglesias',uid,'predicas'), orderBy('fecha','desc')));
-      if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay prédicas.</div>'; return; }
-      snap.forEach(docu => {
-        const d = docu.data();
-        const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
-        const yt = d.youtubeId ? `<iframe height="180" src="https://www.youtube.com/embed/${d.youtubeId}" allowfullscreen></iframe>` : '';
-        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${fmtDate(d.fecha)}</div>${yt}<div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
-      });
-      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'predicas',b.dataset.del)); await cargarPredicas(); }; });
-    }
-    $('btnPredicaGuardar').addEventListener('click', async () => {
-      try {
-        const youtubeId = youtubeIdFromUrl($('p_url').value);
-        if (!youtubeId) { msg.textContent='❌ URL de YouTube inválida'; return; }
-        await addDoc(collection(db,'iglesias',uid,'predicas'), { titulo:$('p_titulo').value.trim(), url:$('p_url').value.trim(), youtubeId, fecha:new Date($('p_fecha').value)||new Date(), publico:$('p_publico').checked, creadoEn:serverTimestamp() });
-        $('p_titulo').value=''; $('p_url').value=''; $('p_publico').checked=true;
-        msg.textContent='✅ Prédica guardada.'; await cargarPredicas();
-      } catch(e) { msg.textContent='❌ '+e.message; }
-    });
-
-    /* ─── EVENTOS ─── */
-    async function cargarEventos() {
-      const cont = $('listaEventos'); if (!cont) return;
-      cont.innerHTML = '';
-      const snap = await getDocs(query(collection(db,'iglesias',uid,'eventos'), orderBy('inicio','desc')));
-      if (snap.empty) { cont.innerHTML='<div class="muted">Aún no hay eventos.</div>'; return; }
-      snap.forEach(docu => {
-        const d = docu.data();
-        const badge = d.publico ? '<span class="badge pub">Público</span>' : '<span class="badge priv">Privado</span>';
-        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${d.lugar||''}</div><div class="muted">${fmtDate(d.inicio)}</div><div class="muted">${d.descripcion||''}</div><div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
-      });
-      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'eventos',b.dataset.del)); await cargarEventos(); }; });
-    }
-    $('btnEventoGuardar').addEventListener('click', async () => {
-      try {
-        await addDoc(collection(db,'iglesias',uid,'eventos'), { titulo:$('e_titulo').value.trim(), lugar:$('e_lugar').value.trim(), inicio:new Date($('e_inicio').value)||new Date(), fin:new Date($('e_fin').value)||new Date(), descripcion:$('e_desc').value.trim(), publico:$('e_publico').checked, creadoEn:serverTimestamp() });
-        $('e_titulo').value=''; $('e_lugar').value=''; $('e_inicio').value=''; $('e_fin').value=''; $('e_desc').value='';
-        msg.textContent='✅ Evento guardado.'; await cargarEventos();
-      } catch(e) { msg.textContent='❌ '+e.message; }
-    });
-
-    /* ─── PETICIONES ─── */
-    async function cargarPeticiones() {
-      const cont = $('listaPeticiones'); if (!cont) return;
-      cont.innerHTML = '';
-      const snap = await getDocs(query(collection(db,'iglesias',uid,'peticiones'), orderBy('fecha','desc')));
-      if (snap.empty) { cont.innerHTML='<div class="muted">Aún no hay peticiones.</div>'; return; }
-      snap.forEach(docu => {
-        const d = docu.data();
-        const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
-    /* ─── PETICIONES (privadas, inbox) ─── */
-    async function cargarPeticiones() {
-      const cont = $('listaPeticiones');
-      if (!cont || !uid) return;
-      cont.innerHTML = '<div class="hint">Cargando…</div>';
-      try {
-        const snap = await getDocs(query(collection(db,'iglesias',uid,'peticiones'), orderBy('creadoEn','desc')));
-        if (snap.empty) { cont.innerHTML = '<div class="hint">No hay peticiones todavía.</div>'; return; }
-        cont.innerHTML = '';
-        snap.forEach(docu => {
-          const d = docu.data();
-          const fecha = d.creadoEn?.seconds ? new Date(d.creadoEn.seconds*1000).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-          const leida = d.leida === true;
-          cont.insertAdjacentHTML('beforeend', `
-            <div class="inbox-card ${leida?'leida':''}" data-id="${docu.id}">
-              <div class="inbox-header">
-                <div>
-                  <span class="inbox-nombre">🙏 ${escStr(d.nombre||'')} ${d.apellido?escStr(d.apellido):''}</span>
-                  ${d.tel ? `<a href="tel:${escStr(d.tel)}" class="inbox-tel">📞 ${escStr(d.tel)}</a>` : ''}
-                </div>
-                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-                  <span class="inbox-fecha">${fecha}</span>
-                  ${!leida ? `<button class="btn-marcar" onclick="marcarLeida('${docu.id}','peticiones')">✓ Marcar leída</button>` : '<span style="color:#aaa;font-size:.75rem">✓ Leída</span>'}
-                </div>
-              </div>
-              <div class="inbox-mensaje">${escStr(d.mensaje||d.detalle||'')}</div>
-              <div class="actions" style="margin-top:.5rem">
-                ${d.tel ? `<a href="https://wa.me/${(d.tel||'').replace(/\D/g,'')}" target="_blank" class="btn-wa-small">💬 WhatsApp</a>` : ''}
-                <button class="danger" onclick="eliminarItem('${docu.id}','peticiones')">🗑️ Eliminar</button>
-              </div>
-            </div>`);
-        });
-      } catch(e) { cont.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`; }
-    }
-
-    /* ─── BAUTISMOS ─── */
-    async function cargarBautismos() {
-      const cont = $('listaBautismos');
-      if (!cont || !uid) return;
-      cont.innerHTML = '<div class="hint">Cargando…</div>';
-      try {
-        const snap = await getDocs(query(collection(db,'iglesias',uid,'bautismos'), orderBy('creadoEn','desc')));
-        if (snap.empty) { cont.innerHTML = '<div class="hint">No hay inscripciones todavía.</div>'; return; }
-        cont.innerHTML = '';
-        snap.forEach(docu => {
-          const d = docu.data();
-          const fecha = d.creadoEn?.seconds ? new Date(d.creadoEn.seconds*1000).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-          const leido = d.leido === true;
-          cont.insertAdjacentHTML('beforeend', `
-            <div class="inbox-card ${leido?'leida':''}" data-id="${docu.id}">
-              <div class="inbox-header">
-                <div>
-                  <span class="inbox-nombre">💧 ${escStr(d.nombre||'')} ${d.apellido?escStr(d.apellido):''}</span>
-                  ${d.tel ? `<a href="tel:${escStr(d.tel)}" class="inbox-tel">📞 ${escStr(d.tel)}</a>` : ''}
-                </div>
-                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-                  <span class="inbox-fecha">${fecha}</span>
-                  ${!leido ? `<button class="btn-marcar" onclick="marcarLeida('${docu.id}','bautismos')">✓ Marcar leído</button>` : '<span style="color:#aaa;font-size:.75rem">✓ Leído</span>'}
-                </div>
-              </div>
-              ${d.mensaje ? `<div class="inbox-mensaje">${escStr(d.mensaje)}</div>` : ''}
-              <div class="actions" style="margin-top:.5rem">
-                ${d.tel ? `<a href="https://wa.me/${(d.tel||'').replace(/\D/g,'')}" target="_blank" class="btn-wa-small">💬 WhatsApp</a>` : ''}
-                <button class="danger" onclick="eliminarItem('${docu.id}','bautismos')">🗑️ Eliminar</button>
-              </div>
-            </div>`);
-        });
-      } catch(e) { cont.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`; }
-    }
-
-    window.marcarLeida = async function(id, coleccion) {
-      const campo = coleccion === 'bautismos' ? 'leido' : 'leida';
-      try {
-        await updateDoc(doc(db,'iglesias',uid,coleccion,id), { [campo]: true });
-        const card = document.querySelector(`.inbox-card[data-id="${id}"]`);
-        if (card) {
-          card.classList.add('leida');
-          const btnM = card.querySelector('.btn-marcar');
-          if (btnM) { const sp = document.createElement('span'); sp.textContent='✓ Leído'; sp.style.cssText='color:#aaa;font-size:.75rem'; btnM.replaceWith(sp); }
-        }
-      } catch(e) { alert('Error: ' + e.message); }
-    };
-
-    window.eliminarItem = async function(id, coleccion) {
-      if (!confirm('¿Eliminar esta entrada?')) return;
-      try {
-        await deleteDoc(doc(db,'iglesias',uid,coleccion,id));
-        document.querySelector(`.inbox-card[data-id="${id}"]`)?.remove();
-      } catch(e) { alert('Error: ' + e.message); }
-    };
-
-    function escStr(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-    /* ─── PUBLICIDAD ─── */
-    const PLAN_LIMITS = { starter:1, pro:Infinity };
-    async function initAdsTab(){
-      const sub = iglesiaDoc?.subscription || {};
-      const plan = (sub.priceIdOrPlanId||'').toLowerCase();
-      const status = (sub.status||'').toLowerCase();
-      const planChip=$('planChip'); const planCount=$('planCount');
-      if (!['starter','pro'].includes(plan)||status!=='active') {
-        planChip.textContent='Sin plan activo'; planChip.className='chip';
-        planCount.textContent='Para publicar anuncios, activá Starter o Pro.';
-        ['ad_title','ad_href','ad_file','btnCreateAd'].forEach(id=>{const el=$(id);if(el)el.disabled=true;});
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(`token_${iglesiaId}`);
+          renderBtnNotif(false);
+        } catch(e) { alert('Error al desuscribirse: ' + e.message); }
       } else {
-        planChip.textContent=plan.toUpperCase(); planChip.className=`chip ${plan}`;
-      }
-      await listarAds(plan);
-      bindCreateAd(plan);
-    }
-
-    async function listarAds(plan){
-      const list=$('adsList'); list.innerHTML='Cargando…';
-      const snap=await getDocs(collection(db,'ads'));
-      const all=snap.docs.map(d=>({id:d.id,...d.data()})).filter(a=>a.iglesiaUid===uid);
-      const activos=all.filter(a=>['draft','approved'].includes((a.status||'').toLowerCase()));
-      const limit=plan?PLAN_LIMITS[plan]??0:0;
-      if(['starter','pro'].includes(plan)) $('planCount').textContent=`Anuncios activos: ${activos.length} / ${limit===Infinity?'∞':limit}`;
-      if(!all.length){list.innerHTML='<div class="muted">Aún no creaste anuncios.</div>';return;}
-      list.innerHTML='';
-      all.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-      for(const ad of all){
-        const st=(ad.status||'draft').toLowerCase();
-        list.insertAdjacentHTML('beforeend',`<div class="ad-card"><img class="ad-img" src="${ad.imageUrl||'assets/placeholder-ad.jpg'}" alt="Anuncio"/><div class="ad-body"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${ad.title||'(Sin título)'}</b><span class="chip ${st}">${st}</span></div>${ad.href?`<div class="small" style="margin-top:6px;word-break:break-all">${ad.href}</div>`:''}</div></div>`);
-      }
-    }
-
-    function bindCreateAd(plan){
-      $('btnCreateAd').onclick=async()=>{
-        if(!['starter','pro'].includes(plan)){alert('Necesitás plan Starter o Pro activo.');return;}
-        const title=($('ad_title').value||'').trim();
-        const href=($('ad_href').value||'').trim();
-        const file=$('ad_file').files?.[0];
-        if(!title){alert('Ingresá un título.');return;}
-        let imageUrl=null;
-        if(file){
-          if(!['image/jpeg','image/png'].includes(file.type)){alert('Usá JPG o PNG.');return;}
-          if(file.size>5*1024*1024){alert('Máx. 5MB.');return;}
-          try{
-            $('ad_msg').textContent='Subiendo imagen…';
-            await new Promise((res,rej)=>{
-              const ref=sRef(st,`ads/${uid}/banner-${Date.now()}-${file.name}`);
-              const task=uploadBytesResumable(ref,file,{contentType:file.type});
-              task.on('state_changed',s=>{$('ad_bar').style.width=Math.round(s.bytesTransferred/s.totalBytes*100)+'%';},rej,async()=>{imageUrl=await getDownloadURL(task.snapshot.ref);res();});
-            });
-            $('ad_msg').textContent='✔ Imagen subida';
-          }catch(e){$('ad_msg').textContent='❌ Error subiendo imagen';return;}
-        }
-        try{
-          const createAd=httpsCallable(fns,'createAd');
-          await createAd({title,href:href||null,imageUrl});
-          alert('Publicidad creada como borrador.');
-          $('ad_title').value='';$('ad_href').value='';$('ad_file').value='';
-          $('ad_bar').style.width='0%';$('ad_msg').textContent='';
-          await listarAds(plan);
-        }catch(e){alert(e?.message||'No se pudo crear la publicidad.');}
-      };
-    }
-
-    /* ─── GALERÍA DE FOTOS ─── */
-    async function cargarGaleria() {
-      const grid = $('galeriaGrid');
-      if (!grid || !uid) return;
-      grid.innerHTML = '<div class="hint">Cargando fotos…</div>';
-      try {
-        const snap = await getDocs(collection(db, 'iglesias', uid, 'galeria'));
-        grid.innerHTML = '';
-        if (snap.empty) { grid.innerHTML = '<div class="hint">Aún no subiste fotos.</div>'; return; }
-        snap.docs
-          .sort((a,b) => (b.data().creadoEn?.seconds||0) - (a.data().creadoEn?.seconds||0))
-          .forEach(d => renderGaleriaItem(d.id, d.data(), grid));
-      } catch(e) {
-        grid.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`;
-      }
-    }
-
-    function renderGaleriaItem(id, data, grid) {
-      const div = document.createElement('div');
-      div.className = 'galeria-item';
-      div.dataset.id = id;
-      const publica = data.publica !== false; // default true
-      div.innerHTML = `
-        <img src="${data.url}" alt="Foto iglesia" loading="lazy">
-        <div class="galeria-overlay">
-          <button class="galeria-toggle ${publica ? 'visible-on' : ''}"
-            onclick="toggleFotoPublica('${id}', ${publica})">
-            ${publica ? '👁️ Pública' : '🙈 Oculta'}
-          </button>
-          <button class="galeria-del" onclick="borrarFoto('${id}', '${data.storagePath||''}')">🗑️</button>
-        </div>`;
-      grid.appendChild(div);
-    }
-
-    window.onGaleriaSelect = async function(e) {
-      const files = Array.from(e.target.files);
-      if (!files.length) return;
-      const MAX = 5 * 1024 * 1024;
-      const validos = files.filter(f => {
-        if (f.size > MAX) { alert(`"${f.name}" supera los 5MB y fue omitida.`); return false; }
-        return true;
-      });
-      if (!validos.length) return;
-
-      const progEl = $('galeriaProg');
-      const barEl  = $('galeriaBar');
-      const msgEl  = $('galeriaMsg');
-      progEl.style.display = 'block';
-      msgEl.textContent = `Subiendo ${validos.length} foto(s)…`;
-
-      let subidas = 0;
-      for (const file of validos) {
-        const path = `galeria/${uid}/${Date.now()}_${file.name}`;
-        const ref  = storageRef(storage, path);
+        // SUSCRIBIR
         try {
-          await uploadBytes(ref, file);
-          const url = await getDownloadURL(ref);
-          const docRef = await addDoc(collection(db, 'iglesias', uid, 'galeria'), {
-            url, storagePath: path, publica: true,
-            creadoEn: serverTimestamp()
+          const perm = await Notification.requestPermission();
+          if (perm !== 'granted') {
+            alert('Necesitás dar permiso de notificaciones en tu navegador.');
+            btn.disabled = false; return;
+          }
+          const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+          if (!token) throw new Error('No se pudo obtener el token');
+
+          // Guardar en Firestore: suscriptores/{iglesiaId}/tokens/{token}
+          await setDoc(doc(db, 'suscriptores', iglesiaId, 'tokens', token), {
+            token,
+            creadoEn: new Date().toISOString(),
+            plataforma: navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop'
           });
-          // Agregar al grid sin recargar
-          const grid = $('galeriaGrid');
-          const hint = grid.querySelector('.hint');
-          if (hint) hint.remove();
-          renderGaleriaItem(docRef.id, { url, storagePath: path, publica: true }, grid);
-          subidas++;
-          barEl.style.width = `${Math.round((subidas/validos.length)*100)}%`;
-        } catch(err) {
-          msgEl.textContent = `Error subiendo ${file.name}: ${err.message}`;
+
+          localStorage.setItem(STORAGE_KEY, '1');
+          localStorage.setItem(`token_${iglesiaId}`, token);
+          renderBtnNotif(true);
+          alert('✅ ¡Te suscribiste! Recibirás notificaciones de esta iglesia.');
+        } catch(e) {
+          alert('Error al suscribirse: ' + e.message);
         }
-      }
-      progEl.style.display = 'none';
-      barEl.style.width = '0%';
-      msgEl.textContent = `✅ ${subidas} foto(s) subida(s)`;
-      e.target.value = '';
-    };
-
-    window.toggleFotoPublica = async function(id, esPublica) {
-      const nueva = !esPublica;
-      try {
-        await updateDoc(doc(db, 'iglesias', uid, 'galeria', id), { publica: nueva });
-        // Actualizar UI
-        const item = document.querySelector(`.galeria-item[data-id="${id}"]`);
-        if (item) {
-          const btn = item.querySelector('.galeria-toggle');
-          btn.textContent = nueva ? '👁️ Pública' : '🙈 Oculta';
-          btn.className = `galeria-toggle ${nueva ? 'visible-on' : ''}`;
-          btn.onclick = () => toggleFotoPublica(id, nueva);
-        }
-      } catch(e) { alert('Error: ' + e.message); }
-    };
-
-    window.borrarFoto = async function(id, storagePath) {
-      if (!confirm('¿Borrar esta foto?')) return;
-      try {
-        await deleteDoc(doc(db, 'iglesias', uid, 'galeria', id));
-        if (storagePath) {
-          try { await deleteObject(storageRef(storage, storagePath)); } catch(_){}
-        }
-        const item = document.querySelector(`.galeria-item[data-id="${id}"]`);
-        if (item) item.remove();
-        const grid = $('galeriaGrid');
-        if (grid && !grid.querySelector('.galeria-item')) {
-          grid.innerHTML = '<div class="hint">Aún no subiste fotos.</div>';
-        }
-      } catch(e) { alert('Error: ' + e.message); }
-    };
-
-    /* ─── NOTIFICACIONES ─── */
-    async function cargarCantSuscriptores() {
-      try {
-        const snap = await getDocs(collection(db,'suscriptores',uid,'tokens'));
-        const el = $('notifCount');
-        if (el) el.textContent = `Suscriptores actuales: ${snap.size}`;
-      } catch(e) {}
-    }
-
-    $('btnEnviarNotif')?.addEventListener('click', async () => {
-      const titulo = ($('notif_titulo').value||'').trim();
-      const cuerpo = ($('notif_cuerpo').value||'').trim();
-      const url    = ($('notif_url').value||'').trim();
-      const msgEl  = $('notifMsg');
-      if (!titulo || !cuerpo) { msgEl.textContent = '❌ Completá título y mensaje.'; return; }
-
-      const btn = $('btnEnviarNotif');
-      btn.disabled = true;
-      btn.textContent = 'Enviando...';
-      msgEl.textContent = '';
-
-      try {
-        const sendNotification = httpsCallable(fns, 'sendPushNotification');
-        const res = await sendNotification({ iglesiaId: uid, titulo, cuerpo, url: url || `/iglesia.html?id=${uid}` });
-        msgEl.textContent = `✅ Notificación enviada a ${res.data?.enviados || 0} suscriptores.`;
-        msgEl.style.color = '#16a34a';
-        $('notif_titulo').value = '';
-        $('notif_cuerpo').value = '';
-        $('notif_url').value = '';
-      } catch(e) {
-        msgEl.textContent = '❌ Error: ' + (e.message || 'No se pudo enviar');
-        msgEl.style.color = '#dc3545';
       }
       btn.disabled = false;
-      btn.textContent = '📤 Enviar a todos los suscriptores';
-    });
+    }
 
-    /* ─── PLAN ─── */
-    const PLANES_INFO = {
-      free:    { nombre:'FREE',    icon:'🆓', precio:'$0/mes',      color:'#555', beneficios:['Página pública','Eventos y prédicas','Peticiones de oración'] },
-      starter: { nombre:'STARTER', icon:'⭐', precio:'$10.000/mes', color:'#764ba2', beneficios:['Todo lo de FREE','1 anuncio destacado','Sección de ofrendas'] },
-      pro:     { nombre:'PRO',     icon:'🚀', precio:'$30.000/mes', color:'#FF6B5B', beneficios:['Todo lo de Starter','Anuncios ilimitados','Hasta 5 admins','Estadísticas'] },
-    };
-
-    function renderPlanActual() {
-      const sub   = iglesiaDoc?.subscription || {};
-      const plan  = (sub.priceIdOrPlanId||'free').toLowerCase();
-      const status= (sub.status||'').toLowerCase();
-      const info  = PLANES_INFO[plan] || PLANES_INFO.free;
-
-      $('planIconBig').textContent     = info.icon;
-      $('planNombreActual').textContent = `Plan ${info.nombre} — ${info.precio}`;
-      $('planEstadoActual').textContent = status === 'active' ? '✅ Activo' : status ? `Estado: ${status}` : '✅ Activo';
-      $('planBeneficiosActual').innerHTML = info.beneficios.map(b=>`<span style="margin-right:1rem">✔ ${b}</span>`).join('');
-
-      // Marcar plan activo en las cards
-      ['free','starter','pro'].forEach(p => {
-        const card = $(`pc-${p}`);
-        const btn  = card?.querySelector('.plan-btn');
-        if (p === plan) {
-          card?.classList.add('activo');
-          if (btn) { btn.textContent = '✓ Plan actual'; btn.disabled = true; }
-        } else {
-          card?.classList.remove('activo');
-          if (btn) { btn.textContent = 'Seleccionar'; btn.disabled = false; }
-        }
-      });
-
-      // Historial
-      const hist = $('historialPagos');
-      if (sub.subscriptionId) {
-        hist.innerHTML = `<div style="background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:10px;line-height:1.8">
-          <div>📌 ID suscripción: <code>${sub.subscriptionId}</code></div>
-          <div>📦 Plan: <b>${info.nombre}</b></div>
-          <div>🔄 Estado: <b>${sub.status||'—'}</b></div>
-        </div>`;
+    function renderBtnNotif(suscripto) {
+      const btn = document.getElementById('btnNotif');
+      if (!btn) return;
+      if (suscripto) {
+        btn.textContent = '🔕 Desactivar notificaciones';
+        btn.style.background = 'rgba(255,255,255,0.1)';
+        btn.style.border = '1px solid rgba(255,255,255,0.3)';
       } else {
-        hist.innerHTML = '<div style="color:#aaa">Sin historial de pagos registrado.</div>';
+        btn.textContent = '🔔 Recibir notificaciones';
+        btn.style.background = 'var(--primary)';
+        btn.style.border = 'none';
       }
     }
 
-    window.cambiarPlan = async function(nuevoPlan) {
-      const planActual = (iglesiaDoc?.subscription?.priceIdOrPlanId||'free').toLowerCase();
-      if (nuevoPlan === planActual) return;
+    window.toggleNotificaciones = toggleNotificaciones;
 
-      if (nuevoPlan === 'free') {
-        if (!confirm('¿Querés bajar al plan FREE? Perderás tus beneficios actuales.')) return;
-        try {
-          await setDoc(doc(db,'iglesias',uid), { subscription:{ priceIdOrPlanId:'free', status:'active', subscriptionId:null } }, { merge:true });
-          iglesiaDoc.subscription = { priceIdOrPlanId:'free', status:'active', subscriptionId:null };
-          renderPlanActual();
-          alert('✅ Cambiaste al plan FREE.');
-        } catch(e) { alert('Error: ' + e.message); }
+    async function render() {
+      const app = document.getElementById('app');
+
+      if (!iglesiaId) {
+        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Iglesia no encontrada</h2><p>El enlace no contiene un ID válido.</p><a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a></div>`;
         return;
       }
 
-      // Para Starter o Pro → redirigir al flujo de pago
-      const planNombre = nuevoPlan === 'starter' ? 'Starter ($10.000/mes)' : 'Pro ($30.000/mes)';
-      if (!confirm(`¿Querés cambiar al plan ${planNombre}?\n\nSerás redirigido al proceso de pago.`)) return;
-      window.location.href = `suscripcion.html?plan=${nuevoPlan}`;
+      // Cargar datos de la iglesia
+      const snap = await getDoc(doc(db,'iglesias',iglesiaId));
+      if (!snap.exists() || snap.data().estado !== 'activa') {
+        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Iglesia no disponible</h2><p>Esta iglesia no existe o aún no está activa.</p><a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a></div>`;
+        return;
+      }
+
+      const ig = snap.data();
+      document.title = `${ig.nombre || 'Iglesia'} | Mi Iglesia+`;
+
+      // Cargar subcolecciones en paralelo
+      const [evSnap, predSnap, petSnap, galSnap] = await Promise.all([
+        getDocs(query(collection(db,'iglesias',iglesiaId,'eventos'), where('publico','==',true))),
+        getDocs(query(collection(db,'iglesias',iglesiaId,'predicas'), where('publico','==',true))),
+        getDocs(query(collection(db,'iglesias',iglesiaId,'peticiones'), where('publico','==',true))),
+        getDocs(query(collection(db,'iglesias',iglesiaId,'galeria'), where('publica','==',true)))
+      ]);
+
+      const eventos   = evSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=> (b.inicio?.seconds||0)-(a.inicio?.seconds||0));
+      const predicas  = predSnap.docs.map(d=>({id:d.id,...d.data()}));
+      const peticiones= petSnap.docs.map(d=>({id:d.id,...d.data()}));
+      const galeria   = galSnap.docs.map(d=>({id:d.id,...d.data()}))
+                          .sort((a,b)=>(b.creadoEn?.seconds||0)-(a.creadoEn?.seconds||0));
+
+      // ── HERO ──
+      const logoHtml = ig.logoUrl
+        ? `<img class="church-logo" src="${escHtml(ig.logoUrl)}" alt="${escHtml(ig.nombre)}">`
+        : `<div class="church-logo-placeholder">⛪</div>`;
+
+      const heroHtml = `
+        <div class="church-hero">
+          ${logoHtml}
+          <h1>${escHtml(ig.nombre)}</h1>
+          <div class="ciudad">📍 ${escHtml(ig.ciudad||'')}</div>
+          <div class="pastor">🧑‍💼 Pastor: ${escHtml(ig.pastor||'')}</div>
+          <div class="hero-badges">
+            ${ig.miembros ? `<span class="badge">👥 ${ig.miembros} miembros</span>` : ''}
+            ${ig.telefono ? `<span class="badge">📞 ${escHtml(ig.telefono)}</span>` : ''}
+            ${ig.emailContacto ? `<span class="badge">✉️ ${escHtml(ig.emailContacto)}</span>` : ''}
+          </div>
+          <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+            <button id="btnNotif" onclick="toggleNotificaciones()" style="padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;font-size:.88rem;color:#fff;background:var(--primary);border:none;transition:all .2s">🔔 Recibir notificaciones</button>
+            <button class="share-btn" onclick="compartir()">🔗 Compartir</button>
+          </div>
+        </div>`;
+
+      // ── INFO + MAPA ──
+      const mapaHtml = ig.direccion
+        ? `<div class="map-wrap">${buildMapEmbed(ig.direccion + (ig.ciudad ? ', ' + ig.ciudad : ''))}</div>`
+        : `<div class="map-wrap"><div class="map-placeholder">📍 Esta iglesia aún no cargó su dirección</div></div>`;
+
+      const infoHtml = `
+        <section class="section">
+          <div class="container">
+            <h2 class="section-title">ℹ️ Información</h2>
+            <div class="info-mapa">
+              <div class="info-card">
+                ${ig.nombre     ? `<div class="info-row"><span class="info-icon">⛪</span><div><div class="info-label">Nombre</div><div class="info-value">${escHtml(ig.nombre)}</div></div></div>` : ''}
+                ${ig.ciudad     ? `<div class="info-row"><span class="info-icon">📍</span><div><div class="info-label">Ciudad</div><div class="info-value">${escHtml(ig.ciudad)}</div></div></div>` : ''}
+                ${ig.direccion  ? `<div class="info-row"><span class="info-icon">🗺️</span><div><div class="info-label">Dirección</div><div class="info-value">${escHtml(ig.direccion)}</div></div></div>` : ''}
+                ${ig.pastor     ? `<div class="info-row"><span class="info-icon">🧑‍💼</span><div><div class="info-label">Pastor</div><div class="info-value">${escHtml(ig.pastor)}</div></div></div>` : ''}
+                ${ig.telefono   ? `<div class="info-row"><span class="info-icon">📞</span><div><div class="info-label">Teléfono</div><div class="info-value"><a href="tel:${escHtml(ig.telefono)}">${escHtml(ig.telefono)}</a></div></div></div>` : ''}
+                ${ig.emailContacto ? `<div class="info-row"><span class="info-icon">✉️</span><div><div class="info-label">Email</div><div class="info-value"><a href="mailto:${escHtml(ig.emailContacto)}">${escHtml(ig.emailContacto)}</a></div></div></div>` : ''}
+                ${ig.horarios   ? `<div class="info-row"><span class="info-icon">🕐</span><div><div class="info-label">Horarios</div><div class="info-value">${escHtml(ig.horarios)}</div></div></div>` : ''}
+                ${ig.descripcion? `<div class="info-row"><span class="info-icon">📝</span><div><div class="info-label">Descripción</div><div class="info-value">${escHtml(ig.descripcion)}</div></div></div>` : ''}
+              </div>
+              ${mapaHtml}
+            </div>
+          </div>
+        </section>`;
+
+      // ── OFRENDAS ──
+      let ofrendarHtml = '';
+      if (ig.ofrendas?.activo) {
+        const of = ig.ofrendas;
+        const metodos = [
+          of.mercadopago ? '<span class="metodo-chip">💳 Mercado Pago</span>' : '',
+          of.transferencia ? '<span class="metodo-chip">🏦 Transferencia</span>' : '',
+          of.efectivo ? '<span class="metodo-chip">💵 Efectivo</span>' : '',
+        ].filter(Boolean).join('');
+
+        const detalle = [
+          of.alias    ? `<div>📌 Alias: <strong>${escHtml(of.alias)}</strong></div>` : '',
+          of.cbu      ? `<div>🏦 CBU: <strong>${escHtml(of.cbu)}</strong></div>` : '',
+          of.titular  ? `<div>👤 Titular: <strong>${escHtml(of.titular)}</strong></div>` : '',
+          of.mpLink   ? `<div>🔗 <a href="${escHtml(of.mpLink)}" target="_blank" rel="noopener">Pagar con Mercado Pago</a></div>` : '',
+          of.mensaje  ? `<div style="margin-top:.5rem;font-style:italic;color:#666">"${escHtml(of.mensaje)}"</div>` : '',
+        ].filter(Boolean).join('');
+
+        ofrendarHtml = `
+          <section class="section" style="padding-top:0">
+            <div class="container">
+              <h2 class="section-title">💝 Ofrendas y Diezmos</h2>
+              <div class="ofrendas-box">
+                <h3>Apoyá a ${escHtml(ig.nombre)}</h3>
+                <p>${of.descripcion || 'Tu ofrenda ayuda a sostener el ministerio y bendecir a más personas.'}</p>
+                <div class="ofrendas-metodos">${metodos}</div>
+                ${detalle ? `<div class="ofrendas-detalle">${detalle}</div>` : ''}
+              </div>
+            </div>
+          </section>`;
+      }
+
+      // ── EVENTOS ──
+      const eventosItems = eventos.length ? eventos.map(ev => {
+        const f = fmtFecha(ev.inicio);
+        return `<div class="evento-card">
+          <div class="evento-fecha"><div class="dia">${f.dia}</div><div class="mes">${f.mes}</div></div>
+          <div class="evento-info">
+            <h4>${escHtml(ev.titulo||'Evento')}</h4>
+            ${ev.lugar ? `<div class="lugar">📍 ${escHtml(ev.lugar)}</div>` : ''}
+            ${ev.descripcion ? `<div style="font-size:.82rem;color:#888;margin-top:.2rem">${escHtml(ev.descripcion)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('') : `<div class="empty-state">📅 No hay eventos próximos por ahora.</div>`;
+
+      const eventosHtml = `
+        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
+          <div class="container">
+            <h2 class="section-title">📅 Próximos Eventos</h2>
+            <div class="eventos-list">${eventosItems}</div>
+          </div>
+        </section>`;
+
+      // ── PRÉDICAS ──
+      const predicasItems = predicas.length ? predicas.map(p => `
+        <div class="predica-card">
+          <iframe src="https://www.youtube.com/embed/${escHtml(p.youtubeId)}" allowfullscreen loading="lazy"></iframe>
+          <div class="predica-body">
+            <h4>${escHtml(p.titulo||'Prédica')}</h4>
+            <div class="fecha">${fmtFecha(p.fecha).full}</div>
+          </div>
+        </div>`).join('') : `<div class="empty-state">🎙️ No hay prédicas publicadas aún.</div>`;
+
+      const predicasHtml = `
+        <section class="section">
+          <div class="container">
+            <h2 class="section-title">🎙️ Prédicas</h2>
+            <div class="predicas-grid">${predicasItems}</div>
+          </div>
+        </section>`;
+
+      // ── PETICIONES (formulario público) ──
+      const peticionesHtml = `
+        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
+          <div class="container">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+              <!-- PETICIÓN DE ORACIÓN -->
+              <div class="form-box" id="formPeticion">
+                <div class="form-icon">🙏</div>
+                <h3 class="form-title">Petición de Oración</h3>
+                <p class="form-desc">Enviá tu petición de forma privada. Solo el equipo pastoral la verá.</p>
+                <div class="form-group">
+                  <label class="form-label">Nombre <span style="color:var(--primary)">*</span></label>
+                  <input id="pet_nombre" class="form-input" placeholder="Tu nombre">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+                  <div class="form-group">
+                    <label class="form-label">Apellido <span class="opt">opcional</span></label>
+                    <input id="pet_apellido" class="form-input" placeholder="Tu apellido">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Teléfono <span class="opt">opcional</span></label>
+                    <input id="pet_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tu petición <span style="color:var(--primary)">*</span></label>
+                  <textarea id="pet_mensaje" class="form-input" rows="4" placeholder="Escribí tu petición de oración aquí…" style="resize:vertical"></textarea>
+                </div>
+                <button id="btnEnviarPeticion" class="form-btn">🙏 Enviar petición</button>
+                <div id="petMsg" class="form-feedback"></div>
+              </div>
+
+              <!-- INSCRIPCIÓN AL BAUTISMO -->
+              <div class="form-box" id="formBautismo">
+                <div class="form-icon">💧</div>
+                <h3 class="form-title">Inscripción al Bautismo</h3>
+                <p class="form-desc">¿Sentís el llamado a bautizarte? Completá el formulario y nos ponemos en contacto.</p>
+                <div class="form-group">
+                  <label class="form-label">Nombre <span style="color:var(--primary)">*</span></label>
+                  <input id="baut_nombre" class="form-input" placeholder="Tu nombre">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+                  <div class="form-group">
+                    <label class="form-label">Apellido <span class="opt">opcional</span></label>
+                    <input id="baut_apellido" class="form-input" placeholder="Tu apellido">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Teléfono <span class="opt">opcional</span></label>
+                    <input id="baut_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">¿Querés contarnos algo? <span class="opt">opcional</span></label>
+                  <textarea id="baut_mensaje" class="form-input" rows="3" placeholder="Contanos un poco sobre vos o tu historia de fe…" style="resize:vertical"></textarea>
+                </div>
+                <button id="btnEnviarBautismo" class="form-btn" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">💧 Inscribirme al bautismo</button>
+                <div id="bautMsg" class="form-feedback"></div>
+              </div>
+
+            </div>
+          </div>
+        </section>`;
+
+
+      // ── GALERÍA ──
+      let galeriaHtml = '';
+      if (galeria.length) {
+        const fotos = galeria.map(f => `
+          <div style="border-radius:12px;overflow:hidden;aspect-ratio:1;background:#f0f0f0">
+            <img src="${escHtml(f.url)}" alt="Foto de ${escHtml(ig.nombre)}" loading="lazy"
+              style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in"
+              onclick="abrirFoto('${escHtml(f.url)}')">
+          </div>`).join('');
+        galeriaHtml = `
+          <section class="section">
+            <div class="container">
+              <h2 class="section-title">📷 Galería</h2>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem">
+                ${fotos}
+              </div>
+            </div>
+          </section>`;
+      }
+
+      // ── SITIO WEB ──
+      const websiteHtml = ig.website ? `
+        <div style="text-align:center;padding:.5rem 0 1.5rem">
+          <a href="${escHtml(ig.website)}" target="_blank" rel="noopener"
+            style="display:inline-flex;align-items:center;gap:.5rem;background:#f0f4ff;color:#3730a3;border:1px solid #c7d2fe;border-radius:10px;padding:.6rem 1.2rem;font-weight:700;text-decoration:none;font-size:.9rem">
+            🌐 Visitar sitio web oficial
+          </a>
+        </div>` : '';
+
+      app.innerHTML = heroHtml + websiteHtml + infoHtml + galeriaHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
+
+      // Inicializar estado del botón de notificaciones
+      renderBtnNotif(estaSuscripto());
+      // Activar formularios de petición y bautismo
+      activarFormularios();
+    }
+
+    // ── FORMULARIOS: activar después de renderizar ──
+    function activarFormularios() {
+      // PETICIÓN
+      document.getElementById('btnEnviarPeticion')?.addEventListener('click', async () => {
+        const nombre  = (document.getElementById('pet_nombre')?.value||'').trim();
+        const apellido= (document.getElementById('pet_apellido')?.value||'').trim();
+        const tel     = (document.getElementById('pet_tel')?.value||'').trim();
+        const mensaje = (document.getElementById('pet_mensaje')?.value||'').trim();
+        const msgEl   = document.getElementById('petMsg');
+        const btn     = document.getElementById('btnEnviarPeticion');
+
+        if (!nombre || !mensaje) {
+          msgEl.textContent = '❌ Completá tu nombre y tu petición.';
+          msgEl.style.color = '#dc3545';
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+        try {
+          const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js');
+          await addDoc(collection(db, 'iglesias', iglesiaId, 'peticiones'), {
+            nombre, apellido, tel, mensaje,
+            leida: false,
+            creadoEn: serverTimestamp()
+          });
+          msgEl.textContent = '✅ ¡Petición enviada! El equipo pastoral la recibirá con amor.';
+          msgEl.style.color = '#16a34a';
+          document.getElementById('pet_nombre').value = '';
+          document.getElementById('pet_apellido').value = '';
+          document.getElementById('pet_tel').value = '';
+          document.getElementById('pet_mensaje').value = '';
+          btn.textContent = '🙏 Petición enviada';
+        } catch(e) {
+          msgEl.textContent = '❌ Error: ' + e.message;
+          msgEl.style.color = '#dc3545';
+          btn.disabled = false;
+          btn.textContent = '🙏 Enviar petición';
+        }
+      });
+
+      // BAUTISMO
+      document.getElementById('btnEnviarBautismo')?.addEventListener('click', async () => {
+        const nombre  = (document.getElementById('baut_nombre')?.value||'').trim();
+        const apellido= (document.getElementById('baut_apellido')?.value||'').trim();
+        const tel     = (document.getElementById('baut_tel')?.value||'').trim();
+        const mensaje = (document.getElementById('baut_mensaje')?.value||'').trim();
+        const msgEl   = document.getElementById('bautMsg');
+        const btn     = document.getElementById('btnEnviarBautismo');
+
+        if (!nombre) {
+          msgEl.textContent = '❌ Ingresá tu nombre.';
+          msgEl.style.color = '#dc3545';
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+        try {
+          const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js');
+          await addDoc(collection(db, 'iglesias', iglesiaId, 'bautismos'), {
+            nombre, apellido, tel, mensaje,
+            leido: false,
+            creadoEn: serverTimestamp()
+          });
+          msgEl.textContent = '✅ ¡Inscripción enviada! El equipo se pondrá en contacto con vos.';
+          msgEl.style.color = '#1d4ed8';
+          document.getElementById('baut_nombre').value = '';
+          document.getElementById('baut_apellido').value = '';
+          document.getElementById('baut_tel').value = '';
+          document.getElementById('baut_mensaje').value = '';
+          btn.textContent = '💧 Inscripción enviada';
+        } catch(e) {
+          msgEl.textContent = '❌ Error: ' + e.message;
+          msgEl.style.color = '#dc3545';
+          btn.disabled = false;
+          btn.textContent = '💧 Inscribirme al bautismo';
+        }
+      });
+    }
+
+    window.compartir = function() {
+      const url = window.location.href;
+      if (navigator.share) {
+        navigator.share({ title: document.title, url });
+      } else {
+        navigator.clipboard.writeText(url).then(()=> alert('¡Enlace copiado al portapapeles!'));
+      }
     };
 
-    // Inicializar tab plan cuando se carga
-    document.querySelector('[data-tab="tab-plan"]').addEventListener('click', renderPlanActual);
+    window.abrirFoto = function(url) {
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImg');
+      img.src = url;
+      lb.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    document.getElementById('lightbox')?.addEventListener('click', () => {
+      document.getElementById('lightbox').style.display = 'none';
+      document.body.style.overflow = '';
+    });
+
+    render().catch(e => {
+      document.getElementById('app').innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Error al cargar</h2><p>${e.message}</p></div>`;
+    });
+  </script>
+
+  <!-- Lightbox -->
+  <div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;align-items:center;justify-content:center;cursor:zoom-out;padding:1rem">
+    <img id="lightboxImg" src="" alt="" style="max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.5)">
+  </div>
+
+  <!-- SW para notificaciones en background -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(()=>{});
+    }
   </script>
 </body>
 </html>
