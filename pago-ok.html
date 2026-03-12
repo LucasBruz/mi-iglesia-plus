@@ -4,8 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pago completado | Mi Iglesia+</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Google Ads Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18012009949"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18012009949');
+  </script>
+  <!-- Event snippet: conversión de pago completado -->
+  <script>
+    gtag('event', 'conversion', {
+      'send_to': 'AW-18012009949/Yg7BCL7MuYccEN3r5YxD',
+      'value': 1.0,
+      'currency': 'ARS'
+    });
+  </script>
 
   <style>
     body {
@@ -29,7 +45,6 @@
     }
     h2 { margin-top:0; font-weight:800; }
     #msg { margin:10px 0 20px 0; color:#666; }
-
     button {
       width:100%;
       padding:14px;
@@ -46,34 +61,29 @@
     button:disabled { opacity:0.4; cursor:not-allowed; }
   </style>
 </head>
-
 <body>
   <div class="card">
     <h2>Procesando pago…</h2>
     <p id="msg">Esperando confirmación…</p>
-
     <button id="btnSeguir" disabled>Continuar al registro</button>
   </div>
-
   <script type="module">
     import { getAuth, onAuthStateChanged } from
-    "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
+      "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, getDoc, doc } from
-    "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+      "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const auth = getAuth();
-    const db = getFirestore();
-
-    const msg = document.getElementById("msg");
-    const btn = document.getElementById("btnSeguir");
+    const db   = getFirestore();
+    const msg  = document.getElementById("msg");
+    const btn  = document.getElementById("btnSeguir");
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return;
-
       async function checkPayment() {
         const snap = await getDoc(doc(db, "preonboarding", user.uid));
-        if (snap.exists() && snap    msg.textContent = "✅ Pago aprobado";
+        if (snap.exists() && snap.data()?.paid === true) {
+          msg.textContent = "✅ Pago aprobado";
           btn.disabled = false;
           btn.onclick = () => location.href = "registro.html";
         } else {
