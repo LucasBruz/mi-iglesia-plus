@@ -106,6 +106,21 @@
     .logo-prog{margin-top:8px;height:6px;border-radius:4px;background:#f0f0f0;overflow:hidden;display:none}
     .logo-prog i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
 
+    /* ─── GALERÍA ─── */
+    .galeria-item{position:relative;border-radius:10px;overflow:hidden;background:#f0f0f0;aspect-ratio:1}
+    .galeria-item img{width:100%;height:100%;object-fit:cover;display:block}
+    .galeria-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;display:flex;flex-direction:column;justify-content:space-between;padding:.5rem}
+    .galeria-item:hover .galeria-overlay{background:rgba(0,0,0,0.45)}
+    .galeria-toggle{opacity:0;transition:opacity .2s;background:rgba(255,255,255,0.9);border:0;border-radius:20px;padding:.3rem .7rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins;color:#333;align-self:flex-start}
+    .galeria-toggle.visible-on{opacity:1;background:var(--primary);color:#fff}
+    .galeria-item:hover .galeria-toggle{opacity:1}
+    .galeria-del{opacity:0;transition:opacity .2s;background:rgba(220,53,69,0.85);border:0;border-radius:20px;padding:.3rem .6rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins;color:#fff;align-self:flex-end}
+    .galeria-item:hover .galeria-del{opacity:1}
+    @media(max-width:768px){
+      .galeria-toggle,.galeria-del{opacity:1}
+      #galeriaGrid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem}
+    }
+
     @media(max-width:768px){
       /* HEADER */
       .dashboard-header{padding:1.5rem 1rem}
@@ -266,6 +281,33 @@
         <iframe id="mapaIframe" width="100%" height="200" frameborder="0" style="border:0" loading="lazy" allowfullscreen></iframe>
       </div>
       <button onclick="previsualizarMapa()" style="margin-top:8px;background:#f0f0f0;color:#333;border:1px solid #ddd;font-size:.85rem;padding:6px 12px">🗺️ Ver en mapa</button>
+
+      <!-- SITIO WEB PROPIO -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🌐 Sitio web propio</h3>
+      <div class="row">
+        <div>
+          <label>URL de su página web (opcional)</label>
+          <input id="ig_website" type="url" placeholder="https://www.miiglesia.com.ar">
+          <div class="hint">Si tu iglesia ya tiene su propio sitio, lo mostramos como enlace en tu página pública.</div>
+        </div>
+      </div>
+
+      <!-- GALERÍA DE FOTOS -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🖼️ Galería de fotos</h3>
+      <p class="small" style="margin-bottom:.8rem">Subí fotos de tu iglesia para mostrar en tu página pública. Podés elegir cuáles mostrar.</p>
+
+      <!-- Upload fotos -->
+      <div style="background:#f9f9f9;border:2px dashed #ddd;border-radius:12px;padding:1.2rem;text-align:center;cursor:pointer" onclick="document.getElementById('galeriaInput').click()" id="galeriaDropzone">
+        <div style="font-size:2rem;margin-bottom:.4rem">📷</div>
+        <div style="font-weight:700;color:#444;font-size:.92rem">Hacé clic para subir fotos</div>
+        <div class="hint">JPG/PNG · Máx. 5MB por foto · Podés subir varias a la vez</div>
+        <input type="file" id="galeriaInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="onGaleriaSelect(event)">
+      </div>
+      <div class="prog" id="galeriaProg" style="margin-top:8px;display:none"><i id="galeriaBar"></i></div>
+      <div id="galeriaMsg" class="hint" style="margin-top:6px;min-height:1rem"></div>
+
+      <!-- Grid de fotos subidas -->
+      <div id="galeriaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem;margin-top:1rem"></div>
 
       <!-- OFRENDAS -->
       <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">💝 Ofrendas y Diezmos</h3>
@@ -474,8 +516,8 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
-    import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, getDocs, deleteDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getStorage, ref as storageRef, uploadBytesResumable, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
     import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js';
 
     const firebaseConfig = {
@@ -487,11 +529,11 @@
       appId: "1:407699856167:web:5d421d407ab7c9789aa702"
     };
 
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
-    const st   = getStorage(app);
-    const fns  = getFunctions(app, "us-central1");
+    const app     = initializeApp(firebaseConfig);
+    const auth    = getAuth(app);
+    const db      = getFirestore(app);
+    const storage = getStorage(app);
+    const fns     = getFunctions(app, "us-central1");
 
     const $ = (id) => document.getElementById(id);
     const msg = $('msg');
@@ -570,6 +612,10 @@
       if (iglesiaDoc.horarios)    $('ig_horarios').value    = iglesiaDoc.horarios;
       if (iglesiaDoc.direccion)   $('ig_direccion').value   = iglesiaDoc.direccion;
       if (iglesiaDoc.provincia)   $('ig_provincia').value   = iglesiaDoc.provincia;
+      if (iglesiaDoc.website)     $('ig_website').value     = iglesiaDoc.website;
+
+      // Cargar galería
+      cargarGaleria();
 
       // Cargar ofrendas
       const of = iglesiaDoc.ofrendas || {};
@@ -627,6 +673,7 @@
           horarios:    ($('ig_horarios').value||'').trim(),
           provincia:   ($('ig_provincia').value||'').trim(),
           direccion:   ($('ig_direccion').value||'').trim(),
+          website:     ($('ig_website').value||'').trim(),
           tags:        tagsSeleccionados,
           ofrendas: {
             activo:       $('of_activo').checked,
@@ -732,7 +779,7 @@
 
       try {
         const name = `logo-${Date.now()}.${selectedLogoFile.name.split('.').pop()}`;
-        const ref  = sRef(st, `logos/${uid}/${name}`);
+        const ref  = storageRef(storage, `logos/${uid}/${name}`);
         const task = uploadBytesResumable(ref, selectedLogoFile, { contentType: selectedLogoFile.type });
 
         await new Promise((resolve, reject) => {
@@ -887,6 +934,115 @@
         }catch(e){alert(e?.message||'No se pudo crear la publicidad.');}
       };
     }
+
+    /* ─── GALERÍA DE FOTOS ─── */
+    async function cargarGaleria() {
+      const grid = $('galeriaGrid');
+      if (!grid || !uid) return;
+      grid.innerHTML = '<div class="hint">Cargando fotos…</div>';
+      try {
+        const snap = await getDocs(collection(db, 'iglesias', uid, 'galeria'));
+        grid.innerHTML = '';
+        if (snap.empty) { grid.innerHTML = '<div class="hint">Aún no subiste fotos.</div>'; return; }
+        snap.docs
+          .sort((a,b) => (b.data().creadoEn?.seconds||0) - (a.data().creadoEn?.seconds||0))
+          .forEach(d => renderGaleriaItem(d.id, d.data(), grid));
+      } catch(e) {
+        grid.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`;
+      }
+    }
+
+    function renderGaleriaItem(id, data, grid) {
+      const div = document.createElement('div');
+      div.className = 'galeria-item';
+      div.dataset.id = id;
+      const publica = data.publica !== false; // default true
+      div.innerHTML = `
+        <img src="${data.url}" alt="Foto iglesia" loading="lazy">
+        <div class="galeria-overlay">
+          <button class="galeria-toggle ${publica ? 'visible-on' : ''}"
+            onclick="toggleFotoPublica('${id}', ${publica})">
+            ${publica ? '👁️ Pública' : '🙈 Oculta'}
+          </button>
+          <button class="galeria-del" onclick="borrarFoto('${id}', '${data.storagePath||''}')">🗑️</button>
+        </div>`;
+      grid.appendChild(div);
+    }
+
+    window.onGaleriaSelect = async function(e) {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+      const MAX = 5 * 1024 * 1024;
+      const validos = files.filter(f => {
+        if (f.size > MAX) { alert(`"${f.name}" supera los 5MB y fue omitida.`); return false; }
+        return true;
+      });
+      if (!validos.length) return;
+
+      const progEl = $('galeriaProg');
+      const barEl  = $('galeriaBar');
+      const msgEl  = $('galeriaMsg');
+      progEl.style.display = 'block';
+      msgEl.textContent = `Subiendo ${validos.length} foto(s)…`;
+
+      let subidas = 0;
+      for (const file of validos) {
+        const path = `galeria/${uid}/${Date.now()}_${file.name}`;
+        const ref  = storageRef(storage, path);
+        try {
+          await uploadBytes(ref, file);
+          const url = await getDownloadURL(ref);
+          const docRef = await addDoc(collection(db, 'iglesias', uid, 'galeria'), {
+            url, storagePath: path, publica: true,
+            creadoEn: serverTimestamp()
+          });
+          // Agregar al grid sin recargar
+          const grid = $('galeriaGrid');
+          const hint = grid.querySelector('.hint');
+          if (hint) hint.remove();
+          renderGaleriaItem(docRef.id, { url, storagePath: path, publica: true }, grid);
+          subidas++;
+          barEl.style.width = `${Math.round((subidas/validos.length)*100)}%`;
+        } catch(err) {
+          msgEl.textContent = `Error subiendo ${file.name}: ${err.message}`;
+        }
+      }
+      progEl.style.display = 'none';
+      barEl.style.width = '0%';
+      msgEl.textContent = `✅ ${subidas} foto(s) subida(s)`;
+      e.target.value = '';
+    };
+
+    window.toggleFotoPublica = async function(id, esPublica) {
+      const nueva = !esPublica;
+      try {
+        await updateDoc(doc(db, 'iglesias', uid, 'galeria', id), { publica: nueva });
+        // Actualizar UI
+        const item = document.querySelector(`.galeria-item[data-id="${id}"]`);
+        if (item) {
+          const btn = item.querySelector('.galeria-toggle');
+          btn.textContent = nueva ? '👁️ Pública' : '🙈 Oculta';
+          btn.className = `galeria-toggle ${nueva ? 'visible-on' : ''}`;
+          btn.onclick = () => toggleFotoPublica(id, nueva);
+        }
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    window.borrarFoto = async function(id, storagePath) {
+      if (!confirm('¿Borrar esta foto?')) return;
+      try {
+        await deleteDoc(doc(db, 'iglesias', uid, 'galeria', id));
+        if (storagePath) {
+          try { await deleteObject(storageRef(storage, storagePath)); } catch(_){}
+        }
+        const item = document.querySelector(`.galeria-item[data-id="${id}"]`);
+        if (item) item.remove();
+        const grid = $('galeriaGrid');
+        if (grid && !grid.querySelector('.galeria-item')) {
+          grid.innerHTML = '<div class="hint">Aún no subiste fotos.</div>';
+        }
+      } catch(e) { alert('Error: ' + e.message); }
+    };
 
     /* ─── NOTIFICACIONES ─── */
     async function cargarCantSuscriptores() {
