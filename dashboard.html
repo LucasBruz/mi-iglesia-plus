@@ -106,7 +106,19 @@
     .logo-prog{margin-top:8px;height:6px;border-radius:4px;background:#f0f0f0;overflow:hidden;display:none}
     .logo-prog i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
 
-    /* ─── GALERÍA ─── */
+    /* ─── INBOX (peticiones y bautismos) ─── */
+    .inbox-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1rem 1.2rem;margin-bottom:.7rem;transition:background .2s}
+    .inbox-card:not(.leida){border-left:3px solid var(--primary);background:#fffaf9}
+    .inbox-card.leida{opacity:.7}
+    .inbox-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+    .inbox-nombre{font-weight:700;font-size:.92rem;margin-right:.5rem}
+    .inbox-tel{font-size:.82rem;color:#888;text-decoration:none;font-weight:600}
+    .inbox-tel:hover{color:var(--primary)}
+    .inbox-fecha{font-size:.75rem;color:#aaa;white-space:nowrap}
+    .inbox-mensaje{font-size:.88rem;color:#444;line-height:1.6;background:#f9f9f9;border-radius:8px;padding:.6rem .8rem}
+    .btn-marcar{background:#e8f5e9;color:#16a34a;border:1px solid #86efac;border-radius:6px;padding:3px 8px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins}
+    .btn-wa-small{display:inline-flex;align-items:center;gap:.3rem;background:#25D366;color:#fff;border-radius:8px;padding:5px 10px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:Poppins}
+    @media(max-width:768px){.inbox-header{flex-direction:column}}
     .galeria-item{position:relative;border-radius:10px;overflow:hidden;background:#f0f0f0;aspect-ratio:1}
     .galeria-item img{width:100%;height:100%;object-fit:cover;display:block}
     .galeria-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;display:flex;flex-direction:column;justify-content:space-between;padding:.5rem}
@@ -205,6 +217,7 @@
     <button class="tab-btn" data-tab="tab-predicas">Prédicas</button>
     <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
     <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
+    <button class="tab-btn" data-tab="tab-bautismos">💧 Bautismos</button>
     <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
     <button class="tab-btn" data-tab="tab-plan">💳 Plan</button>
   </div>
@@ -377,7 +390,8 @@
 
     <!-- TAB: PETICIONES -->
     <section id="tab-peticiones" class="tab card">
-      <h2>Peticiones de oración</h2>
+      <h2>🙏 Peticiones de Oración</h2>
+      <p class="small">Estas peticiones son <b>privadas</b> — solo vos las podés ver. Llegaron desde tu página pública.</p>
 
       <!-- ENVIAR NOTIFICACIÓN -->
       <div style="background:#fff8f7;border:1px solid #ffd5d0;border-radius:12px;padding:1rem;margin-bottom:1.2rem">
@@ -395,15 +409,24 @@
         <div id="notifMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
         <div id="notifCount" class="small" style="margin-top:.3rem;color:#888"></div>
       </div>
-      <div class="row">
-        <div><label for="t_titulo">Título</label><input id="t_titulo" placeholder="Oración por salud" /></div>
+
+      <!-- Lista de peticiones recibidas -->
+      <div class="topbar" style="margin-top:.5rem">
+        <h3 style="font-size:.95rem;margin:0">Peticiones recibidas</h3>
+        <button onclick="cargarPeticiones()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;padding:6px 12px;font-size:.82rem">🔄 Actualizar</button>
       </div>
-      <div class="row">
-        <div><label for="t_detalle">Detalle</label><textarea id="t_detalle" rows="3"></textarea></div>
-        <div><label>Visibilidad</label><label><input id="t_publico" type="checkbox" /> Pública</label></div>
+      <div id="listaPeticiones" style="margin-top:.8rem"></div>
+    </section>
+
+    <!-- TAB: BAUTISMOS -->
+    <section id="tab-bautismos" class="tab card">
+      <h2>💧 Inscripciones al Bautismo</h2>
+      <p class="small">Personas que se inscribieron para bautizarse desde tu página pública.</p>
+      <div class="topbar" style="margin-top:.5rem">
+        <h3 style="font-size:.95rem;margin:0">Solicitudes recibidas</h3>
+        <button onclick="cargarBautismos()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;padding:6px 12px;font-size:.82rem">🔄 Actualizar</button>
       </div>
-      <div class="actions"><button id="btnPeticionGuardar">Guardar petición</button></div>
-      <div class="list" id="listaPeticiones"></div>
+      <div id="listaBautismos" style="margin-top:.8rem"></div>
     </section>
 
     <!-- TAB: PUBLICIDAD -->
@@ -640,7 +663,7 @@
       }
 
       const ok = ensureActiveAndVerified(user, iglesiaDoc);
-      await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones(), cargarCantSuscriptores()]);
+      await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones(), cargarBautismos(), cargarCantSuscriptores()]);
       await initAdsTab();
     });
 
@@ -857,17 +880,98 @@
       snap.forEach(docu => {
         const d = docu.data();
         const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
-        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${d.detalle||''}</div><div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
-      });
-      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'peticiones',b.dataset.del)); await cargarPeticiones(); }; });
-    }
-    $('btnPeticionGuardar').addEventListener('click', async () => {
+    /* ─── PETICIONES (privadas, inbox) ─── */
+    async function cargarPeticiones() {
+      const cont = $('listaPeticiones');
+      if (!cont || !uid) return;
+      cont.innerHTML = '<div class="hint">Cargando…</div>';
       try {
-        await addDoc(collection(db,'iglesias',uid,'peticiones'), { titulo:$('t_titulo').value.trim(), detalle:$('t_detalle').value.trim(), publico:$('t_publico').checked, fecha:new Date(), creadoEn:serverTimestamp() });
-        $('t_titulo').value=''; $('t_detalle').value=''; $('t_publico').checked=false;
-        msg.textContent='✅ Petición guardada.'; await cargarPeticiones();
-      } catch(e) { msg.textContent='❌ '+e.message; }
-    });
+        const snap = await getDocs(query(collection(db,'iglesias',uid,'peticiones'), orderBy('creadoEn','desc')));
+        if (snap.empty) { cont.innerHTML = '<div class="hint">No hay peticiones todavía.</div>'; return; }
+        cont.innerHTML = '';
+        snap.forEach(docu => {
+          const d = docu.data();
+          const fecha = d.creadoEn?.seconds ? new Date(d.creadoEn.seconds*1000).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+          const leida = d.leida === true;
+          cont.insertAdjacentHTML('beforeend', `
+            <div class="inbox-card ${leida?'leida':''}" data-id="${docu.id}">
+              <div class="inbox-header">
+                <div>
+                  <span class="inbox-nombre">🙏 ${escStr(d.nombre||'')} ${d.apellido?escStr(d.apellido):''}</span>
+                  ${d.tel ? `<a href="tel:${escStr(d.tel)}" class="inbox-tel">📞 ${escStr(d.tel)}</a>` : ''}
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                  <span class="inbox-fecha">${fecha}</span>
+                  ${!leida ? `<button class="btn-marcar" onclick="marcarLeida('${docu.id}','peticiones')">✓ Marcar leída</button>` : '<span style="color:#aaa;font-size:.75rem">✓ Leída</span>'}
+                </div>
+              </div>
+              <div class="inbox-mensaje">${escStr(d.mensaje||d.detalle||'')}</div>
+              <div class="actions" style="margin-top:.5rem">
+                ${d.tel ? `<a href="https://wa.me/${(d.tel||'').replace(/\D/g,'')}" target="_blank" class="btn-wa-small">💬 WhatsApp</a>` : ''}
+                <button class="danger" onclick="eliminarItem('${docu.id}','peticiones')">🗑️ Eliminar</button>
+              </div>
+            </div>`);
+        });
+      } catch(e) { cont.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`; }
+    }
+
+    /* ─── BAUTISMOS ─── */
+    async function cargarBautismos() {
+      const cont = $('listaBautismos');
+      if (!cont || !uid) return;
+      cont.innerHTML = '<div class="hint">Cargando…</div>';
+      try {
+        const snap = await getDocs(query(collection(db,'iglesias',uid,'bautismos'), orderBy('creadoEn','desc')));
+        if (snap.empty) { cont.innerHTML = '<div class="hint">No hay inscripciones todavía.</div>'; return; }
+        cont.innerHTML = '';
+        snap.forEach(docu => {
+          const d = docu.data();
+          const fecha = d.creadoEn?.seconds ? new Date(d.creadoEn.seconds*1000).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+          const leido = d.leido === true;
+          cont.insertAdjacentHTML('beforeend', `
+            <div class="inbox-card ${leido?'leida':''}" data-id="${docu.id}">
+              <div class="inbox-header">
+                <div>
+                  <span class="inbox-nombre">💧 ${escStr(d.nombre||'')} ${d.apellido?escStr(d.apellido):''}</span>
+                  ${d.tel ? `<a href="tel:${escStr(d.tel)}" class="inbox-tel">📞 ${escStr(d.tel)}</a>` : ''}
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                  <span class="inbox-fecha">${fecha}</span>
+                  ${!leido ? `<button class="btn-marcar" onclick="marcarLeida('${docu.id}','bautismos')">✓ Marcar leído</button>` : '<span style="color:#aaa;font-size:.75rem">✓ Leído</span>'}
+                </div>
+              </div>
+              ${d.mensaje ? `<div class="inbox-mensaje">${escStr(d.mensaje)}</div>` : ''}
+              <div class="actions" style="margin-top:.5rem">
+                ${d.tel ? `<a href="https://wa.me/${(d.tel||'').replace(/\D/g,'')}" target="_blank" class="btn-wa-small">💬 WhatsApp</a>` : ''}
+                <button class="danger" onclick="eliminarItem('${docu.id}','bautismos')">🗑️ Eliminar</button>
+              </div>
+            </div>`);
+        });
+      } catch(e) { cont.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`; }
+    }
+
+    window.marcarLeida = async function(id, coleccion) {
+      const campo = coleccion === 'bautismos' ? 'leido' : 'leida';
+      try {
+        await updateDoc(doc(db,'iglesias',uid,coleccion,id), { [campo]: true });
+        const card = document.querySelector(`.inbox-card[data-id="${id}"]`);
+        if (card) {
+          card.classList.add('leida');
+          const btnM = card.querySelector('.btn-marcar');
+          if (btnM) { const sp = document.createElement('span'); sp.textContent='✓ Leído'; sp.style.cssText='color:#aaa;font-size:.75rem'; btnM.replaceWith(sp); }
+        }
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    window.eliminarItem = async function(id, coleccion) {
+      if (!confirm('¿Eliminar esta entrada?')) return;
+      try {
+        await deleteDoc(doc(db,'iglesias',uid,coleccion,id));
+        document.querySelector(`.inbox-card[data-id="${id}"]`)?.remove();
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    function escStr(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
     /* ─── PUBLICIDAD ─── */
     const PLAN_LIMITS = { starter:1, pro:Infinity };
