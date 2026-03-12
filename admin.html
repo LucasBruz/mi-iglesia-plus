@@ -138,7 +138,10 @@
       <!-- Planes manual -->
       <section class="card col">
         <h2>📦 Planes (asignación manual)</h2>
-        <p class="help">Asigná plan y estado en <code>iglesias/{uid}.subscription</code>.</p>
+        <p class="help">Seleccioná una iglesia o pegá el UID manualmente.</p>
+        <select id="plan_iglesia_sel" style="margin-bottom:6px">
+          <option value="">— Seleccionar iglesia —</option>
+        </select>
         <input id="plan_uid" placeholder="UID de la iglesia"/>
         <div class="grid2">
           <select id="plan_planId">
@@ -172,23 +175,21 @@
     import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL }
       from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
 
-    // ✅ CONFIG para proyectos NUEVOS (bucket firebasestorage.app)
     const firebaseConfig = {
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
       projectId: "miiglesia-plus",
-      storageBucket: "miiglesia-plus.firebasestorage.app", // ← correcto para proyectos nuevos
+      storageBucket: "miiglesia-plus.firebasestorage.app",
       messagingSenderId: "407699856167",
       appId: "1:407699856167:web:5d421d407ab7c9789aa702"
     };
 
-    // ⚠️ Email del admin autorizado
+    // ⚠️ Email del admin autorizado (debe coincidir con tu cuenta)
     const ADMIN_EMAIL = "miiglesia.on@gmail.com";
 
     const app     = initializeApp(firebaseConfig);
     const auth    = getAuth(app);
     const db      = getFirestore(app);
-    // Usamos el bucket por defecto del config (también podrías forzarlo con gs://miiglesia-plus.firebasestorage.app)
     const storage = getStorage(app);
 
     const $  = (id) => document.getElementById(id);
@@ -443,14 +444,6 @@
       if (file) subirImagen(file);
     });
 
-    function safeName(filename){
-      return filename
-        .normalize('NFKD')
-        .replace(/[\u0300-\u036f]/g,'')
-        .replace(/[^a-zA-Z0-9._-]/g,'_')
-        .toLowerCase();
-    }
-
     function subirImagen(file) {
       const progress = document.getElementById('uploadProgress');
       const preview  = document.getElementById('imgPreview');
@@ -460,7 +453,7 @@
       progress.style.display = 'block';
       progress.textContent   = '⏳ Subiendo imagen...';
 
-      const path = `ads/${Date.now()}_${Math.floor(Math.random()*100000)}_${safeName(file.name)}`;
+      const path = `ads/${Date.now()}_${file.name}`;
       const sRef = storageRef(storage, path);
       const task = uploadBytesResumable(sRef, file);
 
@@ -514,7 +507,7 @@
           href:      href || null,
           imageUrl,
           iglesiaUid: 'admin',
-          status:    'approved',   // aparece directo en el Home
+          status:    'approved',
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
@@ -533,10 +526,63 @@
       }
     };
 
-    // ======= PWA/Service Worker: actualizar para evitar versión cacheada =======
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())).catch(()=>{});
+    // ======= SELECTOR DE IGLESIAS PARA PLANES =======
+    async function cargarSelectorIglesias() {
+      const sel = $('plan_iglesia_sel');
+      try {
+        const snap = await getDocs(collection(db, 'iglesias'));
+        snap.forEach(d => {
+          const ig = d.data();
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          const planActual = ig.subscription?.priceIdOrPlanId || 'free';
+          opt.textContent = `${ig.nombre || '(sin nombre)'} — ${ig.ciudad || ''} [${planActual}]`;
+          sel.appendChild(opt);
+        });
+      } catch(e) {
+        console.error('Error cargando iglesias para selector:', e);
+      }
     }
+    cargarSelectorIglesias();
+
+    $('plan_iglesia_sel').addEventListener('change', function() {
+      if (this.value) $('plan_uid').value = this.value;
+    });
+
+    // ======= PLANES MANUAL =======
+    $('btnSetPlan').onclick = async () => {
+      const uid    = $('plan_uid').value.trim();
+      const planId = $('plan_planId').value;
+      const status = $('plan_status').value;
+      const lbl    = $('planMsg');
+
+      if (!uid) { alert('Ingresá el UID de la iglesia'); return; }
+
+      const user = auth.currentUser;
+      if (!user) { alert('No estás autenticado. Recargá la página.'); return; }
+
+      lbl.textContent = 'Guardando...';
+      lbl.style.color = '#333';
+
+      try {
+        await setDoc(doc(db, 'iglesias', uid), {
+          subscription: {
+            provider: planId === 'free' ? 'none' : 'mercado_pago',
+            priceIdOrPlanId: planId,
+            status,
+            updatedAt: serverTimestamp()
+          }
+        }, { merge: true });
+        lbl.textContent = '✔ Plan guardado correctamente';
+        lbl.style.color = '#16a34a';
+        toast('✅ Plan actualizado');
+      } catch(e) {
+        console.error('[Admin] Error guardando plan:', e.code, e.message);
+        lbl.textContent = '❌ ' + (e?.code || e?.message || 'Error desconocido');
+        lbl.style.color = '#dc3545';
+      }
+    };
+
   </script>
 </body>
 </html>
