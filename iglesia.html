@@ -4,6 +4,26 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Mi Iglesia+ | Cargando...</title>
+
+  <!-- ── SEO BÁSICO (se actualiza por JS al cargar los datos) ── -->
+  <meta name="description" content="Información, eventos, prédicas y más de esta iglesia en Mi Iglesia+.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Mi Iglesia+">
+
+  <!-- ── OPEN GRAPH ── -->
+  <meta property="og:type" content="place">
+  <meta property="og:site_name" content="Mi Iglesia+">
+  <meta property="og:image" content="https://www.miiglesia.online/assets/og-image.png">
+  <meta property="og:locale" content="es_AR">
+
+  <!-- ── TWITTER CARD ── -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.miiglesia.online/assets/og-image.png">
+
+  <link rel="canonical" href="https://www.miiglesia.online/iglesia.html">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6B5B">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -351,7 +371,42 @@
       }
 
       const ig = snap.data();
-      document.title = `${ig.nombre || 'Iglesia'} | Mi Iglesia+`;
+      const igNombre   = ig.nombre || 'Iglesia';
+      const igCiudad   = ig.ciudad || '';
+      const igProv     = ig.provincia || '';
+      const igDesc     = ig.descripcion || `Iglesia ${igNombre} en ${igCiudad}. Encontrá horarios, eventos y más en Mi Iglesia+.`;
+      const igUrl      = `https://www.miiglesia.online/iglesia.html?id=${iglesiaId}`;
+      const igImagen   = ig.logoUrl || 'https://www.miiglesia.online/assets/og-image.png';
+
+      // Actualizar SEO dinámicamente
+      document.title = `${igNombre}${igCiudad ? ' — ' + igCiudad : ''} | Mi Iglesia+`;
+      document.querySelector('meta[name="description"]').setAttribute('content', igDesc);
+      document.querySelector('link[rel="canonical"]').setAttribute('href', igUrl);
+      document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${igNombre} | Mi Iglesia+`) || (() => { const m=document.createElement('meta'); m.setAttribute('property','og:title'); m.setAttribute('content',`${igNombre} | Mi Iglesia+`); document.head.appendChild(m); })();
+      document.querySelector('meta[property="og:description"]')?.setAttribute('content', igDesc) || (() => { const m=document.createElement('meta'); m.setAttribute('property','og:description'); m.setAttribute('content',igDesc); document.head.appendChild(m); })();
+      document.querySelector('meta[property="og:url"]')?.setAttribute('content', igUrl) || (() => { const m=document.createElement('meta'); m.setAttribute('property','og:url'); m.setAttribute('content',igUrl); document.head.appendChild(m); })();
+      document.querySelector('meta[property="og:image"]').setAttribute('content', igImagen);
+
+      // Schema.org para iglesia local
+      const schema = document.createElement('script');
+      schema.type = 'application/ld+json';
+      schema.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Church",
+        "name": igNombre,
+        "description": igDesc,
+        "url": igUrl,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": ig.direccion || '',
+          "addressLocality": igCiudad,
+          "addressRegion": igProv,
+          "addressCountry": "AR"
+        },
+        "image": igImagen,
+        ...(ig.pastor ? { "member": { "@type": "Person", "name": ig.pastor } } : {})
+      });
+      document.head.appendChild(schema);
 
       // Cargar subcolecciones en paralelo — cada una con su propio catch
       const [evSnap, predSnap, galSnap] = await Promise.all([
