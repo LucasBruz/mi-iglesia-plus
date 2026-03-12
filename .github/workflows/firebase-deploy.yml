@@ -32,8 +32,10 @@ jobs:
           channelId: live
           entryPoint: .
 
+      - name: Crear archivo service account
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ runner.temp }}/service-account.json
+
       - name: Deploy Firebase Functions
         run: firebase deploy --only functions --project miiglesia-plus
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/service-account.json
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
