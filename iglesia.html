@@ -114,6 +114,24 @@
     .predica-body h4{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
     .predica-body .fecha{color:var(--gray);font-size:.8rem}
 
+    /* FORMULARIOS PÚBLICOS */
+    .form-box{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;gap:.2rem}
+    .form-icon{font-size:2rem;margin-bottom:.3rem}
+    .form-title{font-size:1.1rem;font-weight:800;margin-bottom:.3rem}
+    .form-desc{color:var(--gray);font-size:.85rem;line-height:1.5;margin-bottom:.8rem}
+    .form-group{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.6rem}
+    .form-label{font-size:.83rem;font-weight:700;color:var(--dark)}
+    .opt{font-weight:400;color:#aaa;font-size:.78rem}
+    .form-input{width:100%;padding:.65rem .9rem;border:1px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:.88rem;color:var(--dark);transition:border-color .2s;background:#fff}
+    .form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,91,.1)}
+    .form-btn{width:100%;padding:.75rem;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;font-family:'Poppins',sans-serif;font-size:.92rem;cursor:pointer;transition:opacity .2s;margin-top:.4rem}
+    .form-btn:hover{opacity:.88}
+    .form-btn:disabled{opacity:.5;cursor:not-allowed}
+    .form-feedback{font-size:.83rem;min-height:1.2rem;margin-top:.4rem;font-weight:600}
+    @media(max-width:640px){
+      .forms-grid{grid-template-columns:1fr!important}
+    }
+
     /* PETICIONES */
     .peticiones-list{display:flex;flex-direction:column;gap:.8rem}
     .peticion-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;display:flex;gap:.8rem;align-items:flex-start}
@@ -452,23 +470,70 @@
           </div>
         </section>`;
 
-      // ── PETICIONES ──
-      const peticionesItems = peticiones.length ? peticiones.map(p => `
-        <div class="peticion-card">
-          <div class="peticion-icon">🙏</div>
-          <div>
-            <div class="peticion-titulo">${escHtml(p.titulo||'Petición')}</div>
-            ${p.detalle ? `<div class="peticion-detalle">${escHtml(p.detalle)}</div>` : ''}
-          </div>
-        </div>`).join('') : `<div class="empty-state">🙏 No hay peticiones públicas por ahora.</div>`;
-
+      // ── PETICIONES (formulario público) ──
       const peticionesHtml = `
         <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
           <div class="container">
-            <h2 class="section-title">🙏 Peticiones de Oración</h2>
-            <div class="peticiones-list">${peticionesItems}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+              <!-- PETICIÓN DE ORACIÓN -->
+              <div class="form-box" id="formPeticion">
+                <div class="form-icon">🙏</div>
+                <h3 class="form-title">Petición de Oración</h3>
+                <p class="form-desc">Enviá tu petición de forma privada. Solo el equipo pastoral la verá.</p>
+                <div class="form-group">
+                  <label class="form-label">Nombre <span style="color:var(--primary)">*</span></label>
+                  <input id="pet_nombre" class="form-input" placeholder="Tu nombre">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+                  <div class="form-group">
+                    <label class="form-label">Apellido <span class="opt">opcional</span></label>
+                    <input id="pet_apellido" class="form-input" placeholder="Tu apellido">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Teléfono <span class="opt">opcional</span></label>
+                    <input id="pet_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tu petición <span style="color:var(--primary)">*</span></label>
+                  <textarea id="pet_mensaje" class="form-input" rows="4" placeholder="Escribí tu petición de oración aquí…" style="resize:vertical"></textarea>
+                </div>
+                <button id="btnEnviarPeticion" class="form-btn">🙏 Enviar petición</button>
+                <div id="petMsg" class="form-feedback"></div>
+              </div>
+
+              <!-- INSCRIPCIÓN AL BAUTISMO -->
+              <div class="form-box" id="formBautismo">
+                <div class="form-icon">💧</div>
+                <h3 class="form-title">Inscripción al Bautismo</h3>
+                <p class="form-desc">¿Sentís el llamado a bautizarte? Completá el formulario y nos ponemos en contacto.</p>
+                <div class="form-group">
+                  <label class="form-label">Nombre <span style="color:var(--primary)">*</span></label>
+                  <input id="baut_nombre" class="form-input" placeholder="Tu nombre">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+                  <div class="form-group">
+                    <label class="form-label">Apellido <span class="opt">opcional</span></label>
+                    <input id="baut_apellido" class="form-input" placeholder="Tu apellido">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Teléfono <span class="opt">opcional</span></label>
+                    <input id="baut_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">¿Querés contarnos algo? <span class="opt">opcional</span></label>
+                  <textarea id="baut_mensaje" class="form-input" rows="3" placeholder="Contanos un poco sobre vos o tu historia de fe…" style="resize:vertical"></textarea>
+                </div>
+                <button id="btnEnviarBautismo" class="form-btn" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">💧 Inscribirme al bautismo</button>
+                <div id="bautMsg" class="form-feedback"></div>
+              </div>
+
+            </div>
           </div>
         </section>`;
+
 
       // ── GALERÍA ──
       let galeriaHtml = '';
@@ -503,6 +568,87 @@
 
       // Inicializar estado del botón de notificaciones
       renderBtnNotif(estaSuscripto());
+      // Activar formularios de petición y bautismo
+      activarFormularios();
+    }
+
+    // ── FORMULARIOS: activar después de renderizar ──
+    function activarFormularios() {
+      // PETICIÓN
+      document.getElementById('btnEnviarPeticion')?.addEventListener('click', async () => {
+        const nombre  = (document.getElementById('pet_nombre')?.value||'').trim();
+        const apellido= (document.getElementById('pet_apellido')?.value||'').trim();
+        const tel     = (document.getElementById('pet_tel')?.value||'').trim();
+        const mensaje = (document.getElementById('pet_mensaje')?.value||'').trim();
+        const msgEl   = document.getElementById('petMsg');
+        const btn     = document.getElementById('btnEnviarPeticion');
+
+        if (!nombre || !mensaje) {
+          msgEl.textContent = '❌ Completá tu nombre y tu petición.';
+          msgEl.style.color = '#dc3545';
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+        try {
+          const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js');
+          await addDoc(collection(db, 'iglesias', iglesiaId, 'peticiones'), {
+            nombre, apellido, tel, mensaje,
+            leida: false,
+            creadoEn: serverTimestamp()
+          });
+          msgEl.textContent = '✅ ¡Petición enviada! El equipo pastoral la recibirá con amor.';
+          msgEl.style.color = '#16a34a';
+          document.getElementById('pet_nombre').value = '';
+          document.getElementById('pet_apellido').value = '';
+          document.getElementById('pet_tel').value = '';
+          document.getElementById('pet_mensaje').value = '';
+          btn.textContent = '🙏 Petición enviada';
+        } catch(e) {
+          msgEl.textContent = '❌ Error: ' + e.message;
+          msgEl.style.color = '#dc3545';
+          btn.disabled = false;
+          btn.textContent = '🙏 Enviar petición';
+        }
+      });
+
+      // BAUTISMO
+      document.getElementById('btnEnviarBautismo')?.addEventListener('click', async () => {
+        const nombre  = (document.getElementById('baut_nombre')?.value||'').trim();
+        const apellido= (document.getElementById('baut_apellido')?.value||'').trim();
+        const tel     = (document.getElementById('baut_tel')?.value||'').trim();
+        const mensaje = (document.getElementById('baut_mensaje')?.value||'').trim();
+        const msgEl   = document.getElementById('bautMsg');
+        const btn     = document.getElementById('btnEnviarBautismo');
+
+        if (!nombre) {
+          msgEl.textContent = '❌ Ingresá tu nombre.';
+          msgEl.style.color = '#dc3545';
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+        try {
+          const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js');
+          await addDoc(collection(db, 'iglesias', iglesiaId, 'bautismos'), {
+            nombre, apellido, tel, mensaje,
+            leido: false,
+            creadoEn: serverTimestamp()
+          });
+          msgEl.textContent = '✅ ¡Inscripción enviada! El equipo se pondrá en contacto con vos.';
+          msgEl.style.color = '#1d4ed8';
+          document.getElementById('baut_nombre').value = '';
+          document.getElementById('baut_apellido').value = '';
+          document.getElementById('baut_tel').value = '';
+          document.getElementById('baut_mensaje').value = '';
+          btn.textContent = '💧 Inscripción enviada';
+        } catch(e) {
+          msgEl.textContent = '❌ Error: ' + e.message;
+          msgEl.style.color = '#dc3545';
+          btn.disabled = false;
+          btn.textContent = '💧 Inscribirme al bautismo';
+        }
+      });
     }
 
     window.compartir = function() {
