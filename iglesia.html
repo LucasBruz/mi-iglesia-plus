@@ -33,9 +33,16 @@
     }
     .church-hero::before{
       content:'';position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(255,107,91,0.15) 0%,transparent 60%);
-      pointer-events:none;
+      background-image:url('assets/fondo.png');
+      background-size:cover;background-position:center center;
+      z-index:0;
     }
+    .church-hero::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
+      z-index:1;
+    }
+    .church-hero > *{position:relative;z-index:2}
     .church-logo{
       width:110px;height:110px;
       border-radius:20px;
