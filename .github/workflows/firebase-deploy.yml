@@ -9,6 +9,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -23,17 +27,19 @@ jobs:
       - name: Install functions dependencies
         run: cd functions && npm install
 
+      # FIX: crear el service account ANTES de usarlo
+      - name: Crear archivo service account
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ runner.temp }}/service-account.json
+
+      # FIX: @v0 → @v0.9.0 para evitar el 401 Unauthorized
       - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+        uses: FirebaseExtended/action-hosting-deploy@v0.9.0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: miiglesia-plus
           channelId: live
           entryPoint: .
-
-      - name: Crear archivo service account
-        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ runner.temp }}/service-account.json
 
       - name: Deploy Firebase Functions
         run: firebase deploy --only functions --project miiglesia-plus
