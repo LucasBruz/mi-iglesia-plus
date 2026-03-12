@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /dashboard.html
+Disallow: /login.html
+Disallow: /pago-unico.html
+Disallow: /pagina-facturacion.html
+
+Sitemap: https://www.miiglesia.online/sitemap.xml
