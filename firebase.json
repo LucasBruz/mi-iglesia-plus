@@ -1,7 +1,11 @@
 {
-  "functions": {
-    "runtime": "nodejs20"
-  },
+  "functions": [
+    {
+      "source": "functions",
+      "runtime": "nodejs20",
+      "codebase": "default"
+    }
+  ],
   "firestore": {
     "rules": "firestore.rules"
   },
