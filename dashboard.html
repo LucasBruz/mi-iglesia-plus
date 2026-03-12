@@ -87,7 +87,16 @@
     .plan-btn:disabled{opacity:.4;cursor:not-allowed}
     .plan-card.activo{outline:3px solid var(--primary)}
     .prog{margin-top:8px;height:8px;border-radius:6px;background:#f0f0f0;overflow:hidden}
-    .prog > i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
+    .tab-locked{position:relative;pointer-events:none;user-select:none}
+    .tab-locked::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.7);border-radius:12px;z-index:10;backdrop-filter:blur(2px)}
+    .lock-overlay{display:none;position:absolute;inset:0;z-index:20;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+    .tab-locked .lock-overlay{display:flex}
+    .lock-overlay .lock-icon{font-size:3rem}
+    .lock-overlay h3{font-size:1.1rem;font-weight:800;color:#111;margin:0}
+    .lock-overlay p{font-size:.88rem;color:#555;margin:0}
+    .lock-overlay .btn-upgrade{background:var(--primary);color:#fff;border:0;border-radius:10px;padding:.7rem 1.4rem;font-weight:700;font-family:Poppins;font-size:.9rem;cursor:pointer;pointer-events:all}
+    .tab-btn.locked-tab{opacity:.5;cursor:not-allowed}
+    .tab-btn.locked-tab::after{content:' 🔒';font-size:.75rem}
     .hint{color:#888;font-size:.85rem;margin-top:6px}
 
     /* ─── SECCIÓN LOGO ─── */
@@ -355,7 +364,13 @@
     </section>
 
     <!-- TAB: PRÉDICAS -->
-    <section id="tab-predicas" class="tab card">
+    <section id="tab-predicas" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-predicas">
+        <div class="lock-icon">🎙️🔒</div>
+        <h3>Prédicas — Plan Pago</h3>
+        <p>Publicá tus prédicas de YouTube con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
       <h2>Prédicas (YouTube)</h2>
       <div class="row">
         <div><label for="p_titulo">Título</label><input id="p_titulo" placeholder="Ej: Fe que mueve montañas" /></div>
@@ -370,7 +385,13 @@
     </section>
 
     <!-- TAB: EVENTOS -->
-    <section id="tab-eventos" class="tab card">
+    <section id="tab-eventos" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-eventos">
+        <div class="lock-icon">📅🔒</div>
+        <h3>Eventos — Plan Pago</h3>
+        <p>Publicá eventos y actividades de tu iglesia con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
       <h2>Eventos</h2>
       <div class="row">
         <div><label for="e_titulo">Título</label><input id="e_titulo" placeholder="Vigilia de oración" /></div>
@@ -419,7 +440,13 @@
     </section>
 
     <!-- TAB: BAUTISMOS -->
-    <section id="tab-bautismos" class="tab card">
+    <section id="tab-bautismos" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-bautismos">
+        <div class="lock-icon">💧🔒</div>
+        <h3>Bautismos — Plan Pago</h3>
+        <p>Recibí inscripciones de bautismo con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
       <h2>💧 Inscripciones al Bautismo</h2>
       <p class="small">Personas que se inscribieron para bautizarse desde tu página pública.</p>
       <div class="topbar" style="margin-top:.5rem">
@@ -430,7 +457,13 @@
     </section>
 
     <!-- TAB: PUBLICIDAD -->
-    <section id="tab-ads" class="tab card">
+    <section id="tab-ads" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-ads">
+        <div class="lock-icon">📣🔒</div>
+        <h3>Publicidad — Plan Pago</h3>
+        <p>Creá anuncios para tu comunidad con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
       <h2>Publicidad</h2>
       <p class="small"><b>Starter:</b> 1 anuncio. <b>Pro:</b> sin límite.</p>
       <div class="counter">
@@ -663,6 +696,7 @@
       }
 
       const ok = ensureActiveAndVerified(user, iglesiaDoc);
+      applyPlanLocks(iglesiaDoc);
       await Promise.all([cargarPredicas(), cargarEventos(), cargarPeticiones(), cargarBautismos(), cargarCantSuscriptores()]);
       await initAdsTab();
     });
@@ -871,7 +905,38 @@
       } catch(e) { msg.textContent='❌ '+e.message; }
     });
 
-    /* ─── PETICIONES (privadas, inbox) ─── */
+    /* ─── BLOQUEO POR PLAN ─── */
+    function applyPlanLocks(igData) {
+      const plan = (igData?.subscription?.priceIdOrPlanId || 'free').toLowerCase();
+      const esFree = (plan === 'free');
+
+      const TABS_PAGAS = ['predicas','eventos','bautismos','ads'];
+
+      TABS_PAGAS.forEach(nombre => {
+        const lock    = $(`lock-${nombre}`);
+        const section = $(`tab-${nombre}`);
+        const tabBtn  = document.querySelector(`[data-tab="tab-${nombre}"]`);
+
+        if (esFree) {
+          if (lock)    lock.style.display = 'flex';
+          if (section) section.classList.add('tab-locked');
+          if (tabBtn)  tabBtn.classList.add('locked-tab');
+          // Bloquear click en tab
+          if (tabBtn) {
+            tabBtn._lockedHandler = (e) => {
+              e.stopImmediatePropagation();
+              // igual mostramos la tab con el overlay
+            };
+          }
+        } else {
+          if (lock)    lock.style.display = 'none';
+          if (section) section.classList.remove('tab-locked');
+          if (tabBtn)  tabBtn.classList.remove('locked-tab');
+        }
+      });
+    }
+
+    
     async function cargarPeticiones() {
       const cont = $('listaPeticiones');
       if (!cont || !uid) return;
