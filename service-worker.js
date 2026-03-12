@@ -2,7 +2,7 @@
 // SERVICE WORKER - miiglesia.online
 // =============================================
 
-const CACHE_NAME = 'miiglesia-v2';
+const CACHE_NAME = 'miiglesia-v3';
 
 const STATIC_ASSETS = [
   '/',
@@ -39,22 +39,21 @@ self.addEventListener('fetch', event => {
   // Solo manejamos requests del mismo origen
   if (url.origin !== location.origin) return;
 
-  // Para archivos HTML → siempre red primero, cache solo si no hay red (offline)
+  // Para archivos HTML → siempre red primero
   if (event.request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          // Guardamos la versión fresca en cache
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
           return response;
         })
-        .catch(() => caches.match(event.request).then(cached => cached || caches.match('/index.html')))
+        .catch(() => caches.match(event.request))  // offline: sirve cache si existe
     );
     return;
   }
 
-  // Para imágenes, JS, CSS → cache-first (más rápido, cambian menos)
+  // Para imágenes, JS, CSS → cache-first
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
@@ -62,7 +61,7 @@ self.addEventListener('fetch', event => {
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         return response;
-      }).catch(() => caches.match('/index.html'));
+      });
     })
   );
 });
