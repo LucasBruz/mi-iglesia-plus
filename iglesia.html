@@ -329,8 +329,18 @@
       }
 
       // Cargar datos de la iglesia
-      const snap = await getDoc(doc(db,'iglesias',iglesiaId));
-      if (!snap.exists() || snap.data().estado !== 'activa') {
+      let snap;
+      try {
+        snap = await getDoc(doc(db,'iglesias',iglesiaId));
+      } catch(e) {
+        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888">
+          <h2>Error al cargar</h2>
+          <p style="color:#dc3545;font-size:.9rem">${e.message}</p>
+          <a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a>
+        </div>`;
+        return;
+      }
+      if (!snap.exists()) {
         app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Iglesia no disponible</h2><p>Esta iglesia no existe o aún no está activa.</p><a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a></div>`;
         return;
       }
@@ -338,19 +348,21 @@
       const ig = snap.data();
       document.title = `${ig.nombre || 'Iglesia'} | Mi Iglesia+`;
 
-      // Cargar subcolecciones en paralelo
-      const [evSnap, predSnap, petSnap, galSnap] = await Promise.all([
-        getDocs(query(collection(db,'iglesias',iglesiaId,'eventos'), where('publico','==',true))),
-        getDocs(query(collection(db,'iglesias',iglesiaId,'predicas'), where('publico','==',true))),
-        getDocs(query(collection(db,'iglesias',iglesiaId,'peticiones'), where('publico','==',true))),
-        getDocs(query(collection(db,'iglesias',iglesiaId,'galeria'), where('publica','==',true)))
+      // Cargar subcolecciones en paralelo — cada una con su propio catch
+      const [evSnap, predSnap, galSnap] = await Promise.all([
+        getDocs(collection(db,'iglesias',iglesiaId,'eventos')).catch(()=>({docs:[]})),
+        getDocs(collection(db,'iglesias',iglesiaId,'predicas')).catch(()=>({docs:[]})),
+        getDocs(collection(db,'iglesias',iglesiaId,'galeria')).catch(()=>({docs:[]}))
       ]);
 
-      const eventos   = evSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=> (b.inicio?.seconds||0)-(a.inicio?.seconds||0));
-      const predicas  = predSnap.docs.map(d=>({id:d.id,...d.data()}));
-      const peticiones= petSnap.docs.map(d=>({id:d.id,...d.data()}));
-      const galeria   = galSnap.docs.map(d=>({id:d.id,...d.data()}))
-                          .sort((a,b)=>(b.creadoEn?.seconds||0)-(a.creadoEn?.seconds||0));
+      const eventos  = evSnap.docs.map(d=>({id:d.id,...d.data()}))
+                         .filter(e=>e.publico!==false)
+                         .sort((a,b)=>(b.inicio?.seconds||0)-(a.inicio?.seconds||0));
+      const predicas = predSnap.docs.map(d=>({id:d.id,...d.data()}))
+                         .filter(p=>p.publico!==false);
+      const galeria  = galSnap.docs.map(d=>({id:d.id,...d.data()}))
+                         .filter(f=>f.publica!==false)
+                         .sort((a,b)=>(b.creadoEn?.seconds||0)-(a.creadoEn?.seconds||0));
 
       // ── HERO ──
       const logoHtml = ig.logoUrl
