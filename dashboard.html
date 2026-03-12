@@ -871,15 +871,6 @@
       } catch(e) { msg.textContent='❌ '+e.message; }
     });
 
-    /* ─── PETICIONES ─── */
-    async function cargarPeticiones() {
-      const cont = $('listaPeticiones'); if (!cont) return;
-      cont.innerHTML = '';
-      const snap = await getDocs(query(collection(db,'iglesias',uid,'peticiones'), orderBy('fecha','desc')));
-      if (snap.empty) { cont.innerHTML='<div class="muted">Aún no hay peticiones.</div>'; return; }
-      snap.forEach(docu => {
-        const d = docu.data();
-        const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
     /* ─── PETICIONES (privadas, inbox) ─── */
     async function cargarPeticiones() {
       const cont = $('listaPeticiones');
@@ -1021,7 +1012,7 @@
           try{
             $('ad_msg').textContent='Subiendo imagen…';
             await new Promise((res,rej)=>{
-              const ref=sRef(st,`ads/${uid}/banner-${Date.now()}-${file.name}`);
+              const ref=storageRef(storage,`ads/${uid}/banner-${Date.now()}-${file.name}`);
               const task=uploadBytesResumable(ref,file,{contentType:file.type});
               task.on('state_changed',s=>{$('ad_bar').style.width=Math.round(s.bytesTransferred/s.totalBytes*100)+'%';},rej,async()=>{imageUrl=await getDownloadURL(task.snapshot.ref);res();});
             });
