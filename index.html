@@ -657,23 +657,24 @@
         }
       });
 
-      // Si el SW tomó control (después de actualizar), recargar la página
-      let refrescando = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refrescando) {
-          refrescando = true;
-          window.location.reload();
-        }
-      });
+      // controllerchange se maneja dentro de mostrarBannerActualizacion
     }
 
     function mostrarBannerActualizacion(newSW) {
       const banner = document.getElementById('update-banner');
+      const btnAct = document.getElementById('btn-actualizar');
       if (banner) {
         banner.style.display = 'flex';
-        document.getElementById('btn-actualizar').onclick = () => {
-          banner.style.display = 'none';
+        btnAct.onclick = () => {
+          btnAct.textContent = '⏳ Actualizando...';
+          btnAct.disabled = true;
+          // Esperamos el controllerchange para recargar
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          });
           newSW.postMessage('skipWaiting');
+          // Fallback: si en 3 segundos no hubo controllerchange, recargamos igual
+          setTimeout(() => window.location.reload(), 3000);
         };
       }
     }
