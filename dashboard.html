@@ -357,6 +357,44 @@
         </div>
       </div>
 
+      <!-- VIDEO DE BIENVENIDA -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🎬 Video de Bienvenida</h3>
+      <p class="small" style="margin-bottom:.8rem">Subí un video corto de bienvenida (máx. 1 minuto, MP4/MOV/WebM, máx. 50MB). Aparecerá al inicio de tu página pública.</p>
+      <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+        <div id="videoPreviewWrap" style="display:none;flex:0 0 auto">
+          <video id="videoPreview" controls style="width:200px;border-radius:10px;background:#000"></video>
+          <div style="margin-top:4px;text-align:center">
+            <button id="btnEliminarVideo" onclick="eliminarVideo()" style="background:#dc3545;font-size:.78rem;padding:4px 10px">🗑️ Eliminar</button>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <input type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm" style="display:none" onchange="onVideoSelect(event)">
+          <button onclick="document.getElementById('videoInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir video</button>
+          <button id="btnGuardarVideo" onclick="guardarVideo()" disabled style="margin-left:.5rem">💾 Subir video</button>
+          <div class="logo-prog" style="margin-top:8px"><i id="videoBar" style="display:block;height:100%;width:0%;background:var(--primary);transition:width .2s"></i></div>
+          <div id="videoMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        </div>
+      </div>
+
+      <!-- FOTO DE PASTORES -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">👨‍👩‍👧 Foto de los Pastores</h3>
+      <p class="small" style="margin-bottom:.8rem">Subí una foto del equipo pastoral. JPG/PNG, máx. 5MB. Aparecerá en tu página pública.</p>
+      <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+        <div id="fotoPastorWrap" style="display:none;flex:0 0 auto">
+          <img id="fotoPastorPreview" src="" alt="Foto pastores" style="width:160px;height:120px;object-fit:cover;border-radius:10px">
+          <div style="margin-top:4px;text-align:center">
+            <button id="btnEliminarFotoPastor" onclick="eliminarFotoPastor()" style="background:#dc3545;font-size:.78rem;padding:4px 10px">🗑️ Eliminar</button>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <input type="file" id="fotoPastorInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="onFotoPastorSelect(event)">
+          <button onclick="document.getElementById('fotoPastorInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir foto</button>
+          <button id="btnGuardarFotoPastor" onclick="guardarFotoPastor()" disabled style="margin-left:.5rem">💾 Subir foto</button>
+          <div class="logo-prog" style="margin-top:8px"><i id="fotoPastorBar" style="display:block;height:100%;width:0%;background:var(--primary);transition:width .2s"></i></div>
+          <div id="fotoPastorMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        </div>
+      </div>
+
       <div class="actions" style="margin-top:1.2rem">
         <button id="btnGuardarPerfil">💾 Guardar cambios</button>
       </div>
@@ -670,6 +708,18 @@
       if (iglesiaDoc.provincia)   $('ig_provincia').value   = iglesiaDoc.provincia;
       if (iglesiaDoc.website)     $('ig_website').value     = iglesiaDoc.website;
 
+      // Cargar video de bienvenida existente
+      if (iglesiaDoc.videoUrl) {
+        $('videoPreview').src = iglesiaDoc.videoUrl;
+        $('videoPreviewWrap').style.display = 'block';
+      }
+
+      // Cargar foto pastores existente
+      if (iglesiaDoc.fotoPastorUrl) {
+        $('fotoPastorPreview').src = iglesiaDoc.fotoPastorUrl;
+        $('fotoPastorWrap').style.display = 'block';
+      }
+
       // Cargar galería
       cargarGaleria();
 
@@ -858,6 +908,143 @@
         btn.disabled = false;
         btn.textContent = '💾 Guardar logo';
       }
+    };
+
+    /* ─── VIDEO DE BIENVENIDA ─── */
+    let selectedVideoFile = null;
+
+    window.onVideoSelect = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const okTypes = ['video/mp4','video/quicktime','video/webm'];
+      if (!okTypes.includes(file.type)) { alert('Usá MP4, MOV o WebM.'); return; }
+      if (file.size > 50*1024*1024) { alert('El video supera 50MB.'); return; }
+      // Verificar duración máx 1 minuto
+      const vid = document.createElement('video');
+      vid.preload = 'metadata';
+      vid.onloadedmetadata = () => {
+        URL.revokeObjectURL(vid.src);
+        if (vid.duration > 65) { alert('El video supera 1 minuto. Por favor recortalo.'); $('videoInput').value=''; return; }
+        selectedVideoFile = file;
+        $('videoPreview').src = URL.createObjectURL(file);
+        $('videoPreviewWrap').style.display = 'block';
+        $('btnGuardarVideo').disabled = false;
+        $('videoMsg').textContent = '✏️ ' + file.name + ' — Clic en "Subir video" para confirmar.';
+      };
+      vid.src = URL.createObjectURL(file);
+    };
+
+    window.guardarVideo = async function() {
+      if (!selectedVideoFile || !uid) return;
+      const btn   = $('btnGuardarVideo');
+      const bar   = $('videoBar');
+      const msgEl = $('videoMsg');
+      btn.disabled = true; btn.textContent = 'Subiendo...';
+      try {
+        const path = `videos/${uid}/bienvenida_${Date.now()}.${selectedVideoFile.name.split('.').pop()}`;
+        const ref  = storageRef(storage, path);
+        await new Promise((res, rej) => {
+          const task = uploadBytesResumable(ref, selectedVideoFile, { contentType: selectedVideoFile.type });
+          task.on('state_changed',
+            s => { bar.style.width = Math.round(s.bytesTransferred/s.totalBytes*100)+'%'; },
+            rej,
+            async () => {
+              const url = await getDownloadURL(task.snapshot.ref);
+              // Borrar video anterior si existe
+              if (iglesiaDoc.videoPath) {
+                try { await deleteObject(storageRef(storage, iglesiaDoc.videoPath)); } catch(_){}
+              }
+              await setDoc(doc(db,'iglesias',uid), { videoUrl: url, videoPath: path }, { merge:true });
+              iglesiaDoc.videoUrl = url; iglesiaDoc.videoPath = path;
+              msgEl.textContent = '✅ Video subido correctamente';
+              res();
+            }
+          );
+        });
+        selectedVideoFile = null;
+        btn.textContent = '💾 Subir video';
+      } catch(e) {
+        msgEl.textContent = '❌ Error: ' + e.message;
+        btn.disabled = false; btn.textContent = '💾 Subir video';
+      }
+    };
+
+    window.eliminarVideo = async function() {
+      if (!confirm('¿Eliminar el video de bienvenida?')) return;
+      try {
+        if (iglesiaDoc.videoPath) await deleteObject(storageRef(storage, iglesiaDoc.videoPath)).catch(()=>{});
+        await setDoc(doc(db,'iglesias',uid), { videoUrl: null, videoPath: null }, { merge:true });
+        iglesiaDoc.videoUrl = null; iglesiaDoc.videoPath = null;
+        $('videoPreviewWrap').style.display = 'none';
+        $('videoPreview').src = '';
+        $('videoMsg').textContent = '🗑️ Video eliminado.';
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    /* ─── FOTO PASTORES ─── */
+    let selectedFotoPastorFile = null;
+
+    window.onFotoPastorSelect = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const okTypes = ['image/jpeg','image/png','image/webp'];
+      if (!okTypes.includes(file.type)) { alert('Usá JPG, PNG o WebP.'); return; }
+      if (file.size > 5*1024*1024) { alert('El archivo supera 5MB.'); return; }
+      selectedFotoPastorFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        $('fotoPastorPreview').src = ev.target.result;
+        $('fotoPastorWrap').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+      $('btnGuardarFotoPastor').disabled = false;
+      $('fotoPastorMsg').textContent = '✏️ ' + file.name + ' — Clic en "Subir foto" para confirmar.';
+    };
+
+    window.guardarFotoPastor = async function() {
+      if (!selectedFotoPastorFile || !uid) return;
+      const btn   = $('btnGuardarFotoPastor');
+      const bar   = $('fotoPastorBar');
+      const msgEl = $('fotoPastorMsg');
+      btn.disabled = true; btn.textContent = 'Subiendo...';
+      try {
+        const path = `pastores/${uid}/foto_${Date.now()}.${selectedFotoPastorFile.name.split('.').pop()}`;
+        const ref  = storageRef(storage, path);
+        const task = uploadBytesResumable(ref, selectedFotoPastorFile, { contentType: selectedFotoPastorFile.type });
+        await new Promise((res, rej) => {
+          task.on('state_changed',
+            s => { bar.style.width = Math.round(s.bytesTransferred/s.totalBytes*100)+'%'; },
+            rej,
+            async () => {
+              const url = await getDownloadURL(task.snapshot.ref);
+              if (iglesiaDoc.fotoPastorPath) {
+                try { await deleteObject(storageRef(storage, iglesiaDoc.fotoPastorPath)); } catch(_){}
+              }
+              await setDoc(doc(db,'iglesias',uid), { fotoPastorUrl: url, fotoPastorPath: path }, { merge:true });
+              iglesiaDoc.fotoPastorUrl = url; iglesiaDoc.fotoPastorPath = path;
+              msgEl.textContent = '✅ Foto subida correctamente';
+              res();
+            }
+          );
+        });
+        selectedFotoPastorFile = null;
+        btn.textContent = '💾 Subir foto';
+      } catch(e) {
+        msgEl.textContent = '❌ Error: ' + e.message;
+        btn.disabled = false; btn.textContent = '💾 Subir foto';
+      }
+    };
+
+    window.eliminarFotoPastor = async function() {
+      if (!confirm('¿Eliminar la foto de los pastores?')) return;
+      try {
+        if (iglesiaDoc.fotoPastorPath) await deleteObject(storageRef(storage, iglesiaDoc.fotoPastorPath)).catch(()=>{});
+        await setDoc(doc(db,'iglesias',uid), { fotoPastorUrl: null, fotoPastorPath: null }, { merge:true });
+        iglesiaDoc.fotoPastorUrl = null; iglesiaDoc.fotoPastorPath = null;
+        $('fotoPastorWrap').style.display = 'none';
+        $('fotoPastorPreview').src = '';
+        $('fotoPastorMsg').textContent = '🗑️ Foto eliminada.';
+      } catch(e) { alert('Error: ' + e.message); }
     };
 
     /* ─── PRÉDICAS ─── */
