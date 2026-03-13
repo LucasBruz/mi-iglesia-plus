@@ -480,6 +480,27 @@
           </div>
         </section>`;
 
+      // ── VIDEO DE BIENVENIDA ──
+      const videoHtml = ig.videoUrl ? `
+        <section class="section" style="background:#000;padding-top:1.5rem;padding-bottom:1.5rem">
+          <div class="container" style="text-align:center">
+            <h2 class="section-title" style="color:#fff">🎬 Video de Bienvenida</h2>
+            <video controls style="width:100%;max-width:640px;border-radius:14px;margin:0 auto;display:block"
+              src="${escHtml(ig.videoUrl)}" preload="metadata"></video>
+          </div>
+        </section>` : '';
+
+      // ── FOTO PASTORES ──
+      const fotoPastorHtml = ig.fotoPastorUrl ? `
+        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
+          <div class="container" style="text-align:center">
+            <h2 class="section-title">👨‍👩‍👧 Nuestros Pastores</h2>
+            <img src="${escHtml(ig.fotoPastorUrl)}" alt="Pastores de ${escHtml(ig.nombre)}"
+              style="width:100%;max-width:480px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.12);margin:0 auto;display:block">
+            ${ig.pastor ? `<p style="margin-top:1rem;font-weight:700;color:#555">🧑‍💼 ${escHtml(ig.pastor)}</p>` : ''}
+          </div>
+        </section>` : '';
+
       // ── OFRENDAS ──
       let ofrendarHtml = '';
       if (ig.ofrendas?.activo) {
@@ -645,7 +666,7 @@
           </a>
         </div>` : '';
 
-      app.innerHTML = heroHtml + websiteHtml + infoHtml + galeriaHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
+      app.innerHTML = heroHtml + websiteHtml + videoHtml + fotoPastorHtml + infoHtml + galeriaHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
 
       // Inicializar estado del botón de notificaciones
       renderBtnNotif(estaSuscripto());
