@@ -350,16 +350,6 @@
   </div>
 
   <!-- ✅ Banner de actualización disponible -->
-  <div id="update-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:1rem 1.5rem;z-index:1000;box-shadow:0 -4px 20px rgba(0,0,0,.3);justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-    <p style="margin:0;font-size:.95rem;font-weight:600;flex:1">
-      🆕 Nueva versión disponible
-      <small style="display:block;color:rgba(255,255,255,.6);font-weight:400;font-size:.8rem">Actualizá para ver los últimos cambios</small>
-    </p>
-    <div style="display:flex;gap:.5rem">
-      <button id="btn-actualizar" style="background:var(--primary);color:#fff;border:0;border-radius:8px;padding:.6rem 1.2rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif">🔄 Actualizar ahora</button>
-      <button onclick="document.getElementById('update-banner').style.display='none'" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.6rem 1rem;cursor:pointer;font-family:'Poppins',sans-serif">Después</button>
-    </div>
-  </div>
 
   <!-- HERO con imagen de fondo -->
   <section class="hero" id="home">
@@ -683,18 +673,35 @@
           const reg = await navigator.serviceWorker.register('/service-worker.js');
           console.log('[PWA] Service Worker registrado ✅');
 
-          // ── DETECTAR NUEVA VERSIÓN DISPONIBLE ──
+          // ── ACTUALIZACIÓN SILENCIOSA AUTOMÁTICA ──
           reg.addEventListener('updatefound', () => {
             const newSW = reg.installing;
             newSW.addEventListener('statechange', () => {
-              // Hay un SW nuevo instalado y hay uno viejo controlando la página
               if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                mostrarBannerActualizacion(newSW);
+                // Activar el nuevo SW inmediatamente sin preguntarle al usuario
+                newSW.postMessage('skipWaiting');
               }
             });
           });
 
-          // Verificar actualizaciones cada vez que se carga la página
+          // Recargar la página cuando el SW nuevo toma control (solo si venía de una actualización)
+          let swRefreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (swRefreshing) return;
+            swRefreshing = true;
+            // Solo recargamos si el usuario NO está en medio de una sesión activa
+            // (esperamos a que la página esté oculta, o recargamos silenciosamente en background)
+            if (document.hidden) {
+              window.location.reload();
+            } else {
+              // Guardar flag y recargar en la próxima visita a index.html
+              sessionStorage.setItem('sw_updated', '1');
+            }
+          });
+
+          // Si venimos de una actualización, ya está fresco, no hacer nada
+          sessionStorage.removeItem('sw_updated');
+
           reg.update();
 
           setTimeout(() => pedirPermisoNotificaciones(reg), 3000);
@@ -704,25 +711,6 @@
       });
 
       // controllerchange se maneja dentro de mostrarBannerActualizacion
-    }
-
-    function mostrarBannerActualizacion(newSW) {
-      const banner = document.getElementById('update-banner');
-      const btnAct = document.getElementById('btn-actualizar');
-      if (banner) {
-        banner.style.display = 'flex';
-        btnAct.onclick = () => {
-          btnAct.textContent = '⏳ Actualizando...';
-          btnAct.disabled = true;
-          // Esperamos el controllerchange para recargar
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            window.location.reload();
-          });
-          newSW.postMessage('skipWaiting');
-          // Fallback: si en 3 segundos no hubo controllerchange, recargamos igual
-          setTimeout(() => window.location.reload(), 3000);
-        };
-      }
     }
 
     async function pedirPermisoNotificaciones(reg) {
