@@ -4,115 +4,86 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Registrar Iglesia | Mi Iglesia+</title>
-
-  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
-
   <style>
-    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; }
+    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; }
     *{ box-sizing:border-box }
-    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
-    .wrap{max-width:520px;margin:40px auto;background:#fff;padding:24px;border:1px solid #eee;border-radius:12px}
-    h1{margin:0 0 6px 0}
-    .small{color:#666;font-size:.92rem;margin:0 0 18px 0}
-    input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
-    button{width:100%;padding:12px;border:0;border-radius:8px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    a{color:var(--primary);text-decoration:none}
-    .section-title{margin-top:18px;font-weight:800}
-
-    /* ===== Parche anti-overlay (solo para registro) ===== */
-    .wrap { position: relative; z-index: 9999; }
-    input, button, select, textarea { pointer-events: auto !important; }
-    .overlay, .page-cover, .hero::after, .cta::after, nav::after { pointer-events: none !important; }
-    #btnRegister{ position:relative; z-index:10000; cursor:pointer; }
-    .page-guard { pointer-events: auto !important; }
-
-    /* Mensajes */
-    #msg{ margin-top:10px; color:#444; font-size:.92rem; min-height:1.2em; }
+    body{ font-family:Poppins,sans-serif; background:#fafafa; margin:0; color:var(--dark) }
+    .wrap{ max-width:520px; margin:40px auto; background:#fff; padding:28px; border:1px solid #eee; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.06) }
+    h1{ margin:0 0 6px 0; font-size:1.6rem }
+    .small{ color:#666; font-size:.92rem; margin:0 0 18px 0 }
+    label{ display:block; font-size:.82rem; font-weight:600; color:#555; margin:12px 0 4px }
+    input{
+      width:100%; padding:11px 14px; border:1.5px solid #ddd;
+      border-radius:8px; font-family:Poppins; font-size:.95rem; outline:none; transition:border .2s;
+    }
+    input:focus{ border-color:var(--primary) }
+    .section-title{ margin:20px 0 2px; font-weight:800; font-size:.95rem; color:var(--dark) }
+    button{
+      width:100%; padding:13px; border:0; border-radius:10px;
+      background:var(--primary); color:#fff; font-weight:700;
+      cursor:pointer; font-family:Poppins; font-size:1rem;
+      margin-top:16px; transition:opacity .2s;
+    }
+    button:disabled{ opacity:.6; cursor:not-allowed }
+    button:hover:not(:disabled){ opacity:.88 }
+    a{ color:var(--primary); text-decoration:none }
+    #msg{ margin-top:12px; font-size:.92rem; min-height:1.2em; line-height:1.5 }
+    .divider{ border:none; border-top:1px solid #eee; margin:20px 0 }
   </style>
 </head>
-<body class="page-guard">
+<body>
   <div class="wrap">
     <h1>Registrar Iglesia</h1>
-    <p class="small">Creá la cuenta del admin y registrá tu iglesia. Te pediremos verificar el email.</p>
+    <p class="small">Creá tu cuenta y registrá tu iglesia en la plataforma.</p>
 
-    <h3 class="section-title">Cuenta del Admin</h3>
-    <input id="email" type="email" placeholder="Email del admin" autocomplete="email" />
-    <input id="password" type="password" placeholder="Contraseña (mín. 6)" autocomplete="new-password" />
+    <p class="section-title">📧 Cuenta del Admin</p>
+    <label>Email</label>
+    <input id="email" type="email" placeholder="admin@tuiglesia.com" autocomplete="email" />
+    <label>Contraseña <span style="font-weight:400;color:#999">(mínimo 6 caracteres)</span></label>
+    <input id="password" type="password" placeholder="••••••••" autocomplete="new-password" />
 
-    <h3 class="section-title">Datos de la Iglesia</h3>
-    <input id="nombre" placeholder="Nombre de la iglesia" />
-    <input id="ciudad" placeholder="Ciudad" />
-    <input id="pastor" placeholder="Pastor / Líder" />
-    <input id="telefono" placeholder="Teléfono" />
+    <hr class="divider">
 
-    <!-- type="button" para evitar submit nativo -->
+    <p class="section-title">⛪ Datos de la Iglesia</p>
+    <label>Nombre de la iglesia *</label>
+    <input id="nombre" placeholder="Ej: Iglesia Bautista Central" />
+    <label>Ciudad *</label>
+    <input id="ciudad" placeholder="Ej: Mendoza" />
+    <label>Pastor / Líder</label>
+    <input id="pastor" placeholder="Ej: Pastor Juan García" />
+    <label>Teléfono</label>
+    <input id="telefono" placeholder="Ej: 261 555-1234" type="tel" />
+
     <button id="btnRegister" type="button">Crear cuenta y registrar iglesia</button>
     <p id="msg"></p>
 
-    <p class="small" style="margin-top:12px">¿Ya tenés cuenta? <a href="login.html">Ingresar</a></p>
+    <p class="small" style="margin-top:14px;text-align:center">¿Ya tenés cuenta? <a href="login.html">Ingresar</a></p>
   </div>
 
-  <!-- ===================== -->
-  <!--  AUTH INLINE (FINAL)  -->
-  <!-- ===================== -->
   <script type="module">
-    /* Importar SDKs desde CDN (una sola versión) */
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import {
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      getAuth, createUserWithEmailAndPassword,
       sendEmailVerification, signOut
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
     import {
-      getFirestore, doc, setDoc, serverTimestamp, getDoc
+      getFirestore, doc, setDoc, serverTimestamp
     } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    /* 🔵 Config */
-    const firebaseConfig = {
+    const app = initializeApp({
       apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
       authDomain: "miiglesia-plus.firebaseapp.com",
       projectId: "miiglesia-plus",
       storageBucket: "miiglesia-plus.firebasestorage.app",
       messagingSenderId: "407699856167",
-      appId: "1:407699856167:web:5d421d407ab7c9789aa702",
-      measurementId: "G-VEPJFQGCQB"
-    };
-
-    /* Inicializar */
-    const app  = initializeApp(firebaseConfig);
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    });
     const auth = getAuth(app);
     const db   = getFirestore(app);
-    console.info("Firebase OK. apiKey:", app.options?.apiKey);
+    const $    = id => document.getElementById(id);
 
-    /* Utilidad */
-    const $ = (id) => document.getElementById(id);
-
-    async function ensurePaidOrRedirect(uid) {
-      // Revisa preonboarding/{uid}.paid
-      const pre = await getDoc(doc(db, 'preonboarding', uid));
-      if (!pre.exists() || pre.data()?.paid !== true) {
-        $('msg').innerHTML = '💳 Debés abonar el registro antes de crear la iglesia. pago-unico.htmlIr a pagar</a>';
-        // Deja la sesión iniciada para que el pago funcione
-        setTimeout(()=> location.href='pago-unico.html', 1200);
-        return false;
-      }
-      return true;
-    }
-
-    async function createChurch(uid, payload) {
-      await setDoc(doc(db, 'iglesias', uid), {
-        id: uid,
-        ...payload,
-        adminUid: uid,
-        miembros: 0,
-        creadoEn: serverTimestamp(),
-        estado: 'pendiente'
-      }, { merge: true });
-    }
-
-    /* -------- Registro (con gate de pago previo) -------- */
-    async function registerChurchAdmin(){
+    document.getElementById('btnRegister').addEventListener('click', async () => {
       const email    = $('email').value.trim();
       const password = $('password').value.trim();
       const nombre   = $('nombre').value.trim();
@@ -120,76 +91,62 @@
       const pastor   = $('pastor').value.trim();
       const telefono = $('telefono').value.trim();
       const msg      = $('msg');
+      const btn      = $('btnRegister');
 
-      if (!email || !password || !nombre || !ciudad){
-        msg.textContent = 'Completá email, contraseña, nombre y ciudad.';
-        return;
-      }
+      // Validaciones
+      if (!email)    { msg.textContent = '⚠️ Ingresá tu email.'; return; }
+      if (!password) { msg.textContent = '⚠️ Ingresá una contraseña.'; return; }
+      if (password.length < 6) { msg.textContent = '⚠️ La contraseña debe tener al menos 6 caracteres.'; return; }
+      if (!nombre)   { msg.textContent = '⚠️ Ingresá el nombre de la iglesia.'; return; }
+      if (!ciudad)   { msg.textContent = '⚠️ Ingresá la ciudad.'; return; }
+
+      btn.disabled = true;
+      msg.style.color = '#444';
+      msg.textContent = '⏳ Creando cuenta...';
 
       try {
-        msg.textContent = 'Creando cuenta...';
-        // 1) Intentar crear cuenta
+        // 1) Crear usuario
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid  = cred.user.uid;
 
-        // 2) Gate de pago previo
-        msg.textContent = 'Verificando pago de registro...';
-        const ok = await ensurePaidOrRedirect(uid);
-        if (!ok) return; // sin pago, NO crear iglesia
+        // 2) Crear documento de iglesia en Firestore
+        msg.textContent = '⏳ Registrando iglesia...';
+        await setDoc(doc(db, 'iglesias', uid), {
+          id: uid,
+          nombre,
+          ciudad,
+          pastor:        pastor   || '',
+          telefono:      telefono || '',
+          emailContacto: email,
+          adminUid:      uid,
+          plan:          'free',
+          estado:        'pendiente',
+          creadoEn:      serverTimestamp()
+        }, { merge: true });
 
-        // 3) Crear iglesia
-        msg.textContent = 'Creando iglesia...';
-        await createChurch(uid, { nombre, ciudad, pastor: pastor || '', telefono: telefono || '', emailContacto: email });
-
-        // 4) Verificación de email + salir
+        // 3) Enviar verificación de email
         await sendEmailVerification(cred.user);
-        msg.textContent = '✅ Iglesia creada. Te enviamos un email de verificación. Revisá tu inbox/spam.';
         await signOut(auth);
 
+        msg.style.color = '#16a34a';
+        msg.innerHTML = '✅ ¡Iglesia registrada! Te enviamos un email de verificación.<br><small style="color:#666">Revisá tu bandeja de entrada (y spam). Una vez verificado el email, podés <a href="login.html">iniciar sesión</a>.</small>';
+        btn.textContent = '✅ Listo';
+
       } catch (e) {
-        // Si el email ya existe, intentamos iniciar sesión y repetir lógica de gate+crear
-        if (e?.code === 'auth/email-already-in-use') {
-          try {
-            const cred2 = await signInWithEmailAndPassword(auth, email, password);
-            const uid   = cred2.user.uid;
+        btn.disabled = false;
+        msg.style.color = '#dc3545';
+        console.error(e);
 
-            $('msg').textContent = 'Verificando pago de registro...';
-            const ok = await ensurePaidOrRedirect(uid);
-            if (!ok) return;
-
-            // Si ya existe doc iglesia, no volver a crear
-            const igSnap = await getDoc(doc(db, 'iglesias', uid));
-            if (!igSnap.exists()) {
-              $('msg').textContent = 'Creando iglesia...';
-              await createChurch(uid, { nombre, ciudad, pastor: pastor || '', telefono: telefono || '', emailContacto: email });
-            }
-
-            await sendEmailVerification(cred2.user);
-            $('msg').textContent = '✅ Iglesia creada o actualizada. Verificá tu email.';
-            await signOut(auth);
-            return;
-          } catch (e2) {
-            showErr(e2);
-            return;
-          }
-        }
-        showErr(e);
+        const errores = {
+          'auth/email-already-in-use': '❌ Ese email ya está registrado. <a href="login.html">Iniciá sesión</a> en cambio.',
+          'auth/invalid-email':        '❌ El email ingresado no es válido.',
+          'auth/weak-password':        '❌ La contraseña es muy corta (mínimo 6 caracteres).',
+          'auth/network-request-failed':'❌ Sin conexión a internet. Revisá tu red.',
+          'auth/too-many-requests':    '❌ Demasiados intentos. Esperá unos minutos e intentá de nuevo.',
+        };
+        msg.innerHTML = errores[e?.code] || '❌ Error: ' + (e?.message || 'Algo salió mal. Intentá de nuevo.');
       }
-    }
-
-    // Listeners (lo esencial en esta página)
-    document.getElementById('btnRegister')
-      ?.addEventListener('click', () => registerChurchAdmin().catch(showErr));
-
-    function showErr(e){
-      console.error(e);
-      const msg = document.getElementById('msg');
-      let txt = e?.message || 'Error inesperado';
-      if (e?.code === 'auth/weak-password') txt = 'La contraseña es demasiado corta (mín. 6).';
-      if (e?.code === 'auth/invalid-email') txt = 'Email inválido.';
-      if (e?.code === 'auth/email-already-in-use') txt = 'Ese email ya está registrado. Si es tuyo, probá iniciar sesión.';
-      msg.textContent = '❌ ' + txt;
-    }
+    });
   </script>
 </body>
 </html>
