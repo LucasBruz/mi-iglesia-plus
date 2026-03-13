@@ -1,77 +1,439 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Planes | Mi Iglesia+</title>
-
-  <!-- GOOGLE FONTS (forma correcta / limpia) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{ --bg:#f5f5f5; --card:#fff; --text:#1a1a1a; --muted:#666; --primary:#ff6b5b; --border:#eee; --dark:#111; }
-    body{ margin:0; padding:0; background:var(--bg); font-family:Poppins, sans-serif; color:var(--text); }
-    h1{ text-align:center; font-size:32px; font-weight:800; margin:34px 12px 10px; }
-    p.lead{ text-align:center; color:var(--muted); margin:0 0 20px; }
-    .container{
-      max-width:1100px; margin:0 auto; padding:18px;
-      display:flex; flex-wrap:wrap; justify-content:center; gap:18px;
+    :root {
+      --primary: #FF6B5B;
+      --dark: #1a1a1a;
+      --gray: #666;
+      --border: #e8e8e8;
+      --bg: #fafafa;
     }
-    .card{
-      background:var(--card); border:1px solid var(--border);
-      width:320px; border-radius:18px; padding:22px;
-      text-align:center; box-shadow:0 4px 18px rgba(0,0,0,.06);
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Poppins, sans-serif; background: var(--bg); color: var(--dark); }
+
+    nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .card h2{ font-size:22px; font-weight:800; margin:0 0 8px; }
-    .price{ font-size:30px; font-weight:800; color:var(--primary); margin:8px 0 12px; }
-    .features{ color:var(--muted); line-height:1.6; font-size:15px; min-height:72px; }
-    .btn{
-      width:100%; margin-top:12px; padding:12px; border:0; border-radius:12px;
-      background:var(--dark); color:#fff; font-weight:700; cursor:pointer;
+    .logo { font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--dark); }
+    .logo span { color: var(--primary); }
+    .nav-back { color: var(--gray); text-decoration: none; font-size: .9rem; }
+    .nav-back:hover { color: var(--primary); }
+
+    .hero {
+      background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
     }
-    .btn:hover{ opacity:.9; }
+    .hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: .8rem; }
+    .hero h1 span { color: var(--primary); }
+    .hero p { color: var(--gray); font-size: 1.1rem; max-width: 500px; margin: 0 auto; }
+
+    .planes {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .plan-card {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      transition: all .3s;
+      position: relative;
+    }
+    .plan-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,.1); }
+    .plan-card.popular {
+      border-color: var(--primary);
+      box-shadow: 0 8px 32px rgba(255,107,91,.15);
+    }
+    .plan-card.admin-card {
+      border-color: #1a1a1a;
+      background: linear-gradient(160deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: #fff;
+    }
+    .plan-card.admin-card .plan-price { color: #FF6B5B; }
+    .plan-card.admin-card .plan-desc { color: #aaa; }
+    .plan-card.admin-card .features li { color: #eee; border-bottom-color: #333; }
+    .plan-card.admin-card .check { color: #4ade80; }
+
+    .badge-popular {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .badge-admin {
+      background: linear-gradient(135deg, #FF6B5B, #ff3b2b);
+    }
+
+    .plan-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .plan-name { font-size: 1.5rem; font-weight: 800; margin-bottom: .5rem; }
+    .plan-price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: .8rem 0;
+    }
+    .plan-price small {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--gray);
+    }
+    .plan-card.admin-card .plan-price small { color: #aaa; }
+    .plan-desc { color: var(--gray); font-size: .9rem; margin-bottom: 1.5rem; }
+
+    .features {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+    .features li {
+      padding: .5rem 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: .9rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .features li:last-child { border-bottom: none; }
+    .features li .check { color: #28a745; font-size: 1rem; }
+    .features li .cross { color: #ccc; font-size: 1rem; }
+
+    .btn-plan {
+      width: 100%;
+      padding: .9rem;
+      border: 0;
+      border-radius: 12px;
+      font-family: Poppins;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all .3s;
+      text-decoration: none;
+      display: block;
+    }
+    .btn-dark { background: var(--dark); color: #fff; }
+    .btn-dark:hover { background: #333; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,107,91,.3); }
+    .btn-outline { background: #fff; color: var(--dark); border: 2px solid var(--border); }
+    .btn-outline:hover { border-color: var(--dark); }
+    .btn-admin { background: linear-gradient(135deg, #FF6B5B, #ff3b2b); color: #fff; border: 0; }
+    .btn-admin:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,91,.4); }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 1000;
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 20px; padding: 2rem;
+      max-width: 480px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3); position: relative;
+    }
+    .modal h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: .3rem; }
+    .modal p.sub { color: #666; font-size: .9rem; margin-bottom: 1.5rem; }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      background: none; border: none; font-size: 1.4rem;
+      cursor: pointer; color: #999;
+    }
+    .modal-close:hover { color: #333; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-weight: 600; font-size: .85rem; margin-bottom: .3rem; color: #333; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: .7rem 1rem;
+      border: 1.5px solid #e0e0e0; border-radius: 10px;
+      font-family: Poppins; font-size: .9rem; outline: none;
+      transition: border .2s; box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: #FF6B5B; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .btn-submit {
+      width: 100%; padding: .9rem;
+      background: linear-gradient(135deg, #1a1a1a, #3a3a3a);
+      color: #fff; border: 0; border-radius: 12px;
+      font-family: Poppins; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: all .3s;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+    .btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .form-success { text-align: center; padding: 1rem 0; }
+    .form-success .icon { font-size: 3rem; margin-bottom: .5rem; }
+    .form-success h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: .3rem; }
+    .form-success p { color: #666; font-size: .9rem; }
+
+    .faq {
+      max-width: 700px;
+      margin: 0 auto 4rem;
+      padding: 0 1.5rem;
+    }
+    .faq h2 { text-align: center; font-size: 1.8rem; font-weight: 800; margin-bottom: 1.5rem; }
+    .faq-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: .8rem;
+    }
+    .faq-item h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+    .faq-item p { color: var(--gray); font-size: .9rem; line-height: 1.6; }
+
+    .garantia {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray);
+      font-size: .9rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      .planes { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <h1>Planes Mi Iglesia+</h1>
-  <p class="lead">Elegí el plan que mejor se adapte a tu iglesia.</p>
 
-  <section class="container">
+  <nav>
+    <a class="logo" href="index.html">Mi <span>Iglesia+</span></a>
+    <a class="nav-back" href="index.html">← Volver al inicio</a>
+  </nav>
 
-    <article class="card">
-      <h2>FREE</h2>
-      <div class="price">$0</div>
-      <div class="features">
-        • Prédicas limitadas<br>
-        • Eventos limitados<br>
-        • Ideal para comenzar
+  <div class="hero">
+    <h1>Elegí tu <span>plan</span></h1>
+    <p>Precios simples y transparentes para conectar tu congregación</p>
+  </div>
+
+  <div class="planes">
+
+    <!-- FREE -->
+    <div class="plan-card">
+      <div class="plan-icon">🕊️</div>
+      <div class="plan-name">FREE</div>
+      <div class="plan-price">$0 <small>/ siempre</small></div>
+      <div class="plan-desc">Ideal para iglesias que recién empiezan</div>
+      <ul class="features">
+        <li><span class="check">✓</span> Panel de administración</li>
+        <li><span class="check">✓</span> Hasta 3 prédicas</li>
+        <li><span class="check">✓</span> Hasta 5 eventos</li>
+        <li><span class="check">✓</span> Peticiones de oración básicas</li>
+        <li><span class="cross">✗</span> Publicidad en el home</li>
+        <li><span class="cross">✗</span> Admins adicionales</li>
+        <li><span class="cross">✗</span> Estadísticas</li>
+      </ul>
+      <a href="registro.html" class="btn-plan btn-outline">Comenzar gratis</a>
+    </div>
+
+    <!-- STARTER -->
+    <div class="plan-card popular">
+      <div class="badge-popular">⭐ Más popular</div>
+      <div class="plan-icon">🔥</div>
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">$10.000 <small>/ mes</small></div>
+      <div class="plan-desc">Para iglesias en crecimiento</div>
+      <ul class="features">
+        <li><span class="check">✓</span> Todo lo del plan FREE</li>
+        <li><span class="check">✓</span> Prédicas ilimitadas</li>
+        <li><span class="check">✓</span> Eventos ilimitados</li>
+        <li><span class="check">✓</span> Peticiones de oración públicas</li>
+        <li><span class="check">✓</span> 1 publicidad en el home</li>
+        <li><span class="cross">✗</span> Admins adicionales</li>
+        <li><span class="cross">✗</span> Estadísticas avanzadas</li>
+      </ul>
+      <a href="registro.html" class="btn-plan btn-primary">Elegir Starter</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan-card">
+      <div class="plan-icon">👑</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$30.000 <small>/ mes</small></div>
+      <div class="plan-desc">Para iglesias consolidadas</div>
+      <ul class="features">
+        <li><span class="check">✓</span> Todo lo del plan Starter</li>
+        <li><span class="check">✓</span> Publicidades ilimitadas</li>
+        <li><span class="check">✓</span> Hasta 5 admins adicionales</li>
+        <li><span class="check">✓</span> Estadísticas avanzadas</li>
+        <li><span class="check">✓</span> Soporte prioritario</li>
+        <li><span class="check">✓</span> Personalización de perfil</li>
+        <li><span class="check">✓</span> Acceso anticipado a novedades</li>
+      </ul>
+      <a href="registro.html" class="btn-plan btn-dark">Elegir Pro</a>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="plan-card admin-card">
+      <div class="badge-popular badge-admin">🛡️ Servicio completo</div>
+      <div class="plan-icon">🧑‍💼</div>
+      <div class="plan-name" style="color:#fff">Admin</div>
+      <div class="plan-price">$50.000 <small>/ mes</small></div>
+      <div class="plan-desc">Nosotros gestionamos tu iglesia por vos</div>
+      <ul class="features">
+        <li><span class="check">✓</span> Todo lo del plan Pro</li>
+        <li><span class="check">✓</span> Diseño personalizado de tu página</li>
+        <li><span class="check">✓</span> Carga de prédicas y eventos</li>
+        <li><span class="check">✓</span> Gestión de publicidad</li>
+        <li><span class="check">✓</span> Soporte directo por WhatsApp</li>
+        <li><span class="check">✓</span> Actualizaciones mensuales de contenido</li>
+        <li><span class="check">✓</span> Sin que vos tengas que hacer nada</li>
+      </ul>
+      <button class="btn-plan btn-admin" onclick="abrirModalAdmin()">Quiero este plan</button>
+    </div>
+
+  </div>
+
+  <!-- MODAL PLAN ADMIN -->
+  <div class="modal-overlay" id="modalAdmin">
+    <div class="modal">
+      <button class="modal-close" onclick="cerrarModalAdmin()">✕</button>
+      <div id="modalContenido">
+        <h2>🧑‍💼 Plan Admin</h2>
+        <p class="sub">Completá el formulario y te contactamos en menos de 24 horas para empezar.</p>
+        <div class="form-group">
+          <label>Nombre de la iglesia *</label>
+          <input id="adm_nombre" placeholder="Ej: Iglesia Bautista Central" />
+        </div>
+        <div class="form-group">
+          <label>Tu nombre *</label>
+          <input id="adm_pastor" placeholder="Ej: Pastor Juan García" />
+        </div>
+        <div class="form-group">
+          <label>WhatsApp *</label>
+          <input id="adm_whatsapp" placeholder="Ej: 261 555-1234" type="tel" />
+        </div>
+        <div class="form-group">
+          <label>Ciudad</label>
+          <input id="adm_ciudad" placeholder="Ej: Mendoza" />
+        </div>
+        <div class="form-group">
+          <label>¿Qué necesitás que hagamos por vos?</label>
+          <textarea id="adm_mensaje" placeholder="Contanos sobre tu iglesia y qué querés mejorar…"></textarea>
+        </div>
+        <button class="btn-submit" id="btnEnviarAdmin" onclick="enviarSolicitudAdmin()">📩 Enviar solicitud</button>
+        <div id="admMsg" style="margin-top:.8rem;font-size:.85rem;color:#dc3545;min-height:1rem"></div>
       </div>
-      <a href="registro.html"><button class="btn">Comenzar</button></a>
-    </article>
+    </div>
+  </div>
 
-    <article class="card">
-      <h2>Starter</h2>
-      <div class="price">$10.000</div>
-      <div class="features">
-        • Prédicas ilimitadas<br>
-        • Eventos extendidos<br>
-        • Peticiones públicas
-      </div>
-      <a href="registro.html"><button class="btn">Elegir plan</button></a>
-    </article>
+  <!-- FAQ -->
+  <div class="faq">
+    <h2>Preguntas frecuentes</h2>
+    <div class="faq-item">
+      <h3>¿Cómo se procesa el pago?</h3>
+      <p>Los pagos se procesan a través de Mercado Pago de forma segura. Podés pagar con tarjeta de crédito, débito o transferencia bancaria.</p>
+    </div>
+    <div class="faq-item">
+      <h3>¿Puedo cambiar de plan en cualquier momento?</h3>
+      <p>Sí, podés subir o bajar de plan cuando quieras desde el panel de facturación. Los cambios se aplican en el siguiente período de facturación.</p>
+    </div>
+    <div class="faq-item">
+      <h3>¿Qué pasa si cancelo?</h3>
+      <p>Podés cancelar en cualquier momento. Tu iglesia pasará al plan FREE al vencer el período actual, sin perder tus datos.</p>
+    </div>
+    <div class="faq-item">
+      <h3>¿Hay contrato de permanencia?</h3>
+      <p>No, los planes son mes a mes sin compromiso de permanencia.</p>
+    </div>
+    <div class="faq-item">
+      <h3>¿Qué incluye el Plan Admin?</h3>
+      <p>Nuestro equipo gestiona tu iglesia por vos: diseño personalizado, carga de contenido, eventos, prédicas y soporte continuo. Vos solo te enfocás en tu ministerio.</p>
+    </div>
+  </div>
 
-    <article class="card">
-      <h2>Pro</h2>
-      <div class="price">$30.000</div>
-      <div class="features">
-        • Todo Starter<br>
-        • Admins adicionales<br>
-        • Estadísticas avanzadas
-      </div>
-      <a href="registro.html"><button class="btn">Elegir plan</button></a>
-    </article>
+  <div class="garantia">
+    🔒 Pagos seguros con Mercado Pago &nbsp;•&nbsp; Sin contratos &nbsp;•&nbsp; Cancelá cuando quieras
+  </div>
 
-  </section>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    });
+    const db = getFirestore(app);
+
+    window.abrirModalAdmin = () => {
+      document.getElementById('modalAdmin').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    window.cerrarModalAdmin = () => {
+      document.getElementById('modalAdmin').classList.remove('open');
+      document.body.style.overflow = '';
+    };
+    document.getElementById('modalAdmin').addEventListener('click', e => {
+      if (e.target === e.currentTarget) window.cerrarModalAdmin();
+    });
+
+    window.enviarSolicitudAdmin = async () => {
+      const nombre   = document.getElementById('adm_nombre').value.trim();
+      const pastor   = document.getElementById('adm_pastor').value.trim();
+      const whatsapp = document.getElementById('adm_whatsapp').value.trim();
+      const ciudad   = document.getElementById('adm_ciudad').value.trim();
+      const mensaje  = document.getElementById('adm_mensaje').value.trim();
+      const msg      = document.getElementById('admMsg');
+      const btn      = document.getElementById('btnEnviarAdmin');
+
+      if (!nombre)   { msg.textContent = '⚠️ Ingresá el nombre de la iglesia.'; return; }
+      if (!pastor)   { msg.textContent = '⚠️ Ingresá tu nombre.'; return; }
+      if (!whatsapp) { msg.textContent = '⚠️ Ingresá tu WhatsApp.'; return; }
+
+      btn.disabled = true; btn.textContent = 'Enviando...'; msg.textContent = '';
+
+      try {
+        await addDoc(collection(db, 'solicitudes_admin'), {
+          nombreIglesia: nombre, pastor, whatsapp, ciudad, mensaje,
+          plan: 'admin', precio: 50000, estado: 'pendiente',
+          creadoEn: serverTimestamp()
+        });
+        document.getElementById('modalContenido').innerHTML = `
+          <div class="form-success">
+            <div class="icon">🎉</div>
+            <h3>¡Solicitud enviada!</h3>
+            <p>Te contactamos por WhatsApp en menos de 24 horas para coordinar el inicio del servicio.</p>
+            <button onclick="cerrarModalAdmin()" style="margin-top:1.2rem;padding:.7rem 1.5rem;background:#1a1a1a;color:#fff;border:0;border-radius:10px;font-family:Poppins;font-weight:700;cursor:pointer">Cerrar</button>
+          </div>`;
+      } catch(e) {
+        msg.textContent = '❌ Error al enviar. Intentá de nuevo.';
+        btn.disabled = false; btn.textContent = '📩 Enviar solicitud';
+      }
+    };
+  </script>
+
 </body>
 </html>
