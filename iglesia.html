@@ -72,23 +72,8 @@
       z-index:1;
     }
     .church-hero > *{position:relative;z-index:2}
-    .church-logo{
-      width:110px;height:110px;
-      border-radius:20px;
-      object-fit:contain;
-      background:#fff;
-      margin:0 auto 1.2rem;
-      display:block;
-      box-shadow:0 8px 32px rgba(0,0,0,0.4);
-      padding:6px;
-    }
-    .church-logo-placeholder{
-      width:110px;height:110px;border-radius:20px;
-      background:rgba(255,255,255,0.1);
-      margin:0 auto 1.2rem;
-      display:flex;align-items:center;justify-content:center;
-      font-size:3rem;border:2px solid rgba(255,255,255,0.2);
-    }
+    .church-logo{width:110px;height:110px;border-radius:20px;object-fit:contain;background:#fff;margin:0 auto 1.2rem;display:block;box-shadow:0 8px 32px rgba(0,0,0,0.4);padding:6px}
+    .church-logo-placeholder{width:110px;height:110px;border-radius:20px;background:rgba(255,255,255,0.1);margin:0 auto 1.2rem;display:flex;align-items:center;justify-content:center;font-size:3rem;border:2px solid rgba(255,255,255,0.2)}
     .church-hero h1{font-size:2rem;font-weight:800;margin-bottom:.4rem}
     .church-hero .ciudad{color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:.8rem}
     .church-hero .pastor{color:rgba(255,255,255,0.55);font-size:.9rem;margin-bottom:1.5rem}
@@ -157,16 +142,7 @@
     .form-btn:hover{opacity:.88}
     .form-btn:disabled{opacity:.5;cursor:not-allowed}
     .form-feedback{font-size:.83rem;min-height:1.2rem;margin-top:.4rem;font-weight:600}
-    @media(max-width:640px){
-      .forms-grid{grid-template-columns:1fr!important}
-    }
-
-    /* PETICIONES */
-    .peticiones-list{display:flex;flex-direction:column;gap:.8rem}
-    .peticion-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;display:flex;gap:.8rem;align-items:flex-start}
-    .peticion-icon{font-size:1.4rem;flex-shrink:0}
-    .peticion-titulo{font-weight:700;font-size:.92rem;margin-bottom:.3rem}
-    .peticion-detalle{color:var(--gray);font-size:.85rem;line-height:1.5}
+    @media(max-width:640px){.forms-grid{grid-template-columns:1fr!important}}
 
     /* FOOTER */
     .page-footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:1.5rem;font-size:.85rem}
@@ -177,12 +153,12 @@
     .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
 
+    /* SHARE BAR */
+    #share-bar{padding-bottom:env(safe-area-inset-bottom,0)}
+
     @media(max-width:600px){
-      /* NAV */
       nav{padding:.7rem 1rem}
       nav a.btn{padding:.5rem .85rem;font-size:.8rem}
-
-      /* HERO */
       .church-hero{padding:2rem 1rem 1.5rem}
       .church-logo{width:80px;height:80px;border-radius:14px}
       .church-logo-placeholder{width:80px;height:80px;font-size:2rem}
@@ -191,34 +167,18 @@
       .church-hero .pastor{font-size:.82rem;margin-bottom:1rem}
       .hero-badges{gap:.4rem;margin-bottom:1rem}
       .badge{font-size:.75rem;padding:.25rem .6rem}
-
-      /* BOTONES del hero */
-      #btnNotif, .share-btn{
-        padding:.55rem .9rem;font-size:.82rem
-      }
-
-      /* SECCIONES */
+      #btnNotif,.share-btn{padding:.55rem .9rem;font-size:.82rem}
       .section{padding:1.5rem .8rem}
       .section-title{font-size:1.1rem}
       .container{padding:0 .8rem}
-
-      /* INFO + MAPA apilados */
       .info-mapa{grid-template-columns:1fr;gap:1rem}
       .map-wrap{height:180px}
-
-      /* PREDICAS: 1 col */
       .predicas-grid{grid-template-columns:1fr;gap:.8rem}
-
-      /* OFRENDAS */
       .ofrendas-box{padding:1rem}
       .ofrendas-metodos{gap:.5rem}
       .metodo-chip{font-size:.8rem;padding:.4rem .7rem}
-
-      /* EVENTOS */
       .evento-card{padding:.8rem 1rem;gap:.8rem}
       .evento-info h4{font-size:.88rem}
-
-      /* PETICIONES */
       .peticion-card{padding:.8rem 1rem}
     }
   </style>
@@ -242,6 +202,17 @@
 
   <div class="page-footer">
     <p>Powered by <a href="index.html">Mi Iglesia+</a> · Conectando comunidades de fe</p>
+  </div>
+
+  <!-- ── BOTÓN COMPARTIR ── -->
+  <div id="share-bar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0e0e0;padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:center;gap:.6rem;z-index:490;box-shadow:0 -2px 12px rgba(0,0,0,.08);flex-wrap:wrap">
+    <span style="font-size:.82rem;font-weight:700;color:#666;margin-right:.2rem">📲 Compartí esta iglesia:</span>
+    <button id="btnShareNative" onclick="compartirNativo()" style="display:none;background:#FF6B5B;color:#fff;border:0;border-radius:8px;padding:.5rem 1.1rem;font-weight:700;font-size:.85rem;cursor:pointer;font-family:'Poppins',sans-serif">🔗 Compartir</button>
+    <a id="btnShareWA" href="" target="_blank" rel="noopener" style="background:#25D366;color:#fff;border-radius:8px;padding:.5rem 1.1rem;font-weight:700;font-size:.85rem;text-decoration:none;white-space:nowrap">
+      <svg style="vertical-align:middle;margin-right:4px" width="15" height="15" viewBox="0 0 32 32" fill="none"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.478.655 4.8 1.8 6.807L2 30l7.38-1.773A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z" fill="#fff"/><path d="M16 4.5c-6.351 0-11.5 5.149-11.5 11.5 0 2.14.588 4.143 1.613 5.858l.243.407-1.03 3.76 3.87-1.015.394.228A11.45 11.45 0 0 0 16 27.5c6.351 0 11.5-5.149 11.5-11.5S22.351 4.5 16 4.5z" fill="#25D366"/><path d="M21.003 18.77c-.307-.154-1.816-.896-2.097-.998-.281-.103-.486-.154-.69.154-.204.307-.791.998-.97 1.203-.178.204-.357.23-.664.077-.307-.154-1.295-.477-2.466-1.522-.911-.813-1.526-1.816-1.705-2.123-.178-.307-.019-.473.134-.626.137-.137.307-.358.46-.537.154-.178.205-.307.307-.511.103-.205.051-.384-.025-.537-.077-.154-.69-1.664-.945-2.277-.249-.597-.502-.516-.69-.526l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.049-1.073 2.558s1.099 2.967 1.252 3.171c.154.205 2.163 3.303 5.24 4.632.733.316 1.305.505 1.751.646.736.234 1.406.201 1.936.122.590-.088 1.816-.742 2.073-1.459.256-.716.256-1.33.179-1.459-.076-.128-.281-.205-.588-.358z" fill="#fff"/></svg>WhatsApp
+    </a>
+    <button id="btnCopiarLink" onclick="copiarLinkBar()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;border-radius:8px;padding:.5rem 1.1rem;font-weight:700;font-size:.85rem;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap">📋 Copiar link</button>
+    <button onclick="cerrarShareBar()" style="background:none;border:0;color:#aaa;font-size:1.2rem;cursor:pointer;padding:.2rem .5rem;line-height:1" title="Cerrar">✕</button>
   </div>
 
   <script type="module">
@@ -291,9 +262,7 @@
       const btn = document.getElementById('btnNotif');
       if (!btn) return;
       btn.disabled = true;
-
       if (estaSuscripto()) {
-        // DESUSCRIBIR
         try {
           const token = localStorage.getItem(`token_${iglesiaId}`);
           if (token) {
@@ -305,30 +274,20 @@
           renderBtnNotif(false);
         } catch(e) { alert('Error al desuscribirse: ' + e.message); }
       } else {
-        // SUSCRIBIR
         try {
           const perm = await Notification.requestPermission();
-          if (perm !== 'granted') {
-            alert('Necesitás dar permiso de notificaciones en tu navegador.');
-            btn.disabled = false; return;
-          }
+          if (perm !== 'granted') { alert('Necesitás dar permiso de notificaciones en tu navegador.'); btn.disabled = false; return; }
           const token = await getToken(messaging, { vapidKey: VAPID_KEY });
           if (!token) throw new Error('No se pudo obtener el token');
-
-          // Guardar en Firestore: suscriptores/{iglesiaId}/tokens/{token}
           await setDoc(doc(db, 'suscriptores', iglesiaId, 'tokens', token), {
-            token,
-            creadoEn: new Date().toISOString(),
+            token, creadoEn: new Date().toISOString(),
             plataforma: navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop'
           });
-
           localStorage.setItem(STORAGE_KEY, '1');
           localStorage.setItem(`token_${iglesiaId}`, token);
           renderBtnNotif(true);
           alert('✅ ¡Te suscribiste! Recibirás notificaciones de esta iglesia.');
-        } catch(e) {
-          alert('Error al suscribirse: ' + e.message);
-        }
+        } catch(e) { alert('Error al suscribirse: ' + e.message); }
       }
       btn.disabled = false;
     }
@@ -353,25 +312,15 @@
       const app = document.getElementById('app');
 
       if (!iglesiaId) {
-        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888">
-          <h2>Iglesia no encontrada</h2>
-          <p>El enlace no contiene un ID válido.</p>
-          <p style="font-size:.75rem;color:#bbb;margin-top:.5rem;word-break:break-all">URL: ${window.location.href}</p>
-          <a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a>
-        </div>`;
+        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Iglesia no encontrada</h2><p>El enlace no contiene un ID válido.</p><a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a></div>`;
         return;
       }
 
-      // Cargar datos de la iglesia
       let snap;
       try {
         snap = await getDoc(doc(db,'iglesias',iglesiaId));
       } catch(e) {
-        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888">
-          <h2>Error al cargar</h2>
-          <p style="color:#dc3545;font-size:.9rem">${e.message}</p>
-          <a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a>
-        </div>`;
+        app.innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Error al cargar</h2><p style="color:#dc3545;font-size:.9rem">${e.message}</p><a class="btn btn-primary" href="index.html" style="margin-top:1rem;display:inline-block">Volver al inicio</a></div>`;
         return;
       }
       if (!snap.exists()) {
@@ -380,60 +329,61 @@
       }
 
       const ig = snap.data();
-      const igNombre   = ig.nombre || 'Iglesia';
-      const igCiudad   = ig.ciudad || '';
-      const igProv     = ig.provincia || '';
-      const igDesc     = ig.descripcion || `Iglesia ${igNombre} en ${igCiudad}. Encontrá horarios, eventos y más en Mi Iglesia+.`;
-      const igUrl      = `https://www.miiglesia.online/iglesia.html?id=${iglesiaId}`;
-      const igImagen   = ig.logoUrl || 'https://www.miiglesia.online/assets/og-image.png';
+      const igNombre = ig.nombre || 'Iglesia';
+      const igCiudad = ig.ciudad || '';
+      const igProv   = ig.provincia || '';
+      const igDesc   = ig.descripcion || `Iglesia ${igNombre} en ${igCiudad}. Encontrá horarios, eventos y más en Mi Iglesia+.`;
+      const igUrl    = `https://www.miiglesia.online/iglesia.html?id=${iglesiaId}`;
+      const igImagen = ig.logoUrl || 'https://www.miiglesia.online/assets/og-image.png';
 
-      // Actualizar SEO dinámicamente
+      // SEO dinámico
       document.title = `${igNombre}${igCiudad ? ' — ' + igCiudad : ''} | Mi Iglesia+`;
       document.querySelector('meta[name="description"]').setAttribute('content', igDesc);
       document.querySelector('link[rel="canonical"]').setAttribute('href', igUrl);
-      document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${igNombre} | Mi Iglesia+`) || (() => { const m=document.createElement('meta'); m.setAttribute('property','og:title'); m.setAttribute('content',`${igNombre} | Mi Iglesia+`); document.head.appendChild(m); })();
-      document.querySelector('meta[property="og:description"]')?.setAttribute('content', igDesc) || (() => { const m=document.createElement('meta'); m.setAttribute('property','og:description'); m.setAttribute('content',igDesc); document.head.appendChild(m); })();
-      document.querySelector('meta[property="og:url"]')?.setAttribute('content', igUrl) || (() => { const m=document.createElement('meta'); m.setAttribute('property','og:url'); m.setAttribute('content',igUrl); document.head.appendChild(m); })();
       document.querySelector('meta[property="og:image"]').setAttribute('content', igImagen);
 
-      // Schema.org para iglesia local
+      // Actualizar share bar con URL y nombre de la iglesia
+      const shareText = `🙏 Visitá la página de ${igNombre} en Mi Iglesia+ `;
+      const waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + igUrl);
+      document.getElementById('btnShareWA').href = waUrl;
+      // Guardar URL actual para copiar
+      window._shareUrl = igUrl;
+
+      // Mostrar botón nativo en mobile
+      if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        document.getElementById('btnShareNative').style.display = 'inline-block';
+        document.getElementById('btnShareWA').style.display = 'none';
+        document.getElementById('btnCopiarLink').style.display = 'none';
+      }
+
+      // Ocultar share bar si ya fue cerrada en esta sesión
+      if (sessionStorage.getItem('share-bar-cerrada')) {
+        document.getElementById('share-bar').style.display = 'none';
+      }
+
+      // Schema.org
       const schema = document.createElement('script');
       schema.type = 'application/ld+json';
       schema.textContent = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Church",
-        "name": igNombre,
-        "description": igDesc,
-        "url": igUrl,
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": ig.direccion || '',
-          "addressLocality": igCiudad,
-          "addressRegion": igProv,
-          "addressCountry": "AR"
-        },
+        "@context": "https://schema.org", "@type": "Church",
+        "name": igNombre, "description": igDesc, "url": igUrl,
+        "address": { "@type": "PostalAddress", "streetAddress": ig.direccion||'', "addressLocality": igCiudad, "addressRegion": igProv, "addressCountry": "AR" },
         "image": igImagen,
         ...(ig.pastor ? { "member": { "@type": "Person", "name": ig.pastor } } : {})
       });
       document.head.appendChild(schema);
 
-      // Cargar subcolecciones en paralelo — cada una con su propio catch
       const [evSnap, predSnap, galSnap] = await Promise.all([
         getDocs(collection(db,'iglesias',iglesiaId,'eventos')).catch(()=>({docs:[]})),
         getDocs(collection(db,'iglesias',iglesiaId,'predicas')).catch(()=>({docs:[]})),
         getDocs(collection(db,'iglesias',iglesiaId,'galeria')).catch(()=>({docs:[]}))
       ]);
 
-      const eventos  = evSnap.docs.map(d=>({id:d.id,...d.data()}))
-                         .filter(e=>e.publico!==false)
-                         .sort((a,b)=>(b.inicio?.seconds||0)-(a.inicio?.seconds||0));
-      const predicas = predSnap.docs.map(d=>({id:d.id,...d.data()}))
-                         .filter(p=>p.publico!==false);
-      const galeria  = galSnap.docs.map(d=>({id:d.id,...d.data()}))
-                         .filter(f=>f.publica!==false)
-                         .sort((a,b)=>(b.creadoEn?.seconds||0)-(a.creadoEn?.seconds||0));
+      const eventos  = evSnap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>e.publico!==false).sort((a,b)=>(b.inicio?.seconds||0)-(a.inicio?.seconds||0));
+      const predicas = predSnap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.publico!==false);
+      const galeria  = galSnap.docs.map(d=>({id:d.id,...d.data()})).filter(f=>f.publica!==false).sort((a,b)=>(b.creadoEn?.seconds||0)-(a.creadoEn?.seconds||0));
 
-      // ── HERO ──
+      // HERO
       const logoHtml = ig.logoUrl
         ? `<img class="church-logo" src="${escHtml(ig.logoUrl)}" alt="${escHtml(ig.nombre)}">`
         : `<div class="church-logo-placeholder">⛪</div>`;
@@ -454,85 +404,72 @@
           </div>
         </div>`;
 
-      // ── INFO + MAPA ──
       const mapaHtml = ig.direccion
         ? `<div class="map-wrap">${buildMapEmbed(ig.direccion + (ig.ciudad ? ', ' + ig.ciudad : ''))}</div>`
         : `<div class="map-wrap"><div class="map-placeholder">📍 Esta iglesia aún no cargó su dirección</div></div>`;
 
       const infoHtml = `
-        <section class="section">
-          <div class="container">
-            <h2 class="section-title">ℹ️ Información</h2>
-            <div class="info-mapa">
-              <div class="info-card">
-                ${ig.nombre     ? `<div class="info-row"><span class="info-icon">⛪</span><div><div class="info-label">Nombre</div><div class="info-value">${escHtml(ig.nombre)}</div></div></div>` : ''}
-                ${ig.ciudad     ? `<div class="info-row"><span class="info-icon">📍</span><div><div class="info-label">Ciudad</div><div class="info-value">${escHtml(ig.ciudad)}</div></div></div>` : ''}
-                ${ig.direccion  ? `<div class="info-row"><span class="info-icon">🗺️</span><div><div class="info-label">Dirección</div><div class="info-value">${escHtml(ig.direccion)}</div></div></div>` : ''}
-                ${ig.pastor     ? `<div class="info-row"><span class="info-icon">🧑‍💼</span><div><div class="info-label">Pastor</div><div class="info-value">${escHtml(ig.pastor)}</div></div></div>` : ''}
-                ${ig.telefono   ? `<div class="info-row"><span class="info-icon">📞</span><div><div class="info-label">Teléfono</div><div class="info-value"><a href="tel:${escHtml(ig.telefono)}">${escHtml(ig.telefono)}</a></div></div></div>` : ''}
-                ${ig.emailContacto ? `<div class="info-row"><span class="info-icon">✉️</span><div><div class="info-label">Email</div><div class="info-value"><a href="mailto:${escHtml(ig.emailContacto)}">${escHtml(ig.emailContacto)}</a></div></div></div>` : ''}
-                ${ig.horarios   ? `<div class="info-row"><span class="info-icon">🕐</span><div><div class="info-label">Horarios</div><div class="info-value">${escHtml(ig.horarios)}</div></div></div>` : ''}
-                ${ig.descripcion? `<div class="info-row"><span class="info-icon">📝</span><div><div class="info-label">Descripción</div><div class="info-value">${escHtml(ig.descripcion)}</div></div></div>` : ''}
-              </div>
-              ${mapaHtml}
+        <section class="section"><div class="container">
+          <h2 class="section-title">ℹ️ Información</h2>
+          <div class="info-mapa">
+            <div class="info-card">
+              ${ig.nombre     ? `<div class="info-row"><span class="info-icon">⛪</span><div><div class="info-label">Nombre</div><div class="info-value">${escHtml(ig.nombre)}</div></div></div>` : ''}
+              ${ig.ciudad     ? `<div class="info-row"><span class="info-icon">📍</span><div><div class="info-label">Ciudad</div><div class="info-value">${escHtml(ig.ciudad)}</div></div></div>` : ''}
+              ${ig.direccion  ? `<div class="info-row"><span class="info-icon">🗺️</span><div><div class="info-label">Dirección</div><div class="info-value">${escHtml(ig.direccion)}</div></div></div>` : ''}
+              ${ig.pastor     ? `<div class="info-row"><span class="info-icon">🧑‍💼</span><div><div class="info-label">Pastor</div><div class="info-value">${escHtml(ig.pastor)}</div></div></div>` : ''}
+              ${ig.telefono   ? `<div class="info-row"><span class="info-icon">📞</span><div><div class="info-label">Teléfono</div><div class="info-value"><a href="tel:${escHtml(ig.telefono)}">${escHtml(ig.telefono)}</a></div></div></div>` : ''}
+              ${ig.emailContacto ? `<div class="info-row"><span class="info-icon">✉️</span><div><div class="info-label">Email</div><div class="info-value"><a href="mailto:${escHtml(ig.emailContacto)}">${escHtml(ig.emailContacto)}</a></div></div></div>` : ''}
+              ${ig.horarios   ? `<div class="info-row"><span class="info-icon">🕐</span><div><div class="info-label">Horarios</div><div class="info-value">${escHtml(ig.horarios)}</div></div></div>` : ''}
+              ${ig.descripcion? `<div class="info-row"><span class="info-icon">📝</span><div><div class="info-label">Descripción</div><div class="info-value">${escHtml(ig.descripcion)}</div></div></div>` : ''}
             </div>
+            ${mapaHtml}
           </div>
-        </section>`;
+        </div></section>`;
 
-      // ── VIDEO DE BIENVENIDA ──
       const videoHtml = ig.videoUrl ? `
         <section class="section" style="background:#000;padding-top:1.5rem;padding-bottom:1.5rem">
           <div class="container" style="text-align:center">
             <h2 class="section-title" style="color:#fff">🎬 Video de Bienvenida</h2>
-            <video controls style="width:100%;max-width:640px;border-radius:14px;margin:0 auto;display:block"
-              src="${escHtml(ig.videoUrl)}" preload="metadata"></video>
+            <video controls style="width:100%;max-width:640px;border-radius:14px;margin:0 auto;display:block" src="${escHtml(ig.videoUrl)}" preload="metadata"></video>
           </div>
         </section>` : '';
 
-      // ── FOTO PASTORES ──
       const fotoPastorHtml = ig.fotoPastorUrl ? `
         <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
           <div class="container" style="text-align:center">
             <h2 class="section-title">👨‍👩‍👧 Nuestros Pastores</h2>
-            <img src="${escHtml(ig.fotoPastorUrl)}" alt="Pastores de ${escHtml(ig.nombre)}"
-              style="width:100%;max-width:480px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.12);margin:0 auto;display:block">
+            <img src="${escHtml(ig.fotoPastorUrl)}" alt="Pastores de ${escHtml(ig.nombre)}" style="width:100%;max-width:480px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.12);margin:0 auto;display:block">
             ${ig.pastor ? `<p style="margin-top:1rem;font-weight:700;color:#555">🧑‍💼 ${escHtml(ig.pastor)}</p>` : ''}
           </div>
         </section>` : '';
 
-      // ── OFRENDAS ──
       let ofrendarHtml = '';
       if (ig.ofrendas?.activo) {
         const of = ig.ofrendas;
         const metodos = [
-          of.mercadopago ? '<span class="metodo-chip">💳 Mercado Pago</span>' : '',
+          of.mercadopago   ? '<span class="metodo-chip">💳 Mercado Pago</span>' : '',
           of.transferencia ? '<span class="metodo-chip">🏦 Transferencia</span>' : '',
-          of.efectivo ? '<span class="metodo-chip">💵 Efectivo</span>' : '',
+          of.efectivo      ? '<span class="metodo-chip">💵 Efectivo</span>' : '',
         ].filter(Boolean).join('');
-
         const detalle = [
-          of.alias    ? `<div>📌 Alias: <strong>${escHtml(of.alias)}</strong></div>` : '',
-          of.cbu      ? `<div>🏦 CBU: <strong>${escHtml(of.cbu)}</strong></div>` : '',
-          of.titular  ? `<div>👤 Titular: <strong>${escHtml(of.titular)}</strong></div>` : '',
-          of.mpLink   ? `<div>🔗 <a href="${escHtml(of.mpLink)}" target="_blank" rel="noopener">Pagar con Mercado Pago</a></div>` : '',
-          of.mensaje  ? `<div style="margin-top:.5rem;font-style:italic;color:#666">"${escHtml(of.mensaje)}"</div>` : '',
+          of.alias   ? `<div>📌 Alias: <strong>${escHtml(of.alias)}</strong></div>` : '',
+          of.cbu     ? `<div>🏦 CBU: <strong>${escHtml(of.cbu)}</strong></div>` : '',
+          of.titular ? `<div>👤 Titular: <strong>${escHtml(of.titular)}</strong></div>` : '',
+          of.mpLink  ? `<div>🔗 <a href="${escHtml(of.mpLink)}" target="_blank" rel="noopener">Pagar con Mercado Pago</a></div>` : '',
+          of.mensaje ? `<div style="margin-top:.5rem;font-style:italic;color:#666">"${escHtml(of.mensaje)}"</div>` : '',
         ].filter(Boolean).join('');
-
         ofrendarHtml = `
-          <section class="section" style="padding-top:0">
-            <div class="container">
-              <h2 class="section-title">💝 Ofrendas y Diezmos</h2>
-              <div class="ofrendas-box">
-                <h3>Apoyá a ${escHtml(ig.nombre)}</h3>
-                <p>${of.descripcion || 'Tu ofrenda ayuda a sostener el ministerio y bendecir a más personas.'}</p>
-                <div class="ofrendas-metodos">${metodos}</div>
-                ${detalle ? `<div class="ofrendas-detalle">${detalle}</div>` : ''}
-              </div>
+          <section class="section" style="padding-top:0"><div class="container">
+            <h2 class="section-title">💝 Ofrendas y Diezmos</h2>
+            <div class="ofrendas-box">
+              <h3>Apoyá a ${escHtml(ig.nombre)}</h3>
+              <p>${of.descripcion || 'Tu ofrenda ayuda a sostener el ministerio y bendecir a más personas.'}</p>
+              <div class="ofrendas-metodos">${metodos}</div>
+              ${detalle ? `<div class="ofrendas-detalle">${detalle}</div>` : ''}
             </div>
-          </section>`;
+          </div></section>`;
       }
 
-      // ── EVENTOS ──
       const eventosItems = eventos.length ? eventos.map(ev => {
         const f = fmtFecha(ev.inicio);
         return `<div class="evento-card">
@@ -546,14 +483,11 @@
       }).join('') : `<div class="empty-state">📅 No hay eventos próximos por ahora.</div>`;
 
       const eventosHtml = `
-        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
-          <div class="container">
-            <h2 class="section-title">📅 Próximos Eventos</h2>
-            <div class="eventos-list">${eventosItems}</div>
-          </div>
-        </section>`;
+        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem"><div class="container">
+          <h2 class="section-title">📅 Próximos Eventos</h2>
+          <div class="eventos-list">${eventosItems}</div>
+        </div></section>`;
 
-      // ── PRÉDICAS ──
       const predicasItems = predicas.length ? predicas.map(p => `
         <div class="predica-card">
           <iframe src="https://www.youtube.com/embed/${escHtml(p.youtubeId)}" allowfullscreen loading="lazy"></iframe>
@@ -564,79 +498,43 @@
         </div>`).join('') : `<div class="empty-state">🎙️ No hay prédicas publicadas aún.</div>`;
 
       const predicasHtml = `
-        <section class="section">
-          <div class="container">
-            <h2 class="section-title">🎙️ Prédicas</h2>
-            <div class="predicas-grid">${predicasItems}</div>
-          </div>
-        </section>`;
+        <section class="section"><div class="container">
+          <h2 class="section-title">🎙️ Prédicas</h2>
+          <div class="predicas-grid">${predicasItems}</div>
+        </div></section>`;
 
-      // ── PETICIONES (formulario público) ──
       const peticionesHtml = `
-        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem">
-          <div class="container">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" class="forms-grid">
-
-              <!-- PETICIÓN DE ORACIÓN -->
-              <div class="form-box" id="formPeticion">
-                <div class="form-icon">🙏</div>
-                <h3 class="form-title">Petición de Oración</h3>
-                <p class="form-desc">Enviá tu petición de forma privada. Solo el equipo pastoral la verá.</p>
-                <div class="form-group">
-                  <label class="form-label">Nombre <span style="color:var(--primary)">*</span></label>
-                  <input id="pet_nombre" class="form-input" placeholder="Tu nombre">
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
-                  <div class="form-group">
-                    <label class="form-label">Apellido <span class="opt">opcional</span></label>
-                    <input id="pet_apellido" class="form-input" placeholder="Tu apellido">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Teléfono <span class="opt">opcional</span></label>
-                    <input id="pet_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Tu petición <span style="color:var(--primary)">*</span></label>
-                  <textarea id="pet_mensaje" class="form-input" rows="4" placeholder="Escribí tu petición de oración aquí…" style="resize:vertical"></textarea>
-                </div>
-                <button id="btnEnviarPeticion" class="form-btn">🙏 Enviar petición</button>
-                <div id="petMsg" class="form-feedback"></div>
+        <section class="section" style="background:#fff;padding-top:2rem;padding-bottom:2rem"><div class="container">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" class="forms-grid">
+            <div class="form-box" id="formPeticion">
+              <div class="form-icon">🙏</div>
+              <h3 class="form-title">Petición de Oración</h3>
+              <p class="form-desc">Enviá tu petición de forma privada. Solo el equipo pastoral la verá.</p>
+              <div class="form-group"><label class="form-label">Nombre <span style="color:var(--primary)">*</span></label><input id="pet_nombre" class="form-input" placeholder="Tu nombre"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+                <div class="form-group"><label class="form-label">Apellido <span class="opt">opcional</span></label><input id="pet_apellido" class="form-input" placeholder="Tu apellido"></div>
+                <div class="form-group"><label class="form-label">Teléfono <span class="opt">opcional</span></label><input id="pet_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel"></div>
               </div>
-
-              <!-- INSCRIPCIÓN AL BAUTISMO -->
-              <div class="form-box" id="formBautismo">
-                <div class="form-icon">💧</div>
-                <h3 class="form-title">Inscripción al Bautismo</h3>
-                <p class="form-desc">¿Sentís el llamado a bautizarte? Completá el formulario y nos ponemos en contacto.</p>
-                <div class="form-group">
-                  <label class="form-label">Nombre <span style="color:var(--primary)">*</span></label>
-                  <input id="baut_nombre" class="form-input" placeholder="Tu nombre">
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
-                  <div class="form-group">
-                    <label class="form-label">Apellido <span class="opt">opcional</span></label>
-                    <input id="baut_apellido" class="form-input" placeholder="Tu apellido">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Teléfono <span class="opt">opcional</span></label>
-                    <input id="baut_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">¿Querés contarnos algo? <span class="opt">opcional</span></label>
-                  <textarea id="baut_mensaje" class="form-input" rows="3" placeholder="Contanos un poco sobre vos o tu historia de fe…" style="resize:vertical"></textarea>
-                </div>
-                <button id="btnEnviarBautismo" class="form-btn" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">💧 Inscribirme al bautismo</button>
-                <div id="bautMsg" class="form-feedback"></div>
+              <div class="form-group"><label class="form-label">Tu petición <span style="color:var(--primary)">*</span></label><textarea id="pet_mensaje" class="form-input" rows="4" placeholder="Escribí tu petición de oración aquí…" style="resize:vertical"></textarea></div>
+              <button id="btnEnviarPeticion" class="form-btn">🙏 Enviar petición</button>
+              <div id="petMsg" class="form-feedback"></div>
+            </div>
+            <div class="form-box" id="formBautismo">
+              <div class="form-icon">💧</div>
+              <h3 class="form-title">Inscripción al Bautismo</h3>
+              <p class="form-desc">¿Sentís el llamado a bautizarte? Completá el formulario y nos ponemos en contacto.</p>
+              <div class="form-group"><label class="form-label">Nombre <span style="color:var(--primary)">*</span></label><input id="baut_nombre" class="form-input" placeholder="Tu nombre"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+                <div class="form-group"><label class="form-label">Apellido <span class="opt">opcional</span></label><input id="baut_apellido" class="form-input" placeholder="Tu apellido"></div>
+                <div class="form-group"><label class="form-label">Teléfono <span class="opt">opcional</span></label><input id="baut_tel" class="form-input" placeholder="Ej: 261 555-1234" type="tel"></div>
               </div>
-
+              <div class="form-group"><label class="form-label">¿Querés contarnos algo? <span class="opt">opcional</span></label><textarea id="baut_mensaje" class="form-input" rows="3" placeholder="Contanos un poco sobre vos o tu historia de fe…" style="resize:vertical"></textarea></div>
+              <button id="btnEnviarBautismo" class="form-btn" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">💧 Inscribirme al bautismo</button>
+              <div id="bautMsg" class="form-feedback"></div>
             </div>
           </div>
-        </section>`;
+        </div></section>`;
 
-
-      // ── GALERÍA ──
       let galeriaHtml = '';
       if (galeria.length) {
         const fotos = galeria.map(f => `
@@ -646,17 +544,12 @@
               onclick="abrirFoto('${escHtml(f.url)}')">
           </div>`).join('');
         galeriaHtml = `
-          <section class="section">
-            <div class="container">
-              <h2 class="section-title">📷 Galería</h2>
-              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem">
-                ${fotos}
-              </div>
-            </div>
-          </section>`;
+          <section class="section"><div class="container">
+            <h2 class="section-title">📷 Galería</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem">${fotos}</div>
+          </div></section>`;
       }
 
-      // ── SITIO WEB ──
       const websiteHtml = ig.website ? `
         <div style="text-align:center;padding:.5rem 0 1.5rem">
           <a href="${escHtml(ig.website)}" target="_blank" rel="noopener"
@@ -667,15 +560,11 @@
 
       app.innerHTML = heroHtml + websiteHtml + videoHtml + fotoPastorHtml + infoHtml + galeriaHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
 
-      // Inicializar estado del botón de notificaciones
       renderBtnNotif(estaSuscripto());
-      // Activar formularios de petición y bautismo
       activarFormularios();
     }
 
-    // ── FORMULARIOS: activar después de renderizar ──
     function activarFormularios() {
-      // PETICIÓN
       document.getElementById('btnEnviarPeticion')?.addEventListener('click', async () => {
         const nombre  = (document.getElementById('pet_nombre')?.value||'').trim();
         const apellido= (document.getElementById('pet_apellido')?.value||'').trim();
@@ -683,37 +572,17 @@
         const mensaje = (document.getElementById('pet_mensaje')?.value||'').trim();
         const msgEl   = document.getElementById('petMsg');
         const btn     = document.getElementById('btnEnviarPeticion');
-
-        if (!nombre || !mensaje) {
-          msgEl.textContent = '❌ Completá tu nombre y tu petición.';
-          msgEl.style.color = '#dc3545';
-          return;
-        }
-        btn.disabled = true;
-        btn.textContent = 'Enviando…';
+        if (!nombre || !mensaje) { msgEl.textContent='❌ Completá tu nombre y tu petición.'; msgEl.style.color='#dc3545'; return; }
+        btn.disabled=true; btn.textContent='Enviando…';
         try {
           const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js');
-          await addDoc(collection(db, 'iglesias', iglesiaId, 'peticiones'), {
-            nombre, apellido, tel, mensaje,
-            leida: false,
-            creadoEn: serverTimestamp()
-          });
-          msgEl.textContent = '✅ ¡Petición enviada! El equipo pastoral la recibirá con amor.';
-          msgEl.style.color = '#16a34a';
-          document.getElementById('pet_nombre').value = '';
-          document.getElementById('pet_apellido').value = '';
-          document.getElementById('pet_tel').value = '';
-          document.getElementById('pet_mensaje').value = '';
-          btn.textContent = '🙏 Petición enviada';
-        } catch(e) {
-          msgEl.textContent = '❌ Error: ' + e.message;
-          msgEl.style.color = '#dc3545';
-          btn.disabled = false;
-          btn.textContent = '🙏 Enviar petición';
-        }
+          await addDoc(collection(db,'iglesias',iglesiaId,'peticiones'), { nombre, apellido, tel, mensaje, leida:false, creadoEn:serverTimestamp() });
+          msgEl.textContent='✅ ¡Petición enviada! El equipo pastoral la recibirá con amor.'; msgEl.style.color='#16a34a';
+          ['pet_nombre','pet_apellido','pet_tel','pet_mensaje'].forEach(id=>{ document.getElementById(id).value=''; });
+          btn.textContent='🙏 Petición enviada';
+        } catch(e) { msgEl.textContent='❌ Error: '+e.message; msgEl.style.color='#dc3545'; btn.disabled=false; btn.textContent='🙏 Enviar petición'; }
       });
 
-      // BAUTISMO
       document.getElementById('btnEnviarBautismo')?.addEventListener('click', async () => {
         const nombre  = (document.getElementById('baut_nombre')?.value||'').trim();
         const apellido= (document.getElementById('baut_apellido')?.value||'').trim();
@@ -721,58 +590,29 @@
         const mensaje = (document.getElementById('baut_mensaje')?.value||'').trim();
         const msgEl   = document.getElementById('bautMsg');
         const btn     = document.getElementById('btnEnviarBautismo');
-
-        if (!nombre) {
-          msgEl.textContent = '❌ Ingresá tu nombre.';
-          msgEl.style.color = '#dc3545';
-          return;
-        }
-        btn.disabled = true;
-        btn.textContent = 'Enviando…';
+        if (!nombre) { msgEl.textContent='❌ Ingresá tu nombre.'; msgEl.style.color='#dc3545'; return; }
+        btn.disabled=true; btn.textContent='Enviando…';
         try {
           const { addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js');
-          await addDoc(collection(db, 'iglesias', iglesiaId, 'bautismos'), {
-            nombre, apellido, tel, mensaje,
-            leido: false,
-            creadoEn: serverTimestamp()
-          });
-          msgEl.textContent = '✅ ¡Inscripción enviada! El equipo se pondrá en contacto con vos.';
-          msgEl.style.color = '#1d4ed8';
-          document.getElementById('baut_nombre').value = '';
-          document.getElementById('baut_apellido').value = '';
-          document.getElementById('baut_tel').value = '';
-          document.getElementById('baut_mensaje').value = '';
-          btn.textContent = '💧 Inscripción enviada';
-        } catch(e) {
-          msgEl.textContent = '❌ Error: ' + e.message;
-          msgEl.style.color = '#dc3545';
-          btn.disabled = false;
-          btn.textContent = '💧 Inscribirme al bautismo';
-        }
+          await addDoc(collection(db,'iglesias',iglesiaId,'bautismos'), { nombre, apellido, tel, mensaje, leido:false, creadoEn:serverTimestamp() });
+          msgEl.textContent='✅ ¡Inscripción enviada! El equipo se pondrá en contacto con vos.'; msgEl.style.color='#1d4ed8';
+          ['baut_nombre','baut_apellido','baut_tel','baut_mensaje'].forEach(id=>{ document.getElementById(id).value=''; });
+          btn.textContent='💧 Inscripción enviada';
+        } catch(e) { msgEl.textContent='❌ Error: '+e.message; msgEl.style.color='#dc3545'; btn.disabled=false; btn.textContent='💧 Inscribirme al bautismo'; }
       });
     }
 
     window.compartir = function() {
       const url = window.location.href;
-      if (navigator.share) {
-        navigator.share({ title: document.title, url });
-      } else {
-        navigator.clipboard.writeText(url).then(()=> alert('¡Enlace copiado al portapapeles!'));
-      }
+      if (navigator.share) { navigator.share({ title: document.title, url }); }
+      else { navigator.clipboard.writeText(url).then(()=> alert('¡Enlace copiado al portapapeles!')); }
     };
 
     window.abrirFoto = function(url) {
       const lb = document.getElementById('lightbox');
       const img = document.getElementById('lightboxImg');
-      img.src = url;
-      lb.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      img.src = url; lb.style.display='flex'; document.body.style.overflow='hidden';
     };
-
-    document.getElementById('lightbox')?.addEventListener('click', () => {
-      document.getElementById('lightbox').style.display = 'none';
-      document.body.style.overflow = '';
-    });
 
     render().catch(e => {
       document.getElementById('app').innerHTML = `<div style="text-align:center;padding:4rem;color:#888"><h2>Error al cargar</h2><p>${e.message}</p></div>`;
@@ -780,15 +620,35 @@
   </script>
 
   <!-- Lightbox -->
-  <div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;align-items:center;justify-content:center;cursor:zoom-out;padding:1rem">
+  <div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;align-items:center;justify-content:center;cursor:zoom-out;padding:1rem" onclick="this.style.display='none';document.body.style.overflow=''">
     <img id="lightboxImg" src="" alt="" style="max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.5)">
   </div>
 
-  <!-- SW para notificaciones en background -->
+  <!-- SW notificaciones -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(()=>{});
     }
+
+    // ── Share bar ──
+    (function(){
+      const SHARE_URL = 'https://www.miiglesia.online';
+      window.compartirNativo = function() {
+        navigator.share({ title: document.title, text: '🙏 Mirá esta iglesia en Mi Iglesia+ ', url: window._shareUrl || window.location.href }).catch(()=>{});
+      };
+      window.copiarLinkBar = function() {
+        const url = window._shareUrl || window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+          const btn = document.getElementById('btnCopiarLink');
+          btn.textContent = '✅ ¡Copiado!';
+          setTimeout(() => btn.textContent = '📋 Copiar link', 2000);
+        });
+      };
+      window.cerrarShareBar = function() {
+        document.getElementById('share-bar').style.display = 'none';
+        sessionStorage.setItem('share-bar-cerrada', '1');
+      };
+    })();
   </script>
 </body>
 </html>
