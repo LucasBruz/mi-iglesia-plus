@@ -870,5 +870,44 @@
     });
   </script>
 
+  <!-- ── BOTÓN COMPARTIR ── -->
+  <div id="share-bar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0e0e0;padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:center;gap:.6rem;z-index:490;box-shadow:0 -2px 12px rgba(0,0,0,.08);flex-wrap:wrap">
+    <span style="font-size:.82rem;font-weight:700;color:#666;margin-right:.2rem">📲 Compartí la app:</span>
+    <button id="btnShareNative" onclick="compartirNativo()" style="display:none;background:#FF6B5B;color:#fff;border:0;border-radius:8px;padding:.5rem 1.1rem;font-weight:700;font-size:.85rem;cursor:pointer;font-family:'Poppins',sans-serif">🔗 Compartir</button>
+    <a id="btnShareWA" href="" target="_blank" rel="noopener" style="background:#25D366;color:#fff;border-radius:8px;padding:.5rem 1.1rem;font-weight:700;font-size:.85rem;text-decoration:none;white-space:nowrap">
+      <svg style="vertical-align:middle;margin-right:4px" width="15" height="15" viewBox="0 0 32 32" fill="none"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.478.655 4.8 1.8 6.807L2 30l7.38-1.773A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z" fill="#fff"/><path d="M16 4.5c-6.351 0-11.5 5.149-11.5 11.5 0 2.14.588 4.143 1.613 5.858l.243.407-1.03 3.76 3.87-1.015.394.228A11.45 11.45 0 0 0 16 27.5c6.351 0 11.5-5.149 11.5-11.5S22.351 4.5 16 4.5z" fill="#25D366"/><path d="M21.003 18.77c-.307-.154-1.816-.896-2.097-.998-.281-.103-.486-.154-.69.154-.204.307-.791.998-.97 1.203-.178.204-.357.23-.664.077-.307-.154-1.295-.477-2.466-1.522-.911-.813-1.526-1.816-1.705-2.123-.178-.307-.019-.473.134-.626.137-.137.307-.358.46-.537.154-.178.205-.307.307-.511.103-.205.051-.384-.025-.537-.077-.154-.69-1.664-.945-2.277-.249-.597-.502-.516-.69-.526l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.049-1.073 2.558s1.099 2.967 1.252 3.171c.154.205 2.163 3.303 5.24 4.632.733.316 1.305.505 1.751.646.736.234 1.406.201 1.936.122.590-.088 1.816-.742 2.073-1.459.256-.716.256-1.33.179-1.459-.076-.128-.281-.205-.588-.358z" fill="#fff"/></svg>WhatsApp
+    </a>
+    <button id="btnCopiarLink" onclick="copiarLinkBar()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;border-radius:8px;padding:.5rem 1.1rem;font-weight:700;font-size:.85rem;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap">📋 Copiar link</button>
+    <button onclick="cerrarShareBar()" style="background:none;border:0;color:#aaa;font-size:1.2rem;cursor:pointer;padding:.2rem .5rem;line-height:1" title="Cerrar">✕</button>
+  </div>
+  <script>
+  (function(){
+    const SHARE_URL  = 'https://www.miiglesia.online';
+    const SHARE_TEXT = '📱 Encontrá iglesias evangélicas cerca tuyo con Mi Iglesia+ ';
+    const BAR_KEY    = 'share-bar-cerrada';
+    if (sessionStorage.getItem(BAR_KEY)) document.getElementById('share-bar').style.display = 'none';
+    if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+      document.getElementById('btnShareNative').style.display = 'inline-block';
+      document.getElementById('btnShareWA').style.display     = 'none';
+      document.getElementById('btnCopiarLink').style.display  = 'none';
+    }
+    document.getElementById('btnShareWA').href = 'https://wa.me/?text=' + encodeURIComponent(SHARE_TEXT + SHARE_URL);
+    window.compartirNativo = function() {
+      navigator.share({ title:'Mi Iglesia+', text:SHARE_TEXT, url:SHARE_URL }).catch(()=>{});
+    };
+    window.copiarLinkBar = function() {
+      navigator.clipboard.writeText(SHARE_URL).then(() => {
+        const btn = document.getElementById('btnCopiarLink');
+        btn.textContent = '✅ ¡Copiado!';
+        setTimeout(() => btn.textContent = '📋 Copiar link', 2000);
+      });
+    };
+    window.cerrarShareBar = function() {
+      document.getElementById('share-bar').style.display = 'none';
+      sessionStorage.setItem(BAR_KEY, '1');
+    };
+  })();
+  </script>
+
 </body>
 </html>
