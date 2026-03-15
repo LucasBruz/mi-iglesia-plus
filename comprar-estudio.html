@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comprar Estudio | Mi Iglesia+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Google Ads tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18012009949"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18012009949');
+  </script>
+  <style>
+    :root {
+      --primary: #ff6b5b;
+      --primary-dark: #e55a4a;
+      --dark: #111;
+      --bg: #f5f5f5;
+      --card: #fff;
+      --muted: #666;
+      --border: #eee;
+      --green: #27ae60;
+      --blue: #1a56db;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: Poppins, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--dark);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    nav img { height: 36px; border-radius: 8px; }
+    nav span { color: #fff; font-weight: 700; font-size: 16px; }
+
+    /* ── LAYOUT ── */
+    .page-wrap {
+      max-width: 560px;
+      margin: 32px auto;
+      padding: 0 16px 60px;
+    }
+
+    /* ── ESTUDIO CARD ── */
+    .estudio-header {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.07);
+    }
+    .estudio-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .estudio-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 0 6px;
+    }
+    .estudio-iglesia {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+    .estudio-desc {
+      font-size: 14px;
+      color: #444;
+      margin: 0 0 16px;
+      line-height: 1.6;
+    }
+    .estudio-precio-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .precio-label { font-size: 13px; color: var(--muted); }
+    .precio-valor {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .precio-gratis {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    /* ── PAYMENT CARD ── */
+    .payment-card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.07);
+    }
+    .payment-card h2 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+    .payment-card p.sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 20px;
+    }
+
+    /* Método de pago selector */
+    .method-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .method-tab {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all .2s;
+    }
+    .method-tab.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: #fff5f5;
+    }
+    .method-tab .method-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+
+    /* Formulario datos comprador */
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: Poppins, sans-serif;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--primary);
+    }
+
+    /* Transferencia bancaria */
+    .bank-box {
+      background: #f0f7ff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .bank-box h4 { margin: 0 0 10px; font-size: 14px; color: #1a56db; }
+    .bank-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid #dce8ff;
+      font-size: 13px;
+    }
+    .bank-row:last-child { border-bottom: 0; }
+    .bank-row label { color: var(--muted); }
+    .bank-row .val { font-weight: 700; font-size: 13px; }
+    .btn-copy {
+      padding: 4px 10px;
+      background: var(--blue);
+      color: #fff;
+      border: 0;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .bank-row.amount-row .val { font-size: 18px; font-weight: 800; color: var(--primary); }
+
+    /* Upload comprobante */
+    .upload-zone {
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: border-color .2s, background .2s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--primary);
+      background: #fff5f5;
+    }
+    .upload-zone .icon { font-size: 28px; margin-bottom: 6px; }
+    .upload-zone p { margin: 0; font-size: 13px; color: var(--muted); }
+    .file-preview {
+      display: none;
+      padding: 10px 14px;
+      background: #e8f5e9;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #2e7d32;
+      margin-bottom: 12px;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-wrap { display: none; margin-bottom: 12px; }
+    .progress-bar-bg {
+      height: 6px;
+      background: #eee;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff6b5b, #ff8c69);
+      transition: width .3s;
+    }
+
+    /* Botón principal */
+    .btn-pagar {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary);
+      color: #fff;
+      border: 0;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+      margin-top: 8px;
+    }
+    .btn-pagar:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-pagar:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Mensaje de estado */
+    #statusMsg {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    /* ── SUCCESS STATE ── */
+    .success-card {
+      display: none;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 40px 24px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,.07);
+    }
+    .success-card .success-icon { font-size: 56px; margin-bottom: 12px; }
+    .success-card h2 { font-size: 22px; font-weight: 800; margin: 0 0 8px; }
+    .success-card p { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--green);
+      color: #fff;
+      border: 0;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+    .btn-download:hover { opacity: .9; }
+
+    /* ── PENDING STATE (transferencia enviada) ── */
+    .pending-card {
+      display: none;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,.07);
+    }
+    .pending-card .pending-icon { font-size: 48px; margin-bottom: 12px; }
+    .pending-card h2 { font-size: 20px; font-weight: 800; margin: 0 0 8px; }
+    .pending-card p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 8px; }
+
+    /* ── LOADING ── */
+    #loadingState {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #eee;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 480px) {
+      .method-tabs { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <img src="assets/logo.png" alt="Mi Iglesia+">
+  <span>Mi Iglesia+</span>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- Estado de carga inicial -->
+  <div id="loadingState">
+    <div class="spinner"></div>
+    <p>Cargando estudio...</p>
+  </div>
+
+  <!-- Contenido principal (oculto hasta cargar) -->
+  <div id="mainContent" style="display:none">
+
+    <!-- Header del estudio -->
+    <div class="estudio-header">
+      <span class="estudio-tag">📚 Estudio Bíblico</span>
+      <h1 class="estudio-title" id="estTitulo">—</h1>
+      <p class="estudio-iglesia" id="estIglesia">—</p>
+      <p class="estudio-desc" id="estDesc"></p>
+      <div class="estudio-precio-row">
+        <span class="precio-label">Precio de acceso</span>
+        <span id="estPrecio" class="precio-valor">—</span>
+      </div>
+    </div>
+
+    <!-- Tarjeta de pago -->
+    <div class="payment-card" id="paymentCard">
+      <h2>💳 Completar compra</h2>
+      <p class="sub">Tus datos para recibir el archivo</p>
+
+      <div class="form-group">
+        <label>Nombre completo *</label>
+        <input type="text" id="compradorNombre" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="compradorEmail" placeholder="tu@email.com">
+      </div>
+
+      <!-- Selección de método de pago -->
+      <p style="font-size:13px;font-weight:700;margin:0 0 10px">Método de pago</p>
+      <div class="method-tabs">
+        <div class="method-tab active" id="tabMP" onclick="setMetodo('mp')">
+          <span class="method-icon">💳</span>
+          Mercado Pago
+        </div>
+        <div class="method-tab" id="tabBanco" onclick="setMetodo('banco')">
+          <span class="method-icon">🏦</span>
+          Transferencia
+        </div>
+      </div>
+
+      <!-- PANEL: Mercado Pago -->
+      <div id="panelMP">
+        <p style="font-size:13px;color:#666;text-align:center;padding:12px 0">
+          Al hacer clic vas a ser redirigido al checkout de Mercado Pago para pagar de forma segura.
+        </p>
+        <button class="btn-pagar" id="btnPagarMP">💳 Pagar con Mercado Pago</button>
+      </div>
+
+      <!-- PANEL: Transferencia bancaria -->
+      <div id="panelBanco" style="display:none">
+        <div class="bank-box">
+          <h4>🏦 Datos para la transferencia</h4>
+          <div class="bank-row amount-row">
+            <label>Monto a transferir</label>
+            <span class="val" id="bankAmount">—</span>
+          </div>
+          <div class="bank-row">
+            <label>Titular</label>
+            <span class="val">Lucas Ezequiel Bruz Calderon</span>
+          </div>
+          <div class="bank-row">
+            <label>Banco</label>
+            <span class="val">Brubank</span>
+          </div>
+          <div class="bank-row">
+            <label>CBU</label>
+            <span class="val">1430001713001593460017</span>
+            <button class="btn-copy" onclick="copiar('1430001713001593460017', this)">Copiar</button>
+          </div>
+          <div class="bank-row">
+            <label>Alias</label>
+            <span class="val">miiglesia.online</span>
+            <button class="btn-copy" onclick="copiar('miiglesia.online', this)">Copiar</button>
+          </div>
+        </div>
+
+        <p style="font-size:13px;font-weight:700;margin:0 0 8px">📸 Subí el comprobante de pago</p>
+        <div class="upload-zone" id="comprobanteZone">
+          <div class="icon">📎</div>
+          <p>Arrastrá la captura o tocá para seleccionar</p>
+          <p style="font-size:11px;margin-top:4px">JPG, PNG o PDF — máx. 5 MB</p>
+          <input type="file" id="comprobanteInput" accept="image/*,.pdf" style="display:none">
+        </div>
+        <div class="file-preview" id="comprobantePreview">
+          <span>📎</span><span id="comprobanteFileName"></span>
+        </div>
+        <div class="progress-wrap" id="comprobanteProgressWrap">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="comprobanteProgressBar"></div>
+          </div>
+          <p style="margin:4px 0 0;font-size:12px;color:#666;text-align:center" id="comprobanteProgressText">Subiendo...</p>
+        </div>
+
+        <button class="btn-pagar" id="btnEnviarTransferencia">🏦 Enviar comprobante</button>
+      </div>
+
+      <p id="statusMsg"></p>
+    </div>
+
+    <!-- Gratis: descarga directa -->
+    <div class="payment-card" id="gratisCard" style="display:none">
+      <h2>🎁 Este estudio es gratuito</h2>
+      <p class="sub">Completá tu nombre y email para descargar el archivo.</p>
+      <div class="form-group">
+        <label>Nombre completo *</label>
+        <input type="text" id="gratisNombre" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="gratisEmail" placeholder="tu@email.com">
+      </div>
+      <button class="btn-pagar" id="btnDescargarGratis" style="background:#27ae60">
+        📥 Descargar gratis
+      </button>
+      <p id="gratisMsg" style="text-align:center;margin-top:12px;font-size:13px"></p>
+    </div>
+  </div>
+
+  <!-- Estado: pago exitoso / descarga disponible -->
+  <div class="success-card" id="successCard">
+    <div class="success-icon">🎉</div>
+    <h2>¡Pago confirmado!</h2>
+    <p>Tu compra fue procesada correctamente. Ya podés descargar el estudio.</p>
+    <a id="btnDescarga" href="#" target="_blank" class="btn-download">
+      📥 Descargar estudio
+    </a>
+    <p style="margin-top:16px;font-size:12px;color:#999">
+      El link de descarga también fue enviado a tu email.
+    </p>
+  </div>
+
+  <!-- Estado: transferencia pendiente de revisión -->
+  <div class="pending-card" id="pendingCard">
+    <div class="pending-icon">⏳</div>
+    <h2>Comprobante enviado</h2>
+    <p>Recibimos tu comprobante. En cuanto confirmemos el pago, te enviamos el link de descarga por WhatsApp o email.</p>
+    <p style="font-size:13px;color:#999">Tiempo de acreditación: hasta 2 horas hábiles.</p>
+  </div>
+
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, getDoc, addDoc, collection, updateDoc, increment }
+  from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL }
+  from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+  authDomain: "miiglesia-plus.firebaseapp.com",
+  projectId: "miiglesia-plus",
+  storageBucket: "miiglesia-plus-storage.appspot.com",
+  messagingSenderId: "407699856167",
+  appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+};
+
+const app     = initializeApp(firebaseConfig);
+const db      = getFirestore(app);
+const storage = getStorage(app);
+
+// ── Leer params de la URL ──
+const params    = new URLSearchParams(location.search);
+const iglesiaId = params.get('iglesia');
+const estudioId = params.get('estudio');
+
+let estudioData   = null;
+let iglesiaData   = null;
+let metodoActivo  = 'mp';
+let comprobanteFile = null;
+
+// ── Cargar datos del estudio ──
+async function init() {
+  if (!iglesiaId || !estudioId) {
+    mostrarError('Enlace inválido. Faltan parámetros.');
+    return;
+  }
+  try {
+    const [estSnap, iglSnap] = await Promise.all([
+      getDoc(doc(db, 'iglesias', iglesiaId, 'estudios', estudioId)),
+      getDoc(doc(db, 'iglesias', iglesiaId))
+    ]);
+    if (!estSnap.exists() || !estSnap.data().visible) {
+      mostrarError('Este estudio no está disponible.');
+      return;
+    }
+    estudioData = estSnap.data();
+    iglesiaData = iglSnap.exists() ? iglSnap.data() : {};
+
+    // Rellenar UI
+    document.getElementById('estTitulo').textContent  = estudioData.titulo;
+    document.getElementById('estIglesia').textContent = iglesiaData.nombre ? `📍 ${iglesiaData.nombre}` : '';
+    document.getElementById('estDesc').textContent    = estudioData.descripcion || '';
+
+    if (estudioData.precio > 0) {
+      document.getElementById('estPrecio').textContent = `$${estudioData.precio.toLocaleString('es-AR')} ARS`;
+      document.getElementById('bankAmount').textContent = `$${estudioData.precio.toLocaleString('es-AR')} ARS`;
+      document.getElementById('paymentCard').style.display = 'block';
+    } else {
+      document.getElementById('estPrecio').className   = 'precio-gratis';
+      document.getElementById('estPrecio').textContent = '¡Gratis!';
+      document.getElementById('gratisCard').style.display = 'block';
+    }
+
+    document.getElementById('loadingState').style.display  = 'none';
+    document.getElementById('mainContent').style.display   = 'block';
+  } catch(e) {
+    mostrarError('Error al cargar el estudio.');
+  }
+}
+
+function mostrarError(msg) {
+  document.getElementById('loadingState').innerHTML =
+    `<p style="color:#c0392b;font-size:15px">⚠️ ${msg}</p>`;
+}
+
+// ── Método de pago ──
+window.setMetodo = function(m) {
+  metodoActivo = m;
+  document.getElementById('tabMP').classList.toggle('active', m === 'mp');
+  document.getElementById('tabBanco').classList.toggle('active', m === 'banco');
+  document.getElementById('panelMP').style.display    = m === 'mp'    ? 'block' : 'none';
+  document.getElementById('panelBanco').style.display = m === 'banco' ? 'block' : 'none';
+};
+
+// ── Copiar al portapapeles ──
+window.copiar = function(texto, btn) {
+  navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = '✓';
+    setTimeout(() => btn.textContent = 'Copiar', 1500);
+  });
+};
+
+// ── Comprobante drag & drop ──
+const cZone  = document.getElementById('comprobanteZone');
+const cInput = document.getElementById('comprobanteInput');
+
+cZone.addEventListener('click', () => cInput.click());
+cZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  cZone.classList.add('drag-over');
+});
+cZone.addEventListener('dragleave', () => cZone.classList.remove('drag-over'));
+cZone.addEventListener('drop', e => {
+  e.preventDefault();
+  cZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) setComprobante(e.dataTransfer.files[0]);
+});
+cInput.addEventListener('change', () => {
+  if (cInput.files[0]) setComprobante(cInput.files[0]);
+});
+
+function setComprobante(file) {
+  if (file.size > 5 * 1024 * 1024) { alert('El archivo supera los 5 MB'); return; }
+  comprobanteFile = file;
+  document.getElementById('comprobanteFileName').textContent = file.name;
+  document.getElementById('comprobantePreview').style.display = 'flex';
+}
+
+// ── PAGAR CON MERCADO PAGO ──
+document.getElementById('btnPagarMP')?.addEventListener('click', async () => {
+  const nombre = document.getElementById('compradorNombre').value.trim();
+  const email  = document.getElementById('compradorEmail').value.trim();
+  const msg    = document.getElementById('statusMsg');
+
+  if (!nombre || !email) {
+    msg.style.color = '#c0392b'; msg.textContent = '⚠️ Completá tu nombre y email.'; return;
+  }
+  if (!email.includes('@')) {
+    msg.style.color = '#c0392b'; msg.textContent = '⚠️ Email inválido.'; return;
+  }
+
+  const btn = document.getElementById('btnPagarMP');
+  btn.disabled = true; btn.textContent = '⏳ Generando link de pago...';
+  msg.textContent = '';
+
+  try {
+    const resp = await fetch('https://us-central1-miiglesia-plus.cloudfunctions.net/createEstudioPreference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        iglesiaId, estudioId,
+        titulo: estudioData.titulo,
+        precio: estudioData.precio,
+        comprador: { nombre, email }
+      })
+    });
+    const data = await resp.json();
+    if (data.init_point) {
+      window.location.href = data.init_point;
+    } else {
+      throw new Error(data.error || 'No se pudo crear el link');
+    }
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '💳 Pagar con Mercado Pago';
+    msg.style.color = '#c0392b'; msg.textContent = '❌ Error: ' + e.message;
+  }
+});
+
+// ── ENVIAR COMPROBANTE DE TRANSFERENCIA ──
+document.getElementById('btnEnviarTransferencia')?.addEventListener('click', async () => {
+  const nombre = document.getElementById('compradorNombre').value.trim();
+  const email  = document.getElementById('compradorEmail').value.trim();
+  const msg    = document.getElementById('statusMsg');
+
+  if (!nombre || !email) {
+    msg.style.color = '#c0392b'; msg.textContent = '⚠️ Completá tu nombre y email.'; return;
+  }
+  if (!comprobanteFile) {
+    msg.style.color = '#c0392b'; msg.textContent = '⚠️ Subí el comprobante de transferencia.'; return;
+  }
+
+  const btn = document.getElementById('btnEnviarTransferencia');
+  btn.disabled = true; btn.textContent = '⏳ Enviando...';
+  msg.textContent = '';
+
+  // Subir comprobante a Storage
+  const fileName  = `${Date.now()}_${comprobanteFile.name.replace(/\s+/g,'_')}`;
+  const fileRef   = ref(storage, `comprobantes-estudios/${iglesiaId}/${estudioId}/${fileName}`);
+  const progressWrap = document.getElementById('comprobanteProgressWrap');
+  const progressBar  = document.getElementById('comprobanteProgressBar');
+  const progressTxt  = document.getElementById('comprobanteProgressText');
+  progressWrap.style.display = 'block';
+
+  const uploadTask = uploadBytesResumable(fileRef, comprobanteFile);
+  uploadTask.on('state_changed',
+    snap => {
+      const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+      progressBar.style.width = pct + '%';
+      progressTxt.textContent = `Subiendo... ${pct}%`;
+    },
+    err => {
+      btn.disabled = false; btn.textContent = '🏦 Enviar comprobante';
+      msg.style.color = '#c0392b'; msg.textContent = '❌ Error al subir: ' + err.message;
+      progressWrap.style.display = 'none';
+    },
+    async () => {
+      const comprobanteUrl = await getDownloadURL(uploadTask.snapshot.ref);
+      // Guardar pedido en Firestore
+      await addDoc(collection(db, 'pedidos_estudios'), {
+        iglesiaId, estudioId,
+        titulo:        estudioData.titulo,
+        precio:        estudioData.precio,
+        comprador:     { nombre, email },
+        metodo:        'transferencia',
+        comprobanteUrl,
+        estado:        'pendiente',
+        archivoUrl:    estudioData.archivoUrl,
+        archivoNombre: estudioData.archivoNombre,
+        creadoEn:      new Date()
+      });
+      progressWrap.style.display = 'none';
+      document.getElementById('paymentCard').style.display = 'none';
+      document.getElementById('pendingCard').style.display = 'block';
+    }
+  );
+});
+
+// ── DESCARGA GRATUITA ──
+document.getElementById('btnDescargarGratis')?.addEventListener('click', async () => {
+  const nombre = document.getElementById('gratisNombre').value.trim();
+  const email  = document.getElementById('gratisEmail').value.trim();
+  const msg    = document.getElementById('gratisMsg');
+
+  if (!nombre || !email) {
+    msg.style.color = '#c0392b'; msg.textContent = '⚠️ Completá tu nombre y email.'; return;
+  }
+
+  const btn = document.getElementById('btnDescargarGratis');
+  btn.disabled = true; btn.textContent = '⏳ Preparando descarga...';
+
+  try {
+    // Registrar descarga gratuita
+    await addDoc(collection(db, 'pedidos_estudios'), {
+      iglesiaId, estudioId,
+      titulo:    estudioData.titulo,
+      precio:    0,
+      comprador: { nombre, email },
+      metodo:    'gratis',
+      estado:    'aprobado',
+      archivoUrl: estudioData.archivoUrl,
+      creadoEn:  new Date()
+    });
+    await updateDoc(doc(db, 'iglesias', iglesiaId, 'estudios', estudioId), {
+      ventas: increment(1)
+    });
+    // Mostrar descarga
+    document.getElementById('gratisCard').style.display = 'none';
+    document.getElementById('estudio-header') && (document.querySelector('.estudio-header').style.display = 'none');
+    document.getElementById('btnDescarga').href = estudioData.archivoUrl;
+    document.getElementById('successCard').querySelector('h2').textContent = '¡Archivo listo!';
+    document.getElementById('successCard').querySelector('p').textContent  = 'Ya podés descargar tu estudio gratuito.';
+    document.getElementById('successCard').style.display = 'block';
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '📥 Descargar gratis';
+    msg.style.color = '#c0392b'; msg.textContent = '❌ Error: ' + e.message;
+  }
+});
+
+// ── Verificar si volvió de MP con pago exitoso ──
+async function verificarPagoMP() {
+  const status       = params.get('status');
+  const collectionId = params.get('collection_id');
+  if (!status || !iglesiaId || !estudioId) return;
+
+  document.getElementById('loadingState').style.display  = 'block';
+  document.getElementById('mainContent').style.display   = 'none';
+  document.getElementById('loadingState').innerHTML = '<div class="spinner"></div><p>Verificando pago...</p>';
+
+  if (status === 'approved' && collectionId) {
+    // Guardar pedido aprobado
+    await addDoc(collection(db, 'pedidos_estudios'), {
+      iglesiaId, estudioId,
+      titulo:        params.get('payment_id') || collectionId,
+      precio:        estudioData?.precio || 0,
+      metodo:        'mercadopago',
+      mpPaymentId:   collectionId,
+      estado:        'aprobado',
+      archivoUrl:    estudioData?.archivoUrl || '',
+      archivoNombre: estudioData?.archivoNombre || '',
+      creadoEn:      new Date()
+    });
+    await updateDoc(doc(db, 'iglesias', iglesiaId, 'estudios', estudioId), {
+      ventas: increment(1)
+    });
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('btnDescarga').href = estudioData?.archivoUrl || '#';
+    document.getElementById('successCard').style.display  = 'block';
+  } else if (status === 'failure') {
+    document.getElementById('loadingState').innerHTML =
+      `<p style="color:#c0392b">❌ El pago no se completó. <a href="javascript:history.back()">Intentar de nuevo</a></p>`;
+  } else if (status === 'pending') {
+    document.getElementById('loadingState').innerHTML =
+      `<div class="pending-icon" style="font-size:40px;text-align:center">⏳</div>
+       <p style="text-align:center">Pago pendiente. Te avisamos cuando se acredite.</p>`;
+  }
+}
+
+init().then(() => {
+  if (params.get('status')) verificarPagoMP();
+});
+</script>
+</body>
+</html>
