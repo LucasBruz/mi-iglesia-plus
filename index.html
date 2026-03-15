@@ -12,7 +12,7 @@
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.miiglesia.online/">
 
-  <!-- ── OPEN GRAPH (Facebook, WhatsApp, etc) ── -->
+  <!-- ── OPEN GRAPH ── -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.miiglesia.online/">
   <meta property="og:title" content="Mi Iglesia+ | Encontrá tu Iglesia en Argentina">
@@ -27,7 +27,7 @@
   <meta name="twitter:description" content="Directorio de iglesias evangélicas en Argentina. Buscá por ciudad, provincia o nombre.">
   <meta name="twitter:image" content="https://www.miiglesia.online/assets/og-image.png">
 
-  <!-- ── SCHEMA.ORG (datos estructurados para Google) ── -->
+  <!-- ── SCHEMA.ORG ── -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -43,7 +43,7 @@
   }
   </script>
 
-  <!-- ✅ PWA: Manifest y meta tags -->
+  <!-- ✅ PWA -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#FF6B5B">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -75,7 +75,6 @@
     .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
     .logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.3rem;color:var(--dark)}
     .logo img{height:52px;width:52px;object-fit:contain;display:block;border-radius:0}
-    .logo-text span{color:var(--primary)}
     .nav-buttons{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
 
     /* Botones */
@@ -85,26 +84,20 @@
     .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,91,.3)}
     .btn-wa{background:#25D366;color:#fff}
 
-    /* ✅ Botón instalar PWA */
+    /* Botón instalar PWA */
     #btn-instalar{
       display:none;
       background:linear-gradient(135deg,#FF6B5B,#e63946);
-      color:#fff;
-      border:none;
-      border-radius:8px;
-      padding:.55rem 1rem;
-      font-weight:700;
-      font-family:'Poppins',sans-serif;
-      cursor:pointer;
-      font-size:.85rem;
-      animation:pulseBtn 2s infinite;
+      color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1rem;font-weight:700;
+      font-family:'Poppins',sans-serif;cursor:pointer;
+      font-size:.85rem;animation:pulseBtn 2s infinite;
     }
     @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 rgba(255,107,91,.4)}50%{box-shadow:0 0 0 8px rgba(255,107,91,0)}}
 
-    /* ✅ Banner de instalación (mobile) */
+    /* Banner instalación */
     #install-banner{
-      display:none;
-      position:fixed;bottom:0;left:0;right:0;
+      display:none;position:fixed;bottom:0;left:0;right:0;
       background:#fff;border-top:2px solid var(--primary);
       padding:1rem 1.5rem;z-index:999;
       box-shadow:0 -4px 20px rgba(0,0,0,.12);
@@ -114,47 +107,30 @@
     #install-banner p small{display:block;color:var(--gray);font-weight:400;font-size:.8rem}
     .banner-btns{display:flex;gap:.5rem}
 
-    /* ─── HERO CON IMAGEN DE FONDO ─── */
+    /* HERO */
     .hero{
-      position:relative;
-      padding:5rem 2rem;
-      text-align:center;
-      overflow:hidden;
-      min-height:580px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      position:relative;padding:5rem 2rem;text-align:center;
+      overflow:hidden;min-height:580px;
+      display:flex;align-items:center;justify-content:center;
     }
-    /* Capa 1: foto de fondo (ya tiene el overlay coral aplicado) */
     .hero::before{
-      content:'';
-      position:absolute;inset:0;
+      content:'';position:absolute;inset:0;
       background-image:url('assets/fondo.png');
-      background-size:cover;
-      background-position:center center;
-      background-repeat:no-repeat;
-      z-index:0;
+      background-size:cover;background-position:center center;
+      background-repeat:no-repeat;z-index:0;
     }
-    /* Capa 2: oscurecer levemente solo arriba y abajo para que el texto sea legible */
     .hero::after{
-      content:'';
-      position:absolute;inset:0;
-      background:linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.4) 100%);
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(to bottom,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0.15) 50%,rgba(0,0,0,0.4) 100%);
       z-index:1;
     }
-    .hero-content{
-      position:relative;
-      z-index:2;
-      max-width:800px;
-      margin:0 auto;
-    }
+    .hero-content{position:relative;z-index:2;max-width:800px;margin:0 auto}
     .logo-circle{width:220px;height:220px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.3))}
     .logo-circle img{width:100%;height:100%;object-fit:contain;border-radius:18px}
     h1{font-size:3.5rem;font-weight:800;margin-bottom:1rem;line-height:1.2;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.45)}
     h1 span{color:#FF6B5B}
     .hero p{font-size:1.1rem;color:rgba(255,255,255,0.88);margin-bottom:2rem;line-height:1.8;text-shadow:0 1px 6px rgba(0,0,0,0.3)}
     .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-    /* Botones del hero adaptados al fondo oscuro */
     .hero .btn-secondary{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);backdrop-filter:blur(4px)}
     .hero .btn-secondary:hover{background:rgba(255,255,255,0.28)}
 
@@ -162,7 +138,6 @@
     .features{padding:4rem 2rem;background:var(--white)}
     .container{max-width:1200px;margin:0 auto}
     .section-title{text-align:center;font-size:2.2rem;font-weight:800;margin-bottom:2rem}
-
     .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
     .feature-card{background:var(--white);padding:2rem;border-radius:12px;border:1px solid var(--border);transition:all .3s;text-align:center}
     .feature-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
@@ -187,9 +162,9 @@
     .church-info{color:var(--gray);font-size:.95rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
     .church-info strong{color:var(--dark)}
     .church-button{width:100%;margin-top:1rem;padding:.8rem}
-    .no-results{text-align:center;color:var(--gray);padding:2rem;grid-column:1 / -1;font-size:1.1rem}
+    .no-results{text-align:center;color:var(--gray);padding:2rem;grid-column:1/-1;font-size:1.1rem}
 
-    /* AUTOCOMPLETE */
+    /* CHIPS */
     .tag-chip{display:inline-flex;align-items:center;padding:.35rem .8rem;border-radius:999px;background:#f0f0f0;color:var(--dark);font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--border);font-family:'Poppins',sans-serif;transition:all .2s;user-select:none}
     .tag-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
     .tag-chip.activo{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -204,15 +179,37 @@
     .suggestion small{color:var(--gray)}
     .suggestion:hover{background:#f8f8f8}
 
+    /* Botón zonas */
+    #btnToggleZonas{
+      background:#eef2ff;color:#3730a3;
+      border:1px solid #c7d2fe;border-radius:999px;
+      padding:.45rem 1.2rem;font-size:.82rem;font-weight:700;
+      cursor:pointer;font-family:'Poppins',sans-serif;
+      transition:all .2s;
+    }
+    #btnToggleZonas:hover{background:#3730a3;color:#fff;border-color:#3730a3}
+
+    /* Panel zonas: animación suave */
+    #zonasPanel{
+      overflow:hidden;
+      max-height:0;
+      transition:max-height .35s ease, opacity .3s ease;
+      opacity:0;
+    }
+    #zonasPanel.abierto{
+      max-height:600px;
+      opacity:1;
+    }
+
     /* EVENTOS DESTACADOS */
     .ads-section{padding:3rem 2rem;background:#fff}
     .ads-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1200px;margin:0 auto}
-    .ad-card{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:transform .2s, box-shadow .2s}
+    .ad-card{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s}
     .ad-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
     .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
     .ad-body{padding:12px}
     .ad-title{font-weight:700;margin-bottom:4px}
-    .ad-meta{color:var(--gray);font-size:.92rem;display:flex;align-items:center;gap:8px}
+    .ad-meta{color:var(--gray);font-size:.92rem}
     .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
     .chip.starter{background:#6c757d}
     .chip.pro{background:#28a745}
@@ -233,18 +230,28 @@
     .founder-photo img{width:100%;height:100%;object-fit:cover}
     .founder-info{text-align:left}
     .founder-info h4{margin:0;color:white;font-size:1.1rem}
-    .founder-info p{margin:.3rem 0 0 0;color:rgba(255,255,255,.7);font-size:.9rem}
-    .founder-info .btn{margin-top:.8rem;padding:.5rem 1.2rem;font-size:.85rem}
+    .founder-info p{margin:.3rem 0 0;color:rgba(255,255,255,.7);font-size:.9rem}
+
+    /* Burbuja WhatsApp */
+    #wa-bubble{
+      display:none;position:fixed;bottom:1.5rem;right:1.2rem;
+      width:52px;height:52px;background:#25D366;border-radius:50%;
+      box-shadow:0 4px 16px rgba(37,211,102,.5);
+      align-items:center;justify-content:center;
+      font-size:1.6rem;z-index:500;text-decoration:none;
+      animation:pulseWa 2.5s infinite;
+    }
+    @keyframes pulseWa{0%,100%{box-shadow:0 4px 16px rgba(37,211,102,.5)}50%{box-shadow:0 4px 28px rgba(37,211,102,.75)}}
+
+    #hamburger{display:none}
 
     @media(max-width:768px){
-      /* NAV mobile: mostrar Ingresar + Comenzar, ocultar resto */
       nav{padding:.7rem 1rem}
-      #hamburger{display:none}
       .nav-buttons{display:flex;gap:.4rem;align-items:center}
       .btn-wa{display:none}
       #btn-instalar{display:none!important}
+      #wa-bubble{display:flex}
 
-      /* HERO */
       .hero{padding:3rem 1.2rem;min-height:auto}
       .logo-circle{width:130px;height:130px;margin-bottom:1.2rem}
       h1{font-size:1.85rem}
@@ -252,63 +259,22 @@
       .hero-buttons{flex-direction:column;gap:.7rem}
       .hero-buttons .btn{width:100%;padding:.85rem}
 
-      /* FEATURES */
       .features{padding:2.5rem 1rem}
       .section-title{font-size:1.4rem;margin-bottom:1.2rem}
       .features-grid{grid-template-columns:1fr;gap:1rem}
 
-      /* SEARCH */
       .search-section{padding:2rem 1rem}
-      .search-bar-wrap{flex-direction:column;gap:.5rem}
-      .search-bar-wrap input{font-size:1rem;padding:.85rem 1rem}
-      .search-bar-wrap button{width:100%;padding:.85rem}
 
-      /* CHIPS zonas: scroll horizontal */
       #tags-rapidos{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:.3rem;-webkit-overflow-scrolling:touch;scrollbar-width:none}
       #tags-rapidos::-webkit-scrollbar{display:none}
 
-      /* CHURCH CARDS */
-      .churches-grid{grid-template-columns:1fr;gap:1rem;padding:0 1rem}
+      #zonasPanel.abierto{max-height:900px}
+
       .church-card{border-radius:14px}
-
-      /* PLANES */
-      .planes-grid{grid-template-columns:1fr;gap:1rem}
-
-      /* TABS sección */
-      .tab-nav{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;gap:.4rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:.3rem}
-      .tab-nav::-webkit-scrollbar{display:none}
-
-      /* FOOTER */
       .footer-founder{flex-direction:column;text-align:center;gap:1rem}
       .founder-info{text-align:center}
       footer{padding:1.5rem 1rem;font-size:.82rem}
     }
-
-    /* Burbuja flotante de WhatsApp */
-    #wa-bubble{
-      display:none;
-      position:fixed;
-      bottom:1.5rem;right:1.2rem;
-      width:52px;height:52px;
-      background:#25D366;
-      border-radius:50%;
-      box-shadow:0 4px 16px rgba(37,211,102,.5);
-      align-items:center;justify-content:center;
-      font-size:1.6rem;
-      z-index:500;
-      text-decoration:none;
-      animation:pulseWa 2.5s infinite;
-    }
-    @keyframes pulseWa{
-      0%,100%{box-shadow:0 4px 16px rgba(37,211,102,.5)}
-      50%{box-shadow:0 4px 28px rgba(37,211,102,.75)}
-    }
-    @media(max-width:768px){
-      #wa-bubble{display:flex}
-    }
-
-    /* Hamburger button (oculto, ya no se usa) */
-    #hamburger{display:none}
   </style>
 </head>
 <body>
@@ -328,7 +294,7 @@
     </div>
   </nav>
 
-  <!-- Burbuja WhatsApp (solo mobile) -->
+  <!-- Burbuja WhatsApp -->
   <a id="wa-bubble" href="https://wa.me/5492615515707" target="_blank" rel="noopener" title="Contacto por WhatsApp">
     <svg viewBox="0 0 32 32" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M16 2C8.268 2 2 8.268 2 16c0 2.478.655 4.8 1.8 6.807L2 30l7.38-1.773A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z" fill="#fff"/>
@@ -337,7 +303,7 @@
     </svg>
   </a>
 
-  <!-- ✅ Banner de instalación para mobile -->
+  <!-- Banner instalación -->
   <div id="install-banner">
     <p>
       📲 Instalá Mi Iglesia+ en tu celu
@@ -349,9 +315,7 @@
     </div>
   </div>
 
-  <!-- ✅ Banner de actualización disponible -->
-
-  <!-- HERO con imagen de fondo -->
+  <!-- HERO -->
   <section class="hero" id="home">
     <div class="hero-content">
       <div class="logo-circle">
@@ -370,7 +334,7 @@
   <section class="ads-section" id="publicidad">
     <div class="container">
       <h2 class="section-title" style="text-align:center">Eventos destacados</h2>
-      <div id="adsGrid" class="ads-grid"><!-- Se completa por JS --></div>
+      <div id="adsGrid" class="ads-grid"></div>
     </div>
   </section>
 
@@ -404,7 +368,7 @@
       <h2 class="section-title">Encontrá tu Iglesia</h2>
       <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad, pastor o palabra clave</p>
 
-      <!-- Palabras clave rápidas -->
+      <!-- Tags de categoría -->
       <div id="tags-rapidos" style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:.7rem">
         <span class="tag-chip" onclick="buscarPorTag('jóvenes')">🔥 Jóvenes</span>
         <span class="tag-chip" onclick="buscarPorTag('familiar')">👨‍👩‍👧 Familiar</span>
@@ -418,57 +382,69 @@
         <button class="tag-chip tag-clear" id="btnLimpiarTag" onclick="limpiarBusqueda()" style="display:none">✕ Limpiar</button>
       </div>
 
-      <!-- Chips de zonas — Argentina -->
-      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
-        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🇦🇷 Argentina:</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mendoza')">Mendoza</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Buenos Aires')">Buenos Aires</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Córdoba')">Córdoba</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Rosario')">Rosario</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Tucumán')">Tucumán</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Salta')">Salta</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Neuquén')">Neuquén</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('San Juan')">San Juan</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('La Plata')">La Plata</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mar del Plata')">Mar del Plata</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Corrientes')">Corrientes</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Misiones')">Misiones</span>
+      <!-- Botón para mostrar/ocultar zonas -->
+      <div style="text-align:center;margin-bottom:.8rem">
+        <button id="btnToggleZonas" onclick="toggleZonas()">
+          📍 Buscar por zona ▾
+        </button>
       </div>
 
-      <!-- Chips de zonas — Latinoamérica -->
-      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
-        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌎 Latinoamérica:</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Chile')">Chile</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Uruguay')">Uruguay</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Paraguay')">Paraguay</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Bolivia')">Bolivia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Perú')">Perú</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Colombia')">Colombia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Venezuela')">Venezuela</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Ecuador')">Ecuador</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('México')">México</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Brasil')">Brasil</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Costa Rica')">Costa Rica</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Guatemala')">Guatemala</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Honduras')">Honduras</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('El Salvador')">El Salvador</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Panamá')">Panamá</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Cuba')">Cuba</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('República Dominicana')">Rep. Dominicana</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Puerto Rico')">Puerto Rico</span>
-      </div>
+      <!-- Panel de zonas colapsable -->
+      <div id="zonasPanel">
 
-      <!-- Chips de zonas — Resto del mundo -->
-      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1.2rem">
-        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌍 Mundo:</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('España')">España</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Estados Unidos')">Estados Unidos</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Italia')">Italia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Alemania')">Alemania</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Francia')">Francia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Portugal')">Portugal</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Israel')">Israel</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Online')">🌐 Online</span>
+        <!-- Argentina -->
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
+          <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🇦🇷 Argentina:</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Mendoza')">Mendoza</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Buenos Aires')">Buenos Aires</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Córdoba')">Córdoba</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Rosario')">Rosario</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Tucumán')">Tucumán</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Salta')">Salta</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Neuquén')">Neuquén</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('San Juan')">San Juan</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('La Plata')">La Plata</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Mar del Plata')">Mar del Plata</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Corrientes')">Corrientes</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Misiones')">Misiones</span>
+        </div>
+
+        <!-- Latinoamérica -->
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
+          <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌎 Latinoamérica:</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Chile')">Chile</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Uruguay')">Uruguay</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Paraguay')">Paraguay</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Bolivia')">Bolivia</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Perú')">Perú</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Colombia')">Colombia</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Venezuela')">Venezuela</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Ecuador')">Ecuador</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('México')">México</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Brasil')">Brasil</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Costa Rica')">Costa Rica</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Guatemala')">Guatemala</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Honduras')">Honduras</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('El Salvador')">El Salvador</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Panamá')">Panamá</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Cuba')">Cuba</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('República Dominicana')">Rep. Dominicana</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Puerto Rico')">Puerto Rico</span>
+        </div>
+
+        <!-- Mundo -->
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.8rem">
+          <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌍 Mundo:</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('España')">España</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Estados Unidos')">Estados Unidos</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Italia')">Italia</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Alemania')">Alemania</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Francia')">Francia</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Portugal')">Portugal</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Israel')">Israel</span>
+          <span class="tag-chip tag-zona" onclick="buscarPorTag('Online')">🌐 Online</span>
+        </div>
+
       </div>
 
       <div class="search-box">
@@ -512,7 +488,7 @@
     <p>&copy; 2026 Mi Iglesia+. Conectando comunidades de fe.</p>
   </footer>
 
-  <!-- SCRIPTS Firebase + búsqueda (sin cambios) -->
+  <!-- SCRIPTS -->
   <script type="module">
     import { db } from './js/firebase-init.js';
     import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
@@ -521,23 +497,34 @@
 
     window.irABuscador = function(e){
       if (e) e.preventDefault();
-      document.querySelector('#buscar')?.scrollIntoView({ behavior: 'smooth' });
+      document.querySelector('#buscar')?.scrollIntoView({ behavior:'smooth' });
       setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
     }
 
+    /* ── Zonas colapsables ── */
+    window.toggleZonas = function() {
+      const panel = document.getElementById('zonasPanel');
+      const btn   = document.getElementById('btnToggleZonas');
+      const abierto = panel.classList.contains('abierto');
+      panel.classList.toggle('abierto', !abierto);
+      btn.textContent = abierto ? '📍 Buscar por zona ▾' : '📍 Buscar por zona ▴';
+      btn.style.background  = abierto ? '' : '#3730a3';
+      btn.style.color       = abierto ? '' : '#fff';
+      btn.style.borderColor = abierto ? '' : '#3730a3';
+    };
+
     async function cargarIglesias(){
       try{
-        const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
+        const q = query(collection(db,'iglesias'), where('estado','==','activa'));
         const snap = await getDocs(q);
         iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
         mostrarTodasLasIglesias();
       }catch(e){
         console.error(e);
-        document.getElementById('resultados').innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verificá Firebase.</div>';
+        document.getElementById('resultados').innerHTML = '<div class="no-results">No se pudieron cargar las iglesias.</div>';
       }
     }
 
-    // Busca en nombre, ciudad, provincia, direccion, pastor, descripcion, horarios y tags
     function iglesiaCoincide(iglesia, busqueda) {
       const b = busqueda.toLowerCase().trim();
       if (!b) return true;
@@ -553,7 +540,6 @@
     window.buscarIglesias = function(){
       const busqueda = (document.getElementById('searchInput').value || '').trim();
       filtrarYMostrar(busqueda);
-      // Marcar chip activo si coincide
       document.querySelectorAll('.tag-chip:not(.tag-clear)').forEach(c => {
         c.classList.toggle('activo', c.textContent.toLowerCase().includes(busqueda.toLowerCase()) && busqueda);
       });
@@ -573,9 +559,7 @@
       lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i, busqueda));
     }
 
-    window.mostrarTodasLasIglesias = function(){
-      filtrarYMostrar('');
-    }
+    window.mostrarTodasLasIglesias = function(){ filtrarYMostrar(''); }
 
     window.buscarPorTag = function(tag) {
       const input = document.getElementById('searchInput');
@@ -623,50 +607,44 @@
 
     const input = document.getElementById('searchInput');
     const sug   = document.getElementById('suggestions');
-    function ocultarSugerencias(){ if (sug) sug.style.display='none'; }
-    function mostrarSugerencias(){ if (sug) sug.style.display='block'; }
+    function ocultarSugerencias(){ if(sug) sug.style.display='none'; }
+    function mostrarSugerencias(){ if(sug) sug.style.display='block'; }
 
     function buildSugerencias(text){
       const q = (text||'').toLowerCase().trim();
-      if (!q) { ocultarSugerencias(); return; }
-      const match = iglesias
-        .filter(i => iglesiaCoincide(i, q))
-        .slice(0,8);
+      if (!q){ ocultarSugerencias(); return; }
+      const match = iglesias.filter(i => iglesiaCoincide(i,q)).slice(0,8);
       if (!match.length){ ocultarSugerencias(); return; }
-      if (sug) {
+      if (sug){
         sug.innerHTML = match.map(i => {
-          // Buscar qué campo matcheó para mostrarlo como hint
           const tagMatch = (i.tags||[]).find(t => t.toLowerCase().includes(q));
           const hint = tagMatch ? `🏷️ ${tagMatch}` : (i.ciudad||'');
           return `<div class="suggestion" data-value="${(i.nombre||'').replace(/"/g,'&quot;')}">
-            <span>${i.nombre || '-'}</span>
-            <small>${hint}</small>
+            <span>${i.nombre||'-'}</span><small>${hint}</small>
           </div>`;
         }).join('');
         mostrarSugerencias();
         [...sug.querySelectorAll('.suggestion')].forEach(el=>{
           el.addEventListener('click', ()=>{
-            input.value = el.getAttribute('data-value') || '';
+            input.value = el.getAttribute('data-value')||'';
             buscarIglesias();
           });
         });
       }
     }
 
-    input?.addEventListener('input', e=> buildSugerencias(e.target.value));
-    input?.addEventListener('keydown', e=> { if(e.key==='Escape') ocultarSugerencias(); });
-    document.addEventListener('click', e=>{
+    input?.addEventListener('input', e => buildSugerencias(e.target.value));
+    input?.addEventListener('keydown', e => { if(e.key==='Escape') ocultarSugerencias(); });
+    document.addEventListener('click', e => {
       const auto = document.getElementById('autocomplete');
       if (auto && !auto.contains(e.target) && e.target !== input) ocultarSugerencias();
     });
-    document.getElementById('searchInput')?.addEventListener('keypress', e=> { if(e.key==='Enter') buscarIglesias(); });
+    document.getElementById('searchInput')?.addEventListener('keypress', e => { if(e.key==='Enter') buscarIglesias(); });
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await cargarIglesias();
-    });
+    document.addEventListener('DOMContentLoaded', async () => { await cargarIglesias(); });
   </script>
 
-  <!-- ✅ Eventos destacados (Firestore) -->
+  <!-- Eventos destacados -->
   <script type="module">
     import { db } from './js/firebase-init.js';
     import { collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
@@ -688,8 +666,7 @@
           const hrefOpen  = ad.href ? `<a class="ad-card" href="${ad.href}" target="_blank" rel="noopener">` : '<div class="ad-card">';
           const hrefClose = ad.href ? '</a>' : '</div>';
           const title = (ad.title||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-          const alt   = title || 'Evento destacado';
-          const img   = ad.imageUrl ? `<img class="ad-img" loading="lazy" src="${ad.imageUrl}" alt="${alt}">` : '';
+          const img   = ad.imageUrl ? `<img class="ad-img" loading="lazy" src="${ad.imageUrl}" alt="${title||'Evento destacado'}">` : '';
           grid.insertAdjacentHTML('beforeend', `${hrefOpen}${img}<div class="ad-body"><div class="ad-title">${title}</div><div class="ad-meta">Evento destacado</div></div>${hrefClose}`);
         });
       }catch(e){
@@ -701,7 +678,7 @@
     document.addEventListener('DOMContentLoaded', cargarEventosDestacados);
   </script>
 
-  <!-- ✅ PWA: Service Worker + Instalación + Actualización automática -->
+  <!-- PWA -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
@@ -709,44 +686,30 @@
           const reg = await navigator.serviceWorker.register('/service-worker.js');
           console.log('[PWA] Service Worker registrado ✅');
 
-          // ── ACTUALIZACIÓN SILENCIOSA AUTOMÁTICA ──
           reg.addEventListener('updatefound', () => {
             const newSW = reg.installing;
             newSW.addEventListener('statechange', () => {
               if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                // Activar el nuevo SW inmediatamente sin preguntarle al usuario
                 newSW.postMessage('skipWaiting');
               }
             });
           });
 
-          // Recargar la página cuando el SW nuevo toma control (solo si venía de una actualización)
           let swRefreshing = false;
           navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (swRefreshing) return;
             swRefreshing = true;
-            // Solo recargamos si el usuario NO está en medio de una sesión activa
-            // (esperamos a que la página esté oculta, o recargamos silenciosamente en background)
-            if (document.hidden) {
-              window.location.reload();
-            } else {
-              // Guardar flag y recargar en la próxima visita a index.html
-              sessionStorage.setItem('sw_updated', '1');
-            }
+            if (document.hidden) { window.location.reload(); }
+            else { sessionStorage.setItem('sw_updated','1'); }
           });
 
-          // Si venimos de una actualización, ya está fresco, no hacer nada
           sessionStorage.removeItem('sw_updated');
-
           reg.update();
-
           setTimeout(() => pedirPermisoNotificaciones(reg), 3000);
-        } catch (err) {
+        } catch(err) {
           console.error('[PWA] Error SW:', err);
         }
       });
-
-      // controllerchange se maneja dentro de mostrarBannerActualizacion
     }
 
     async function pedirPermisoNotificaciones(reg) {
@@ -761,19 +724,19 @@
     async function suscribirPush(reg) {
       try {
         const VAPID_KEY = 'TU_VAPID_PUBLIC_KEY_DE_FIREBASE_AQUI';
-        await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidToUint8(VAPID_KEY) });
-      } catch (e) { console.warn('[PWA] Push no disponible:', e.message); }
+        await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:vapidToUint8(VAPID_KEY) });
+      } catch(e) { console.warn('[PWA] Push no disponible:', e.message); }
     }
 
     function vapidToUint8(base64) {
       const pad = '='.repeat((4 - base64.length % 4) % 4);
-      const b64 = (base64 + pad).replace(/-/g, '+').replace(/_/g, '/');
+      const b64 = (base64 + pad).replace(/-/g,'+').replace(/_/g,'/');
       return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     }
 
     let deferredPrompt = null;
-    const btnNav    = document.getElementById('btn-instalar');
-    const banner    = document.getElementById('install-banner');
+    const btnNav = document.getElementById('btn-instalar');
+    const banner = document.getElementById('install-banner');
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -795,7 +758,7 @@
     document.getElementById('btn-instalar-banner')?.addEventListener('click', instalarApp);
     document.getElementById('btn-cerrar-banner')?.addEventListener('click', () => {
       if (banner) banner.style.display = 'none';
-      sessionStorage.setItem('pwa-banner-cerrado', '1');
+      sessionStorage.setItem('pwa-banner-cerrado','1');
     });
     window.addEventListener('appinstalled', () => {
       if (btnNav) btnNav.style.display = 'none';
