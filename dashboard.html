@@ -1,807 +1,1553 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mi Iglesia+ | Encontrá Iglesias Evangélicas en Argentina</title>
-
-  <!-- ── SEO BÁSICO ── -->
-  <meta name="description" content="Encontrá iglesias evangélicas, bautistas, pentecostales y más en toda Argentina. Buscá por ciudad, provincia o nombre. Registrá tu iglesia gratis en Mi Iglesia+.">
-  <meta name="keywords" content="iglesias evangélicas Argentina, iglesias cerca de mí, iglesias Mendoza, iglesias Buenos Aires, iglesias Córdoba, bautista, pentecostal, cristiano, fe, congregación">
-  <meta name="author" content="Mi Iglesia+">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://www.miiglesia.online/">
-
-  <!-- ── OPEN GRAPH (Facebook, WhatsApp, etc) ── -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.miiglesia.online/">
-  <meta property="og:title" content="Mi Iglesia+ | Encontrá tu Iglesia en Argentina">
-  <meta property="og:description" content="El directorio más completo de iglesias evangélicas en Argentina. Buscá por ciudad o provincia y conectate con tu comunidad de fe.">
-  <meta property="og:image" content="https://www.miiglesia.online/assets/og-image.png">
-  <meta property="og:locale" content="es_AR">
-  <meta property="og:site_name" content="Mi Iglesia+">
-
-  <!-- ── TWITTER CARD ── -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Mi Iglesia+ | Encontrá tu Iglesia en Argentina">
-  <meta name="twitter:description" content="Directorio de iglesias evangélicas en Argentina. Buscá por ciudad, provincia o nombre.">
-  <meta name="twitter:image" content="https://www.miiglesia.online/assets/og-image.png">
-
-  <!-- ── SCHEMA.ORG (datos estructurados para Google) ── -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Mi Iglesia+",
-    "url": "https://www.miiglesia.online",
-    "description": "Directorio de iglesias evangélicas en Argentina",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://www.miiglesia.online/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
-
-  <!-- ✅ PWA: Manifest y meta tags -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#FF6B5B">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Mi Iglesia+">
-  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-
-  <!-- Google Ads Tag -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18012009949"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-18012009949');
-  </script>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel de Iglesia | Mi Iglesia+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    :root{--primary:#FF6B5B;--dark:#1a1a1a;--gray:#666;--border:#e0e0e0;--white:#fff;--bg:#fafafa}
-    body{font-family:'Poppins',sans-serif;color:var(--dark);background:var(--bg);line-height:1.6}
+    :root{ --primary:#FF6B5B; --dark:#1a1a1a; --gray:#666; --border:#e0e0e0; --white:#fff; --ok:#28a745; --warn:#ffb703; --danger:#dc3545; --muted:#888;}
+    *{ box-sizing:border-box }
+    body{font-family:Poppins,sans-serif;background:#fafafa;margin:0;color:var(--dark)}
 
-    /* NAV */
-    nav{background:var(--white);padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-    .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-    .logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.3rem;color:var(--dark)}
-    .logo img{height:52px;width:52px;object-fit:contain;display:block;border-radius:0}
-    .logo-text span{color:var(--primary)}
-    .nav-buttons{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
-
-    /* Botones */
-    .btn{padding:.7rem 1.1rem;border:0;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .3s;display:inline-block;text-decoration:none;text-align:center}
-    .btn-secondary{background:#f0f0f0;color:var(--dark);border:1px solid var(--border)}
-    .btn-primary{background:var(--primary);color:var(--white)}
-    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,91,.3)}
-    .btn-wa{background:#25D366;color:#fff}
-
-    /* ✅ Botón instalar PWA */
-    #btn-instalar{
-      display:none;
-      background:linear-gradient(135deg,#FF6B5B,#e63946);
-      color:#fff;
-      border:none;
-      border-radius:8px;
-      padding:.55rem 1rem;
-      font-weight:700;
-      font-family:'Poppins',sans-serif;
-      cursor:pointer;
-      font-size:.85rem;
-      animation:pulseBtn 2s infinite;
-    }
-    @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 rgba(255,107,91,.4)}50%{box-shadow:0 0 0 8px rgba(255,107,91,0)}}
-
-    /* ✅ Banner de instalación (mobile) */
-    #install-banner{
-      display:none;
-      position:fixed;bottom:0;left:0;right:0;
-      background:#fff;border-top:2px solid var(--primary);
-      padding:1rem 1.5rem;z-index:999;
-      box-shadow:0 -4px 20px rgba(0,0,0,.12);
-      justify-content:space-between;align-items:center;gap:1rem;
-    }
-    #install-banner p{font-size:.95rem;font-weight:600;flex:1}
-    #install-banner p small{display:block;color:var(--gray);font-weight:400;font-size:.8rem}
-    .banner-btns{display:flex;gap:.5rem}
-
-    /* ─── HERO CON IMAGEN DE FONDO ─── */
-    .hero{
+    /* ─── HEADER CON FONDO ─── */
+    .dashboard-header{
       position:relative;
-      padding:5rem 2rem;
-      text-align:center;
       overflow:hidden;
-      min-height:580px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      padding:2.5rem 2rem 2rem;
+      color:#fff;
     }
-    /* Capa 1: foto de fondo (ya tiene el overlay coral aplicado) */
-    .hero::before{
-      content:'';
+    .dashboard-header-bg{
       position:absolute;inset:0;
       background-image:url('assets/fondo.png');
-      background-size:cover;
-      background-position:center center;
-      background-repeat:no-repeat;
+      background-size:cover;background-position:center center;
       z-index:0;
     }
-    /* Capa 2: oscurecer levemente solo arriba y abajo para que el texto sea legible */
-    .hero::after{
-      content:'';
+    .dashboard-header-overlay{
       position:absolute;inset:0;
-      background:linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.4) 100%);
+      background:linear-gradient(to bottom, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.18) 50%, rgba(0,0,0,0.45) 100%);
       z-index:1;
     }
-    .hero-content{
-      position:relative;
-      z-index:2;
-      max-width:800px;
-      margin:0 auto;
-    }
-    .logo-circle{width:220px;height:220px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.3))}
-    .logo-circle img{width:100%;height:100%;object-fit:contain;border-radius:18px}
-    h1{font-size:3.5rem;font-weight:800;margin-bottom:1rem;line-height:1.2;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.45)}
-    h1 span{color:#FF6B5B}
-    .hero p{font-size:1.1rem;color:rgba(255,255,255,0.88);margin-bottom:2rem;line-height:1.8;text-shadow:0 1px 6px rgba(0,0,0,0.3)}
-    .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-    /* Botones del hero adaptados al fondo oscuro */
-    .hero .btn-secondary{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.35);backdrop-filter:blur(4px)}
-    .hero .btn-secondary:hover{background:rgba(255,255,255,0.28)}
+    .dashboard-header-content{position:relative;z-index:2;max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+    .dashboard-header h1{margin:0 0 4px;font-size:1.8rem;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4)}
+    .dashboard-header .lead{color:rgba(255,255,255,0.85);margin:0 0 8px;font-size:.95rem}
+    .dashboard-header .muted{color:rgba(255,255,255,0.65);font-size:.85rem}
+    #status{margin-top:4px;font-size:.85rem;color:rgba(255,255,255,0.8)}
 
-    /* FEATURES */
-    .features{padding:4rem 2rem;background:var(--white)}
-    .container{max-width:1200px;margin:0 auto}
-    .section-title{text-align:center;font-size:2.2rem;font-weight:800;margin-bottom:2rem}
+    .container{max-width:1000px;margin:0 auto;padding:0 16px}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:22px;margin:16px auto;max-width:1000px}
+    p.lead{color:#666;margin:0 0 16px 0}
+    .muted{color:#888;font-size:.9rem}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
+    button{padding:10px 14px;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;font-family:Poppins}
+    button.secondary{background:#111}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    input,textarea,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:Poppins}
+    label{display:block;margin:8px 0 4px 0;font-weight:600}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .row > div{flex:1 1 280px}
+    #msg{margin-top:10px;color:#444;min-height:1.2em}
 
-    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
-    .feature-card{background:var(--white);padding:2rem;border-radius:12px;border:1px solid var(--border);transition:all .3s;text-align:center}
-    .feature-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
-    .feature-icon{font-size:2.5rem;margin-bottom:1rem}
-    .feature-card h3{font-size:1.3rem;margin-bottom:1rem;color:var(--dark)}
-    .feature-card p{color:var(--gray);font-size:.95rem;line-height:1.6}
+    .tabs{display:flex;gap:8px;margin:16px 0 0;border-bottom:1px solid #eee;flex-wrap:wrap;padding:0 16px}
+    .tab-btn{background:#f2f2f2;color:#333;border-radius:10px 10px 0 0;border:1px solid #eee;border-bottom:0;padding:10px 14px;cursor:pointer;font-family:Poppins;font-weight:700}
+    .tab-btn.active{background:#fff;color:#000;border-bottom:1px solid #fff}
+    .tab{display:none}
+    .tab.active{display:block}
 
-    /* CTA */
-    .cta{background:linear-gradient(135deg,var(--primary) 0%,#e63946 100%);color:var(--white);padding:4rem 2rem;text-align:center}
-    .cta h2{font-size:2.2rem;margin-bottom:1rem}
-    .cta p{font-size:1.05rem;margin-bottom:2rem;opacity:.95}
+    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
+    .item{border:1px solid #eee;border-radius:12px;padding:12px;background:#fff}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff;margin-right:6px}
+    .badge.pub{background:#28a745} .badge.priv{background:#6c757d}
+    iframe{width:100%;border-radius:8px;border:0}
+    .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .danger{background:#dc3545}
 
-    /* SEARCH */
-    .search-section{padding:4rem 2rem;background:var(--white)}
-    .search-box{display:flex;gap:1rem;max-width:600px;margin:0 auto 1rem;flex-wrap:wrap;justify-content:center;position:relative}
-    .search-input{flex:1;min-width:250px;padding:1rem;border:2px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:1rem;transition:border-color .3s}
-    .search-input:focus{outline:none;border-color:var(--primary)}
-    .search-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:0 auto}
-    .church-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all .3s;cursor:pointer}
-    .church-card:hover{box-shadow:0 10px 30px rgba(0,0,0,.1);transform:translateY(-5px)}
-    .church-card h3{color:var(--primary);margin-bottom:1rem;font-size:1.3rem}
-    .church-info{color:var(--gray);font-size:.95rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
-    .church-info strong{color:var(--dark)}
-    .church-button{width:100%;margin-top:1rem;padding:.8rem}
-    .no-results{text-align:center;color:var(--gray);padding:2rem;grid-column:1 / -1;font-size:1.1rem}
-
-    /* AUTOCOMPLETE */
-    .tag-chip{display:inline-flex;align-items:center;padding:.35rem .8rem;border-radius:999px;background:#f0f0f0;color:var(--dark);font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--border);font-family:'Poppins',sans-serif;transition:all .2s;user-select:none}
-    .tag-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .tag-chip.activo{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .tag-zona{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
-    .tag-zona:hover{background:#3730a3;color:#fff;border-color:#3730a3}
-    .tag-zona.activo{background:#3730a3;color:#fff;border-color:#3730a3}
-    .tag-clear{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}
-    .tag-clear:hover{background:#b91c1c;color:#fff;border-color:#b91c1c}
-    .church-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0}
-    .suggestions{display:none;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.08);overflow:hidden}
-    .suggestion{padding:.7rem 1rem;display:flex;justify-content:space-between;gap:12px;cursor:pointer}
-    .suggestion small{color:var(--gray)}
-    .suggestion:hover{background:#f8f8f8}
-
-    /* EVENTOS DESTACADOS */
-    .ads-section{padding:3rem 2rem;background:#fff}
-    .ads-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1200px;margin:0 auto}
-    .ad-card{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:transform .2s, box-shadow .2s}
-    .ad-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+    .ad-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
+    .ad-card{border:1px solid #eee;border-radius:12px;overflow:hidden;background:#fff}
     .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
     .ad-body{padding:12px}
-    .ad-title{font-weight:700;margin-bottom:4px}
-    .ad-meta{color:var(--gray);font-size:.92rem;display:flex;align-items:center;gap:8px}
     .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
-    .chip.starter{background:#6c757d}
-    .chip.pro{background:#28a745}
+    .chip.starter{background:#6c757d} .chip.pro{background:#28a745}
+    .chip.draft{background:#ff9800} .chip.approved{background:#28a745} .chip.archived{background:#6c757d}
+    .counter{display:flex;gap:10px;align-items:center;margin:10px 0;color:#444}
+    .small{font-size:.9rem;color:#777}
 
-    /* TABS */
-    .tabs-section{padding:3rem 1.5rem;background:var(--bg)}
-    .tabs-wrap{max-width:1000px;margin:0 auto}
-    .tabs{display:flex;gap:10px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
-    .tab-btn{padding:.6rem 1rem;border:1px solid var(--border);background:#fff;border-radius:999px;cursor:pointer;font-weight:700}
-    .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .tab-pane{display:none;background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;max-width:1000px;margin:0 auto}
-    .tab-pane.active{display:block}
+    .tag-dash{display:inline-flex;align-items:center;padding:.3rem .75rem;border-radius:999px;background:#f0f0f0;color:#444;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid #ddd;transition:all .15s;user-select:none}
+    .tag-dash:hover{background:#ffe4e1;border-color:var(--primary);color:var(--primary)}
+    .tag-dash.activo{background:var(--primary);color:#fff;border-color:var(--primary)}
 
-    /* FOOTER */
-    footer{background:var(--dark);color:rgba(255,255,255,.7);padding:2rem;text-align:center;font-size:.9rem}
-    .footer-founder{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:2rem}
-    .founder-photo{width:80px;height:80px;flex-shrink:0;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.1)}
-    .founder-photo img{width:100%;height:100%;object-fit:cover}
-    .founder-info{text-align:left}
-    .founder-info h4{margin:0;color:white;font-size:1.1rem}
-    .founder-info p{margin:.3rem 0 0 0;color:rgba(255,255,255,.7);font-size:.9rem}
-    .founder-info .btn{margin-top:.8rem;padding:.5rem 1.2rem;font-size:.85rem}
+    .plan-card{border:1px solid #eee;border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+    .plan-header{padding:1.2rem;text-align:center}
+    .plan-nombre{font-size:1.1rem;font-weight:800;letter-spacing:.05em}
+    .plan-precio{font-size:1.8rem;font-weight:800;margin-top:.3rem}
+    .plan-precio span{font-size:.9rem;font-weight:400;opacity:.8}
+    .plan-features{list-style:none;padding:1rem 1.2rem;flex:1;font-size:.88rem;line-height:2}
+    .plan-btn{margin:.8rem 1.2rem 1.2rem;padding:.7rem;border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;font-family:Poppins;font-size:.9rem;transition:opacity .2s}
+    .plan-btn:hover{opacity:.85}
+    .plan-btn:disabled{opacity:.4;cursor:not-allowed}
+    .plan-card.activo{outline:3px solid var(--primary)}
+    .prog{margin-top:8px;height:8px;border-radius:6px;background:#f0f0f0;overflow:hidden}
+    .tab-locked{position:relative;pointer-events:none;user-select:none}
+    .tab-locked::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.7);border-radius:12px;z-index:10;backdrop-filter:blur(2px)}
+    .lock-overlay{display:none;position:absolute;inset:0;z-index:20;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+    .tab-locked .lock-overlay{display:flex}
+    .lock-overlay .lock-icon{font-size:3rem}
+    .lock-overlay h3{font-size:1.1rem;font-weight:800;color:#111;margin:0}
+    .lock-overlay p{font-size:.88rem;color:#555;margin:0}
+    .lock-overlay .btn-upgrade{background:var(--primary);color:#fff;border:0;border-radius:10px;padding:.7rem 1.4rem;font-weight:700;font-family:Poppins;font-size:.9rem;cursor:pointer;pointer-events:all}
+    .tab-btn.locked-tab{opacity:.5;cursor:not-allowed}
+    .tab-btn.locked-tab::after{content:' 🔒';font-size:.75rem}
+    .hint{color:#888;font-size:.85rem;margin-top:6px}
 
+    /* ─── SECCIÓN LOGO ─── */
+    .logo-upload-wrap{display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;margin-top:1rem}
+    .logo-preview-box{width:160px;height:160px;border-radius:16px;border:2px dashed var(--border);background:#f9f9f9;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;cursor:pointer;transition:border-color .2s}
+    .logo-preview-box:hover{border-color:var(--primary)}
+    .logo-preview-box img{width:100%;height:100%;object-fit:contain}
+    .logo-preview-box .placeholder{font-size:3rem;color:#ccc}
+    .logo-upload-info{flex:1;min-width:200px}
+    .logo-upload-info p{color:var(--gray);font-size:.9rem;margin-bottom:1rem;line-height:1.6}
+    .logo-prog{margin-top:8px;height:6px;border-radius:4px;background:#f0f0f0;overflow:hidden;display:none}
+    .logo-prog i{display:block;height:100%;width:0%;background:var(--primary);transition:width .2s}
+
+    /* ─── INBOX ─── */
+    .inbox-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1rem 1.2rem;margin-bottom:.7rem;transition:background .2s}
+    .inbox-card:not(.leida){border-left:3px solid var(--primary);background:#fffaf9}
+    .inbox-card.leida{opacity:.7}
+    .inbox-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+    .inbox-nombre{font-weight:700;font-size:.92rem;margin-right:.5rem}
+    .inbox-tel{font-size:.82rem;color:#888;text-decoration:none;font-weight:600}
+    .inbox-tel:hover{color:var(--primary)}
+    .inbox-fecha{font-size:.75rem;color:#aaa;white-space:nowrap}
+    .inbox-mensaje{font-size:.88rem;color:#444;line-height:1.6;background:#f9f9f9;border-radius:8px;padding:.6rem .8rem}
+    .btn-marcar{background:#e8f5e9;color:#16a34a;border:1px solid #86efac;border-radius:6px;padding:3px 8px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins}
+    .btn-wa-small{display:inline-flex;align-items:center;gap:.3rem;background:#25D366;color:#fff;border-radius:8px;padding:5px 10px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:Poppins}
+
+    /* ─── GALERÍA ─── */
+    .galeria-item{position:relative;border-radius:10px;overflow:hidden;background:#f0f0f0;aspect-ratio:1}
+    .galeria-item img{width:100%;height:100%;object-fit:cover;display:block}
+    .galeria-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;display:flex;flex-direction:column;justify-content:space-between;padding:.5rem}
+    .galeria-item:hover .galeria-overlay{background:rgba(0,0,0,0.45)}
+    .galeria-toggle{opacity:0;transition:opacity .2s;background:rgba(255,255,255,0.9);border:0;border-radius:20px;padding:.3rem .7rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins;color:#333;align-self:flex-start}
+    .galeria-toggle.visible-on{opacity:1;background:var(--primary);color:#fff}
+    .galeria-item:hover .galeria-toggle{opacity:1}
+    .galeria-del{opacity:0;transition:opacity .2s;background:rgba(220,53,69,0.85);border:0;border-radius:20px;padding:.3rem .6rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Poppins;color:#fff;align-self:flex-end}
+    .galeria-item:hover .galeria-del{opacity:1}
+
+    /* ─── ESTUDIOS BÍBLICOS ─── */
+    .estudio-card{background:#fff;border:1px solid #eee;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .estudio-card .estudio-info{flex:1}
+    .estudio-card .estudio-title{font-weight:700;font-size:15px;margin:0 0 4px}
+    .estudio-card .estudio-desc{font-size:13px;color:#666;margin:0 0 6px}
+    .estudio-card .estudio-meta{font-size:12px;color:#999;display:flex;gap:12px;flex-wrap:wrap}
+    .estudio-card .estudio-price{font-weight:800;color:var(--primary);font-size:15px;white-space:nowrap}
+    .btn-estudio-del{padding:6px 14px;background:#fee2e2;color:#b91c1c;border:0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:Poppins}
+    .btn-estudio-toggle{padding:6px 14px;background:#e0f2fe;color:#0369a1;border:0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:Poppins}
+
+    /* ─── DROP ZONE ─── */
+    .drop-zone{border:2px dashed #ccc;border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:#fff}
+    .drop-zone:hover,.drop-zone.drag-over{border-color:var(--primary);background:#fff5f5}
+
+    /* ─── MOBILE ─── */
     @media(max-width:768px){
-      /* NAV mobile: mostrar Ingresar + Comenzar, ocultar resto */
-      nav{padding:.7rem 1rem}
-      #hamburger{display:none}
-      .nav-buttons{display:flex;gap:.4rem;align-items:center}
-      .btn-wa{display:none}
-      #btn-instalar{display:none!important}
-
-      /* HERO */
-      .hero{padding:3rem 1.2rem;min-height:auto}
-      .logo-circle{width:130px;height:130px;margin-bottom:1.2rem}
-      h1{font-size:1.85rem}
-      .hero p{font-size:.95rem;margin-bottom:1.5rem}
-      .hero-buttons{flex-direction:column;gap:.7rem}
-      .hero-buttons .btn{width:100%;padding:.85rem}
-
-      /* FEATURES */
-      .features{padding:2.5rem 1rem}
-      .section-title{font-size:1.4rem;margin-bottom:1.2rem}
-      .features-grid{grid-template-columns:1fr;gap:1rem}
-
-      /* SEARCH */
-      .search-section{padding:2rem 1rem}
-      .search-bar-wrap{flex-direction:column;gap:.5rem}
-      .search-bar-wrap input{font-size:1rem;padding:.85rem 1rem}
-      .search-bar-wrap button{width:100%;padding:.85rem}
-
-      /* CHIPS zonas: scroll horizontal */
-      #tags-rapidos{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:.3rem;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-      #tags-rapidos::-webkit-scrollbar{display:none}
-
-      /* CHURCH CARDS */
-      .churches-grid{grid-template-columns:1fr;gap:1rem;padding:0 1rem}
-      .church-card{border-radius:14px}
-
-      /* PLANES */
-      .planes-grid{grid-template-columns:1fr;gap:1rem}
-
-      /* TABS sección */
-      .tab-nav{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;gap:.4rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:.3rem}
-      .tab-nav::-webkit-scrollbar{display:none}
-
-      /* FOOTER */
-      .footer-founder{flex-direction:column;text-align:center;gap:1rem}
-      .founder-info{text-align:center}
-      footer{padding:1.5rem 1rem;font-size:.82rem}
+      .dashboard-header{padding:1.5rem 1rem}
+      .dashboard-header h1{font-size:1.35rem}
+      .dashboard-header .lead{font-size:.82rem}
+      .dashboard-header-content{gap:.5rem}
+      .dashboard-header-content button{padding:.5rem .9rem;font-size:.82rem}
+      .tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 12px;gap:4px}
+      .tabs::-webkit-scrollbar{display:none}
+      .tab-btn{white-space:nowrap;padding:8px 12px;font-size:.82rem}
+      .card{padding:14px;margin:10px 12px;border-radius:12px}
+      .card h2{font-size:1.1rem;margin-bottom:.8rem}
+      .card h3{font-size:.95rem}
+      .row{flex-direction:column;gap:8px}
+      .row > div{flex:1 1 100%}
+      button{padding:9px 12px;font-size:.88rem}
+      .actions{flex-direction:column}
+      .actions button{width:100%}
+      input,textarea,select{padding:10px;font-size:.92rem}
+      .list{grid-template-columns:1fr;gap:10px}
+      .item{padding:10px}
+      .ad-grid{grid-template-columns:1fr}
+      .logo-upload-wrap{flex-direction:column;align-items:center;gap:1rem}
+      .logo-preview-box{width:120px;height:120px}
+      .topbar{flex-direction:column;align-items:stretch}
+      .topbar button{width:100%}
+      .estudio-card{flex-direction:column}
+      .galeria-toggle,.galeria-del{opacity:1}
+      #galeriaGrid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem}
+      .inbox-header{flex-direction:column}
     }
-
-    /* Burbuja flotante de WhatsApp */
-    #wa-bubble{
-      display:none;
-      position:fixed;
-      bottom:1.5rem;right:1.2rem;
-      width:52px;height:52px;
-      background:#25D366;
-      border-radius:50%;
-      box-shadow:0 4px 16px rgba(37,211,102,.5);
-      align-items:center;justify-content:center;
-      font-size:1.6rem;
-      z-index:500;
-      text-decoration:none;
-      animation:pulseWa 2.5s infinite;
-    }
-    @keyframes pulseWa{
-      0%,100%{box-shadow:0 4px 16px rgba(37,211,102,.5)}
-      50%{box-shadow:0 4px 28px rgba(37,211,102,.75)}
-    }
-    @media(max-width:768px){
-      #wa-bubble{display:flex}
-    }
-
-    /* Hamburger button (oculto, ya no se usa) */
-    #hamburger{display:none}
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-container">
-      <a class="logo" href="#home">
-        <img src="assets/logo.png" alt="Mi Iglesia+">
-      </a>
-      <div class="nav-buttons" id="navButtons">
-        <a class="btn btn-secondary" href="login.html">Ingresar</a>
-        <a class="btn btn-primary" href="registro.html">Comenzar</a>
-        <a class="btn btn-wa" href="https://wa.me/5492615515707" target="_blank" rel="noopener">Contacto</a>
-        <button id="btn-instalar" title="Instalar app en tu dispositivo">📲 Instalar App</button>
+  <!-- HEADER CON FONDO -->
+  <div class="dashboard-header">
+    <div class="dashboard-header-bg"></div>
+    <div class="dashboard-header-overlay"></div>
+    <div class="dashboard-header-content">
+      <div>
+        <h1>Panel de Iglesia</h1>
+        <p class="lead">Editá y publicá tus <b>Prédicas</b>, <b>Eventos</b>, <b>Peticiones</b>, <b>Publicidad</b> y <b>Estudios</b>.</p>
+        <div class="muted">Sesión: <span id="emailLbl">—</span></div>
+        <div id="status"></div>
       </div>
-    </div>
-  </nav>
-
-  <!-- Burbuja WhatsApp (solo mobile) -->
-  <a id="wa-bubble" href="https://wa.me/5492615515707" target="_blank" rel="noopener" title="Contacto por WhatsApp">
-    <svg viewBox="0 0 32 32" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16 2C8.268 2 2 8.268 2 16c0 2.478.655 4.8 1.8 6.807L2 30l7.38-1.773A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z" fill="#fff"/>
-      <path d="M16 4.5c-6.351 0-11.5 5.149-11.5 11.5 0 2.14.588 4.143 1.613 5.858l.243.407-1.03 3.76 3.87-1.015.394.228A11.45 11.45 0 0 0 16 27.5c6.351 0 11.5-5.149 11.5-11.5S22.351 4.5 16 4.5z" fill="#25D366"/>
-      <path d="M21.003 18.77c-.307-.154-1.816-.896-2.097-.998-.281-.103-.486-.154-.69.154-.204.307-.791.998-.97 1.203-.178.204-.357.23-.664.077-.307-.154-1.295-.477-2.466-1.522-.911-.813-1.526-1.816-1.705-2.123-.178-.307-.019-.473.134-.626.137-.137.307-.358.46-.537.154-.178.205-.307.307-.511.103-.205.051-.384-.025-.537-.077-.154-.69-1.664-.945-2.277-.249-.597-.502-.516-.69-.526l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.049-1.073 2.558s1.099 2.967 1.252 3.171c.154.205 2.163 3.303 5.24 4.632.733.316 1.305.505 1.751.646.736.234 1.406.201 1.936.122.590-.088 1.816-.742 2.073-1.459.256-.716.256-1.33.179-1.459-.076-.128-.281-.205-.588-.358z" fill="#fff"/>
-    </svg>
-  </a>
-
-  <!-- ✅ Banner de instalación para mobile -->
-  <div id="install-banner">
-    <p>
-      📲 Instalá Mi Iglesia+ en tu celu
-      <small>Accedé rápido desde la pantalla de inicio</small>
-    </p>
-    <div class="banner-btns">
-      <button class="btn btn-primary" id="btn-instalar-banner">Instalar</button>
-      <button class="btn btn-secondary" id="btn-cerrar-banner">Ahora no</button>
+      <div>
+        <button id="btnLogout" class="secondary">Salir</button>
+      </div>
     </div>
   </div>
 
-  <!-- ✅ Banner de actualización disponible -->
-
-  <!-- HERO con imagen de fondo -->
-  <section class="hero" id="home">
-    <div class="hero-content">
-      <div class="logo-circle">
-        <img src="assets/logo.png" alt="Mi Iglesia+">
-      </div>
-      <h1>Conectados en un solo lugar <span>como nunca antes</span></h1>
-      <p>La plataforma moderna que necesitaba tu iglesia. Gestioná eventos, compartí prédicas, administrá ofrendas y mantené conectada tu congregación.</p>
-      <div class="hero-buttons">
-        <a class="btn btn-secondary" href="#buscar" onclick="irABuscador(event)">Ver Iglesias</a>
-        <a class="btn btn-primary" href="biblia.html">📖 Leer la Biblia</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- EVENTOS DESTACADOS -->
-  <section class="ads-section" id="publicidad">
-    <div class="container">
-      <h2 class="section-title" style="text-align:center">Eventos destacados</h2>
-      <div id="adsGrid" class="ads-grid"><!-- Se completa por JS --></div>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="features">
-    <div class="container">
-      <h2 class="section-title">Todo lo que tu iglesia necesita</h2>
-      <div class="features-grid">
-        <div class="feature-card"><div class="feature-icon">📅</div><h3>Eventos</h3><p>Organizá cultos, reuniones y actividades especiales con un calendario compartido.</p></div>
-        <div class="feature-card"><div class="feature-icon">🎙️</div><h3>Prédicas</h3><p>Compartí prédicas en video y audio. Tus miembros pueden verlas cuando quieran.</p></div>
-        <div class="feature-card"><div class="feature-icon">❤️</div><h3>Peticiones de Oración</h3><p>Espacio donde la congregación comparte necesidades y arma grupos de oración.</p></div>
-        <div class="feature-card"><div class="feature-icon">🌐</div><h3>Multi-Iglesia</h3><p>Cada iglesia tiene su propio espacio. Los miembros pueden conectarse a múltiples congregaciones.</p></div>
-        <div class="feature-card"><div class="feature-icon">👥</div><h3>Roles y Permisos</h3><p>Gestioná administradores, líderes y miembros con diferentes niveles de acceso.</p></div>
-        <div class="feature-card"><div class="feature-icon">⚙️</div><h3>Panel Admin</h3><p>Controlá todo desde un dashboard intuitivo y fácil de usar.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta">
-    <div class="container">
-      <h2>¿Listo para conectar tu iglesia?</h2>
-      <p>Unite a iglesias que ya están transformando la forma en que se conectan con sus comunidades.</p>
-      <a class="btn btn-primary" style="background:white;color:var(--primary)" href="registro.html">Comenzar Ahora</a>
-    </div>
-  </section>
-
-  <!-- SEARCH -->
-  <section class="search-section" id="buscar">
-    <div class="container">
-      <h2 class="section-title">Encontrá tu Iglesia</h2>
-      <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad, pastor o palabra clave</p>
-
-      <!-- Palabras clave rápidas -->
-      <div id="tags-rapidos" style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:.7rem">
-        <span class="tag-chip" onclick="buscarPorTag('jóvenes')">🔥 Jóvenes</span>
-        <span class="tag-chip" onclick="buscarPorTag('familiar')">👨‍👩‍👧 Familiar</span>
-        <span class="tag-chip" onclick="buscarPorTag('alabanza')">🎵 Alabanza</span>
-        <span class="tag-chip" onclick="buscarPorTag('evangelismo')">📢 Evangelismo</span>
-        <span class="tag-chip" onclick="buscarPorTag('niños')">🧒 Niños</span>
-        <span class="tag-chip" onclick="buscarPorTag('online')">💻 Online</span>
-        <span class="tag-chip" onclick="buscarPorTag('bautista')">✝️ Bautista</span>
-        <span class="tag-chip" onclick="buscarPorTag('pentecostal')">🔥 Pentecostal</span>
-        <span class="tag-chip" onclick="buscarPorTag('evangelica')">📖 Evangélica</span>
-        <button class="tag-chip tag-clear" id="btnLimpiarTag" onclick="limpiarBusqueda()" style="display:none">✕ Limpiar</button>
-      </div>
-
-      <!-- Chips de zonas — Argentina -->
-      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
-        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🇦🇷 Argentina:</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mendoza')">Mendoza</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Buenos Aires')">Buenos Aires</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Córdoba')">Córdoba</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Rosario')">Rosario</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Tucumán')">Tucumán</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Salta')">Salta</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Neuquén')">Neuquén</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('San Juan')">San Juan</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('La Plata')">La Plata</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Mar del Plata')">Mar del Plata</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Corrientes')">Corrientes</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Misiones')">Misiones</span>
-      </div>
-
-      <!-- Chips de zonas — Latinoamérica -->
-      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
-        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌎 Latinoamérica:</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Chile')">Chile</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Uruguay')">Uruguay</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Paraguay')">Paraguay</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Bolivia')">Bolivia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Perú')">Perú</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Colombia')">Colombia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Venezuela')">Venezuela</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Ecuador')">Ecuador</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('México')">México</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Brasil')">Brasil</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Costa Rica')">Costa Rica</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Guatemala')">Guatemala</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Honduras')">Honduras</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('El Salvador')">El Salvador</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Panamá')">Panamá</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Cuba')">Cuba</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('República Dominicana')">Rep. Dominicana</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Puerto Rico')">Puerto Rico</span>
-      </div>
-
-      <!-- Chips de zonas — Resto del mundo -->
-      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1.2rem">
-        <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌍 Mundo:</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('España')">España</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Estados Unidos')">Estados Unidos</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Italia')">Italia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Alemania')">Alemania</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Francia')">Francia</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Portugal')">Portugal</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Israel')">Israel</span>
-        <span class="tag-chip tag-zona" onclick="buscarPorTag('Online')">🌐 Online</span>
-      </div>
-
-      <div class="search-box">
-        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Jóvenes, Mendoza, Pastor Juan, Bautista..." aria-label="Buscar iglesias">
-        <a class="btn btn-primary" onclick="buscarIglesias()">Buscar</a>
-        <div class="autocomplete" id="autocomplete" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;">
-          <div class="suggestions" id="suggestions"></div>
-        </div>
-      </div>
-      <div id="resultados" class="search-results"></div>
-    </div>
-  </section>
-
   <!-- TABS -->
-  <section class="tabs-section" id="info">
-    <div class="tabs-wrap">
-      <div class="tabs">
-        <button class="tab-btn active" data-pane="tab-sobre">Sobre nosotros</button>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-perfil">🏠 Mi Iglesia</button>
+    <button class="tab-btn" data-tab="tab-predicas">Prédicas</button>
+    <button class="tab-btn" data-tab="tab-eventos">Eventos</button>
+    <button class="tab-btn" data-tab="tab-peticiones">Peticiones</button>
+    <button class="tab-btn" data-tab="tab-bautismos">💧 Bautismos</button>
+    <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
+    <button class="tab-btn" data-tab="tab-estudios">📚 Estudios</button>
+    <button class="tab-btn" data-tab="tab-plan">💳 Plan</button>
+  </div>
+
+  <div style="padding:0 16px 32px">
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: MI IGLESIA
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-perfil" class="tab card active">
+      <h2>🏠 Perfil de mi Iglesia</h2>
+      <p class="small">Personalizá cómo aparece tu iglesia en la plataforma y en tu página pública.</p>
+
+      <!-- Link público -->
+      <div id="linkPublico" style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin:12px 0;font-size:.9rem;display:none">
+        🌐 Tu página pública: <a id="linkPublicoHref" href="#" target="_blank" style="color:#16a34a;font-weight:700"></a>
+        <button onclick="copiarLink()" style="background:#16a34a;padding:4px 10px;font-size:.8rem;margin-left:8px">Copiar</button>
       </div>
-      <div id="tab-sobre" class="tab-pane active">
-        <h3 style="margin-bottom:.6rem;">Mi Iglesia+</h3>
-        <p style="color:var(--gray);">
-          Nuestra misión es ayudar a iglesias a organizarse, comunicar y crecer con herramientas simples:
-          eventos, prédicas, peticiones de oración y un panel de administración moderno.
-        </p>
-      </div>
-    </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-founder">
-      <div class="founder-photo">
-        <img src="assets/lucas-bruz.jpg" alt="Fundador">
-      </div>
-      <div class="founder-info">
-        <h4>Lucas Bruz</h4>
-        <p>Fundador de Mi Iglesia+</p>
-      </div>
-    </div>
-    <p>&copy; 2026 Mi Iglesia+. Conectando comunidades de fe.</p>
-  </footer>
-
-  <!-- SCRIPTS Firebase + búsqueda (sin cambios) -->
-  <script type="module">
-    import { db } from './js/firebase-init.js';
-    import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
-
-    let iglesias = [];
-
-    window.irABuscador = function(e){
-      if (e) e.preventDefault();
-      document.querySelector('#buscar')?.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
-    }
-
-    async function cargarIglesias(){
-      try{
-        const q = query(collection(db, 'iglesias'), where('estado','==','activa'));
-        const snap = await getDocs(q);
-        iglesias = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-        mostrarTodasLasIglesias();
-      }catch(e){
-        console.error(e);
-        document.getElementById('resultados').innerHTML = '<div class="no-results">No se pudieron cargar las iglesias. Verificá Firebase.</div>';
-      }
-    }
-
-    // Busca en nombre, ciudad, provincia, direccion, pastor, descripcion, horarios y tags
-    function iglesiaCoincide(iglesia, busqueda) {
-      const b = busqueda.toLowerCase().trim();
-      if (!b) return true;
-      const campos = [
-        iglesia.nombre, iglesia.ciudad, iglesia.provincia,
-        iglesia.direccion, iglesia.pastor,
-        iglesia.descripcion, iglesia.horarios,
-        ...(iglesia.tags || [])
-      ];
-      return campos.some(v => (v||'').toLowerCase().includes(b));
-    }
-
-    window.buscarIglesias = function(){
-      const busqueda = (document.getElementById('searchInput').value || '').trim();
-      filtrarYMostrar(busqueda);
-      // Marcar chip activo si coincide
-      document.querySelectorAll('.tag-chip:not(.tag-clear)').forEach(c => {
-        c.classList.toggle('activo', c.textContent.toLowerCase().includes(busqueda.toLowerCase()) && busqueda);
-      });
-      const btnLimpiar = document.getElementById('btnLimpiarTag');
-      if (btnLimpiar) btnLimpiar.style.display = busqueda ? 'inline-flex' : 'none';
-      ocultarSugerencias();
-    }
-
-    function filtrarYMostrar(busqueda) {
-      const resultados = document.getElementById('resultados');
-      resultados.innerHTML = '';
-      const lista = iglesias.filter(i => iglesiaCoincide(i, busqueda));
-      if (!lista.length){
-        resultados.innerHTML = `<div class="no-results">No se encontraron iglesias${busqueda ? ` para "<b>${busqueda}</b>"` : ''}.</div>`;
-        return;
-      }
-      lista.forEach(i => resultados.innerHTML += crearTarjetaIglesia(i, busqueda));
-    }
-
-    window.mostrarTodasLasIglesias = function(){
-      filtrarYMostrar('');
-    }
-
-    window.buscarPorTag = function(tag) {
-      const input = document.getElementById('searchInput');
-      input.value = tag;
-      document.querySelectorAll('.tag-chip:not(.tag-clear)').forEach(c => c.classList.remove('activo'));
-      event?.currentTarget?.classList?.add('activo');
-      const btnLimpiar = document.getElementById('btnLimpiarTag');
-      if (btnLimpiar) btnLimpiar.style.display = 'inline-flex';
-      filtrarYMostrar(tag);
-      ocultarSugerencias();
-      document.querySelector('#buscar')?.scrollIntoView({ behavior:'smooth' });
-    }
-
-    window.limpiarBusqueda = function() {
-      document.getElementById('searchInput').value = '';
-      document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('activo'));
-      document.getElementById('btnLimpiarTag').style.display = 'none';
-      mostrarTodasLasIglesias();
-    }
-
-    window.crearTarjetaIglesia = function(iglesia, busqueda=''){
-      const logoHtml = iglesia.logoUrl
-        ? `<img src="${iglesia.logoUrl}" alt="${iglesia.nombre}" style="width:54px;height:54px;object-fit:contain;border-radius:10px;margin-bottom:.6rem;display:block">`
-        : `<div style="font-size:2rem;margin-bottom:.4rem">⛪</div>`;
-
-      const tagsHtml = (iglesia.tags||[]).length
-        ? `<div class="church-tags">${iglesia.tags.map(t => {
-            const activo = busqueda && t.toLowerCase().includes(busqueda.toLowerCase());
-            return `<span class="tag-chip${activo?' activo':''}" style="font-size:.75rem;padding:.2rem .6rem" onclick="buscarPorTag('${t}')">${t}</span>`;
-          }).join('')}</div>`
-        : '';
-
-      return `
-        <div class="church-card">
-          ${logoHtml}
-          <h3>${iglesia.nombre || '-'}</h3>
-          <div class="church-info"><strong>📍</strong> ${iglesia.ciudad||'-'}${iglesia.provincia ? ', '+iglesia.provincia : ''}</div>
-          <div class="church-info"><strong>🧑‍💼</strong> ${iglesia.pastor||'-'}</div>
-          ${iglesia.horarios ? `<div class="church-info"><strong>🕐</strong> ${iglesia.horarios}</div>` : ''}
-          ${tagsHtml}
-          <a class="btn btn-primary church-button" href="iglesia.html?id=${iglesia.id}">Ver Iglesia</a>
+      <!-- LOGO -->
+      <h3 style="margin:1.2rem 0 .5rem;font-size:1rem">📸 Logo</h3>
+      <div class="logo-upload-wrap">
+        <div class="logo-preview-box" id="logoPreviewBox" onclick="document.getElementById('logoInput').click()">
+          <img id="logoPreviewImg" src="" alt="" style="display:none">
+          <div class="placeholder" id="logoPlaceholder">⛪</div>
         </div>
-      `;
+        <div class="logo-upload-info">
+          <p>Aparece en el buscador y en tu página pública. Cuadrada, mín. 200×200px, JPG/PNG.</p>
+          <input type="file" id="logoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="onLogoSelect(event)">
+          <button onclick="document.getElementById('logoInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir imagen</button>
+          <button id="btnGuardarLogo" onclick="guardarLogo()" disabled style="margin-left:.5rem">💾 Guardar logo</button>
+          <div class="logo-prog" id="logoProg"><i id="logoBar"></i></div>
+          <div id="logoMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        </div>
+      </div>
+
+      <!-- INFO BÁSICA -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📋 Información básica</h3>
+      <div class="row">
+        <div><label>Descripción de la iglesia</label><textarea id="ig_descripcion" rows="3" placeholder="Breve descripción de tu comunidad..."></textarea></div>
+        <div><label>Horarios de culto</label><textarea id="ig_horarios" rows="3" placeholder="Ej: Domingos 10hs y 19hs, Miércoles 20hs"></textarea></div>
+      </div>
+
+      <!-- TAGS -->
+      <h3 style="margin:1.5rem 0 .3rem;font-size:1rem">🏷️ Palabras clave (tags)</h3>
+      <p class="small" style="margin-bottom:.7rem">Ayudan a que te encuentren más fácil en el buscador.</p>
+      <div id="tagsDisponibles" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem"></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <input id="tagCustomInput" placeholder="Agregar tag personalizado..." style="flex:1;min-width:180px;max-width:300px;padding:8px 12px;font-size:.88rem">
+        <button onclick="agregarTagCustom()" style="padding:8px 14px;font-size:.85rem">+ Agregar</button>
+      </div>
+      <div style="margin-top:.6rem;font-size:.82rem;color:#888">Tags seleccionados: <span id="tagsSeleccionados" style="font-weight:700;color:var(--primary)">ninguno</span></div>
+
+      <!-- UBICACIÓN -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📍 Ubicación</h3>
+      <div class="row">
+        <div>
+          <label>Provincia / País</label>
+          <select id="ig_provincia">
+            <option value="">— Seleccioná provincia o país —</option>
+            <optgroup label="🇦🇷 Argentina — Provincias">
+              <option>Buenos Aires</option><option>CABA</option><option>Catamarca</option>
+              <option>Chaco</option><option>Chubut</option><option>Córdoba</option>
+              <option>Corrientes</option><option>Entre Ríos</option><option>Formosa</option>
+              <option>Jujuy</option><option>La Pampa</option><option>La Rioja</option>
+              <option>Mendoza</option><option>Misiones</option><option>Neuquén</option>
+              <option>Río Negro</option><option>Salta</option><option>San Juan</option>
+              <option>San Luis</option><option>Santa Cruz</option><option>Santa Fe</option>
+              <option>Santiago del Estero</option><option>Tierra del Fuego</option><option>Tucumán</option>
+            </optgroup>
+            <optgroup label="🌎 Latinoamérica">
+              <option>Chile</option><option>Uruguay</option><option>Paraguay</option>
+              <option>Bolivia</option><option>Perú</option><option>Colombia</option>
+              <option>Venezuela</option><option>Ecuador</option><option>México</option>
+              <option>Brasil</option><option>Costa Rica</option><option>Guatemala</option>
+              <option>Honduras</option><option>El Salvador</option><option>Nicaragua</option>
+              <option>Panamá</option><option>Cuba</option><option>República Dominicana</option>
+              <option>Puerto Rico</option><option>Haití</option>
+            </optgroup>
+            <optgroup label="🌍 Resto del mundo">
+              <option>España</option><option>Estados Unidos</option><option>Italia</option>
+              <option>Alemania</option><option>Francia</option><option>Portugal</option>
+              <option>Israel</option><option>Reino Unido</option><option>Suiza</option>
+              <option>Países Bajos</option><option>Bélgica</option><option>Suecia</option>
+              <option>Noruega</option><option>Australia</option><option>Canadá</option>
+              <option>Japón</option><option>Corea del Sur</option><option>Sudáfrica</option>
+              <option>Nigeria</option><option>Ghana</option><option>Etiopía</option><option>Otro</option>
+            </optgroup>
+          </select>
+        </div>
+        <div><label>Dirección completa</label><input id="ig_direccion" placeholder="Ej: Av. San Martín 1234, Mendoza"></div>
+      </div>
+      <div id="mapaPreview" style="margin-top:10px;border-radius:10px;overflow:hidden;border:1px solid #ddd;height:200px;display:none">
+        <iframe id="mapaIframe" width="100%" height="200" frameborder="0" style="border:0" loading="lazy" allowfullscreen></iframe>
+      </div>
+      <button onclick="previsualizarMapa()" style="margin-top:8px;background:#f0f0f0;color:#333;border:1px solid #ddd;font-size:.85rem;padding:6px 12px">🗺️ Ver en mapa</button>
+
+      <!-- SITIO WEB -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🌐 Sitio web propio</h3>
+      <div class="row">
+        <div>
+          <label>URL de su página web (opcional)</label>
+          <input id="ig_website" type="url" placeholder="https://www.miiglesia.com.ar">
+          <div class="hint">Si tu iglesia ya tiene su propio sitio, lo mostramos como enlace en tu página pública.</div>
+        </div>
+      </div>
+
+      <!-- GALERÍA -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🖼️ Galería de fotos</h3>
+      <p class="small" style="margin-bottom:.8rem">Subí fotos de tu iglesia para mostrar en tu página pública.</p>
+      <div class="drop-zone" onclick="document.getElementById('galeriaInput').click()" id="galeriaDropzone">
+        <div style="font-size:2rem;margin-bottom:.4rem">📷</div>
+        <div style="font-weight:700;color:#444;font-size:.92rem">Hacé clic para subir fotos</div>
+        <div class="hint">JPG/PNG · Máx. 5MB por foto · Podés subir varias a la vez</div>
+        <input type="file" id="galeriaInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="onGaleriaSelect(event)">
+      </div>
+      <div class="prog" id="galeriaProg" style="margin-top:8px;display:none"><i id="galeriaBar"></i></div>
+      <div id="galeriaMsg" class="hint" style="margin-top:6px;min-height:1rem"></div>
+      <div id="galeriaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem;margin-top:1rem"></div>
+
+      <!-- OFRENDAS -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">💝 Ofrendas y Diezmos</h3>
+      <div style="background:#fff8f7;border:1px solid #ffd5d0;border-radius:10px;padding:14px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px">
+          <input type="checkbox" id="of_activo" style="width:18px;height:18px"> Mostrar sección de ofrendas en mi página pública
+        </label>
+        <div id="ofrendasFields">
+          <div class="row">
+            <div><label>Descripción / Mensaje</label><input id="of_descripcion" placeholder="Ej: Tu ofrenda transforma vidas..."></div>
+            <div><label>Titular de la cuenta</label><input id="of_titular" placeholder="Nombre y apellido"></div>
+          </div>
+          <div class="row">
+            <div><label>CBU</label><input id="of_cbu" placeholder="0000000000000000000000"></div>
+            <div><label>Alias</label><input id="of_alias" placeholder="mi.iglesia.alias"></div>
+          </div>
+          <div class="row">
+            <div><label>Link de Mercado Pago (opcional)</label><input id="of_mplink" placeholder="https://link.mercadopago.com.ar/..."></div>
+          </div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_mp"> Mercado Pago</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_transf"> Transferencia bancaria</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="of_efec"> Efectivo</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEO DE BIENVENIDA -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🎬 Video de Bienvenida</h3>
+      <p class="small" style="margin-bottom:.8rem">Subí un video corto de bienvenida (máx. 1 minuto, MP4/MOV/WebM, máx. 50MB).</p>
+      <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+        <div id="videoPreviewWrap" style="display:none;flex:0 0 auto">
+          <video id="videoPreview" controls style="width:200px;border-radius:10px;background:#000"></video>
+          <div style="margin-top:4px;text-align:center">
+            <button id="btnEliminarVideo" onclick="eliminarVideo()" style="background:#dc3545;font-size:.78rem;padding:4px 10px">🗑️ Eliminar</button>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <input type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm" style="display:none" onchange="onVideoSelect(event)">
+          <button onclick="document.getElementById('videoInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir video</button>
+          <button id="btnGuardarVideo" onclick="guardarVideo()" disabled style="margin-left:.5rem">💾 Subir video</button>
+          <div class="logo-prog" style="margin-top:8px"><i id="videoBar" style="display:block;height:100%;width:0%;background:var(--primary);transition:width .2s"></i></div>
+          <div id="videoMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        </div>
+      </div>
+
+      <!-- FOTO PASTORES -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">👨‍👩‍👧 Foto de los Pastores</h3>
+      <p class="small" style="margin-bottom:.8rem">Subí una foto del equipo pastoral. JPG/PNG, máx. 5MB.</p>
+      <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+        <div id="fotoPastorWrap" style="display:none;flex:0 0 auto">
+          <img id="fotoPastorPreview" src="" alt="Foto pastores" style="width:160px;height:120px;object-fit:cover;border-radius:10px">
+          <div style="margin-top:4px;text-align:center">
+            <button id="btnEliminarFotoPastor" onclick="eliminarFotoPastor()" style="background:#dc3545;font-size:.78rem;padding:4px 10px">🗑️ Eliminar</button>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <input type="file" id="fotoPastorInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="onFotoPastorSelect(event)">
+          <button onclick="document.getElementById('fotoPastorInput').click()" style="background:#f0f0f0;color:#333;border:1px solid #ddd">📁 Elegir foto</button>
+          <button id="btnGuardarFotoPastor" onclick="guardarFotoPastor()" disabled style="margin-left:.5rem">💾 Subir foto</button>
+          <div class="logo-prog" style="margin-top:8px"><i id="fotoPastorBar" style="display:block;height:100%;width:0%;background:var(--primary);transition:width .2s"></i></div>
+          <div id="fotoPastorMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:1.2rem">
+        <button id="btnGuardarPerfil">💾 Guardar cambios</button>
+      </div>
+      <div id="perfilMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: PRÉDICAS
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-predicas" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-predicas">
+        <div class="lock-icon">🎙️🔒</div>
+        <h3>Prédicas — Plan Pago</h3>
+        <p>Publicá tus prédicas de YouTube con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
+      <h2>Prédicas (YouTube)</h2>
+      <div class="row">
+        <div><label for="p_titulo">Título</label><input id="p_titulo" placeholder="Ej: Fe que mueve montañas" /></div>
+        <div><label for="p_url">URL de YouTube</label><input id="p_url" placeholder="https://www.youtube.com/watch?v=..." /></div>
+      </div>
+      <div class="row">
+        <div><label for="p_fecha">Fecha</label><input id="p_fecha" type="date" /></div>
+        <div><label>Visibilidad</label><label><input id="p_publico" type="checkbox" checked /> Pública</label></div>
+      </div>
+      <div class="actions"><button id="btnPredicaGuardar">Guardar prédica</button></div>
+      <div class="list" id="listaPredicas"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: EVENTOS
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-eventos" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-eventos">
+        <div class="lock-icon">📅🔒</div>
+        <h3>Eventos — Plan Pago</h3>
+        <p>Publicá eventos y actividades con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
+      <h2>Eventos</h2>
+      <div class="row">
+        <div><label for="e_titulo">Título</label><input id="e_titulo" placeholder="Vigilia de oración" /></div>
+        <div><label for="e_lugar">Lugar</label><input id="e_lugar" placeholder="Templo central" /></div>
+      </div>
+      <div class="row">
+        <div><label for="e_inicio">Inicio</label><input id="e_inicio" type="datetime-local" /></div>
+        <div><label for="e_fin">Fin</label><input id="e_fin" type="datetime-local" /></div>
+      </div>
+      <div class="row">
+        <div><label for="e_desc">Descripción</label><textarea id="e_desc" rows="3"></textarea></div>
+        <div><label>Visibilidad</label><label><input id="e_publico" type="checkbox" checked /> Público</label></div>
+      </div>
+      <div class="actions"><button id="btnEventoGuardar">Guardar evento</button></div>
+      <div class="list" id="listaEventos"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: PETICIONES
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-peticiones" class="tab card">
+      <h2>🙏 Peticiones de Oración</h2>
+      <p class="small">Estas peticiones son <b>privadas</b> — solo vos las podés ver.</p>
+
+      <!-- Enviar notificación -->
+      <div style="background:#fff8f7;border:1px solid #ffd5d0;border-radius:12px;padding:1rem;margin-bottom:1.2rem">
+        <h3 style="font-size:.95rem;margin-bottom:.6rem">📢 Enviar notificación a suscriptores</h3>
+        <div class="row">
+          <div><label>Título</label><input id="notif_titulo" placeholder="Ej: ¡Nuevo evento este domingo!"></div>
+          <div><label>Mensaje</label><input id="notif_cuerpo" placeholder="Ej: Te esperamos a las 10hs en el templo"></div>
+        </div>
+        <div class="row" style="margin-top:.5rem">
+          <div><label>URL destino (opcional)</label><input id="notif_url" placeholder="Ej: /iglesia.html?id=..."></div>
+        </div>
+        <div class="actions" style="margin-top:.8rem">
+          <button id="btnEnviarNotif">📤 Enviar a todos los suscriptores</button>
+        </div>
+        <div id="notifMsg" class="hint" style="margin-top:.5rem;min-height:1rem"></div>
+        <div id="notifCount" class="small" style="margin-top:.3rem;color:#888"></div>
+      </div>
+
+      <div class="topbar" style="margin-top:.5rem">
+        <h3 style="font-size:.95rem;margin:0">Peticiones recibidas</h3>
+        <button onclick="cargarPeticiones()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;padding:6px 12px;font-size:.82rem">🔄 Actualizar</button>
+      </div>
+      <div id="listaPeticiones" style="margin-top:.8rem"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: BAUTISMOS
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-bautismos" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-bautismos">
+        <div class="lock-icon">💧🔒</div>
+        <h3>Bautismos — Plan Pago</h3>
+        <p>Recibí inscripciones de bautismo con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
+      <h2>💧 Inscripciones al Bautismo</h2>
+      <p class="small">Personas que se inscribieron para bautizarse desde tu página pública.</p>
+      <div class="topbar" style="margin-top:.5rem">
+        <h3 style="font-size:.95rem;margin:0">Solicitudes recibidas</h3>
+        <button onclick="cargarBautismos()" style="background:#f0f0f0;color:#333;border:1px solid #ddd;padding:6px 12px;font-size:.82rem">🔄 Actualizar</button>
+      </div>
+      <div id="listaBautismos" style="margin-top:.8rem"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: PUBLICIDAD
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-ads" class="tab card" style="position:relative">
+      <div class="lock-overlay" id="lock-ads">
+        <div class="lock-icon">📣🔒</div>
+        <h3>Publicidad — Plan Pago</h3>
+        <p>Creá anuncios para tu comunidad con el plan Starter o Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
+      <h2>Publicidad</h2>
+      <p class="small"><b>Starter:</b> 1 anuncio. <b>Pro:</b> sin límite.</p>
+      <div class="counter">
+        <span>Plan:</span><span id="planChip" class="chip">—</span>
+        <span id="planCount" class="small">Cargando…</span>
+      </div>
+      <div class="row">
+        <div><label for="ad_title">Título del anuncio</label><input id="ad_title" placeholder="Reunión de jóvenes – Sábado 19 hs" /></div>
+        <div><label for="ad_href">URL (opcional)</label><input id="ad_href" placeholder="https://..." /></div>
+      </div>
+      <div class="uploader">
+        <label for="ad_file"><b>Imagen</b> (JPG/PNG, máx. 5MB)</label>
+        <input id="ad_file" type="file" accept=".jpg,.jpeg,.png" />
+        <div class="prog"><i id="ad_bar"></i></div>
+        <div id="ad_msg" class="hint" style="min-height:18px;margin-top:6px"></div>
+      </div>
+      <div class="actions" style="margin-top:10px"><button id="btnCreateAd">Crear publicidad</button></div>
+      <div class="ad-grid" id="adsList"></div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: ESTUDIOS BÍBLICOS ✨ NUEVO
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-estudios" class="tab card" style="position:relative">
+      <!-- Overlay Pro -->
+      <div class="lock-overlay" id="lock-estudios">
+        <div class="lock-icon">📚🔒</div>
+        <h3>Estudios Bíblicos — Plan Pro</h3>
+        <p>Subí y vendé estudios en PDF o Word. Exclusivo del plan Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
+
+      <h2>📚 Estudios Bíblicos</h2>
+      <p class="small">Subí tus estudios en PDF o Word y ponelos a la venta. Los compradores reciben el archivo al confirmar el pago.</p>
+
+      <!-- Formulario nuevo estudio -->
+      <div style="background:#f8f9fa;border-radius:14px;padding:20px;margin-bottom:24px;border:1px solid #eee">
+        <h3 style="margin:0 0 16px;font-size:1rem;font-weight:700">➕ Subir nuevo estudio</h3>
+
+        <div class="row">
+          <div>
+            <label>Título *</label>
+            <input id="estudioTitulo" type="text" placeholder="Ej: Estudio de Romanos 8" maxlength="80">
+          </div>
+          <div>
+            <label>Precio (ARS) *</label>
+            <input id="estudioPrice" type="number" placeholder="Ej: 2500" min="0">
+            <div class="hint">Ponelo en 0 para que sea gratis</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <label>Descripción corta</label>
+          <textarea id="estudioDesc" rows="2" placeholder="De qué trata este estudio..." maxlength="200"></textarea>
+        </div>
+
+        <!-- Drop zone archivo -->
+        <label style="margin-bottom:8px">Archivo (PDF o Word) *</label>
+        <div class="drop-zone" id="estudioDropZone">
+          <div style="font-size:28px;margin-bottom:6px">📄</div>
+          <p style="margin:0;color:#666;font-size:14px">Arrastrá tu archivo acá o hacé clic para seleccionar</p>
+          <p style="margin:4px 0 0;color:#999;font-size:12px">PDF o Word (.docx) — máx. 20 MB</p>
+          <input id="estudioFileInput" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none">
+        </div>
+        <div id="estudioFilePreview" style="display:none;margin-top:8px;padding:10px 14px;background:#e8f5e9;border-radius:10px;font-size:13px;color:#2e7d32;align-items:center;gap:8px">
+          <span>📎</span><span id="estudioFileName"></span>
+        </div>
+        <div id="estudioProgressWrap" style="display:none;margin-top:8px">
+          <div style="height:6px;background:#eee;border-radius:99px;overflow:hidden">
+            <div id="estudioProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#ff6b5b,#ff8c69);transition:width .3s"></div>
+          </div>
+          <p id="estudioProgressText" style="margin:4px 0 0;font-size:12px;color:#666;text-align:center">Subiendo...</p>
+        </div>
+
+        <button id="btnSubirEstudio" style="width:100%;padding:13px;background:#111;color:#fff;border:0;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;margin-top:14px">
+          📤 Publicar estudio
+        </button>
+        <p id="estudioMsg" style="text-align:center;margin:8px 0 0;font-size:13px;min-height:18px"></p>
+      </div>
+
+      <!-- Lista de estudios publicados -->
+      <h3 style="font-size:1rem;font-weight:700;margin:0 0 12px">Estudios publicados</h3>
+      <div id="estudiosList">
+        <p style="color:#999;font-size:14px;text-align:center;padding:20px">Cargando...</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TAB: PLAN
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-plan" class="tab card">
+      <h2>💳 Mi Plan</h2>
+      <p class="small">Administrá tu suscripción y cambiá de plan cuando quieras.</p>
+
+      <div id="planActualBox" style="background:#f9f9f9;border:1px solid #eee;border-radius:12px;padding:1.2rem;margin:1rem 0">
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div id="planIconBig" style="font-size:2.5rem">⏳</div>
+          <div>
+            <div style="font-size:1.1rem;font-weight:800" id="planNombreActual">Cargando…</div>
+            <div style="color:#888;font-size:.85rem;margin-top:2px" id="planEstadoActual"></div>
+          </div>
+        </div>
+        <div id="planBeneficiosActual" style="margin-top:1rem;font-size:.88rem;color:#555;line-height:1.8"></div>
+      </div>
+
+      <h3 style="font-size:1rem;margin:1.5rem 0 .8rem">Planes disponibles</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem">
+
+        <!-- FREE -->
+        <div class="plan-card" id="pc-free">
+          <div class="plan-header" style="background:#f5f5f5">
+            <div class="plan-nombre">FREE</div>
+            <div class="plan-precio">$0 <span>/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>✅ Página pública</li>
+            <li>✅ Peticiones de oración</li>
+            <li>❌ Sin prédicas ni eventos</li>
+            <li>❌ Sin publicidad</li>
+            <li>❌ Sin estudios bíblicos</li>
+          </ul>
+          <button class="plan-btn" data-plan="free" onclick="cambiarPlan('free')">Seleccionar</button>
+        </div>
+
+        <!-- STARTER -->
+        <div class="plan-card" id="pc-starter">
+          <div class="plan-header" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+            <div class="plan-nombre" style="color:#fff">STARTER</div>
+            <div class="plan-precio" style="color:#fff">$10.000 <span>/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>✅ Todo lo de FREE</li>
+            <li>✅ Prédicas y eventos</li>
+            <li>✅ 1 anuncio destacado</li>
+            <li>✅ Sección de ofrendas</li>
+            <li>❌ Sin estudios bíblicos</li>
+          </ul>
+          <button class="plan-btn" data-plan="starter" onclick="cambiarPlan('starter')" style="background:linear-gradient(135deg,#667eea,#764ba2)">Seleccionar</button>
+        </div>
+
+        <!-- PRO -->
+        <div class="plan-card" id="pc-pro" style="border:2px solid var(--primary);position:relative">
+          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:2px 14px;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap">⭐ MÁS POPULAR</div>
+          <div class="plan-header" style="background:linear-gradient(135deg,#FF6B5B,#e63946)">
+            <div class="plan-nombre" style="color:#fff">PRO</div>
+            <div class="plan-precio" style="color:#fff">$30.000 <span>/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>✅ Todo lo de Starter</li>
+            <li>✅ Anuncios ilimitados</li>
+            <li>✅ 📚 Estudios bíblicos</li>
+            <li>✅ Hasta 5 administradores</li>
+            <li>✅ Estadísticas de visitas</li>
+          </ul>
+          <button class="plan-btn" data-plan="pro" onclick="cambiarPlan('pro')" style="background:linear-gradient(135deg,#FF6B5B,#e63946)">Seleccionar</button>
+        </div>
+
+      </div>
+
+      <h3 style="font-size:1rem;margin:1.5rem 0 .8rem">📋 Historial de pagos</h3>
+      <div id="historialPagos" style="font-size:.88rem;color:#888">Cargando…</div>
+
+      <div style="margin-top:1.5rem;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:1rem;font-size:.88rem">
+        💬 ¿Necesitás ayuda con tu plan? <a href="https://wa.me/5492615515707?text=Hola,%20necesito%20ayuda%20con%20mi%20plan%20en%20Mi%20Iglesia+" target="_blank" style="color:#16a34a;font-weight:700">Contactanos por WhatsApp</a>
+      </div>
+    </section>
+
+    <p id="msg"></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, getDocs, deleteDoc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getStorage, ref as storageRef, uploadBytesResumable, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
+    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    };
+
+    const app     = initializeApp(firebaseConfig);
+    const auth    = getAuth(app);
+    const db      = getFirestore(app);
+    const storage = getStorage(app);
+    const fns     = getFunctions(app, "us-central1");
+
+    const $ = (id) => document.getElementById(id);
+    const msg = $('msg');
+    let uid = null;
+    let iglesiaDoc = null;
+    let selectedLogoFile = null;
+
+    /* ─── TABS ─── */
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* ─── HELPERS ─── */
+    function youtubeIdFromUrl(url) {
+      const m = (url||'').match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+      return m ? m[1] : '';
+    }
+    function fmtDate(d) {
+      try { return new Date(d?.seconds ? d.seconds*1000 : d).toLocaleDateString(); } catch { return ''; }
+    }
+    function escStr(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function disableAllForms(disabled) {
+      ['p_titulo','p_url','p_fecha','p_publico','btnPredicaGuardar',
+       'e_titulo','e_lugar','e_inicio','e_fin','e_desc','e_publico','btnEventoGuardar',
+       'ad_title','ad_href','ad_file','btnCreateAd','btnGuardarLogo'
+      ].forEach(id => { const el=$(id); if(el) el.disabled=disabled; });
     }
 
-    const input = document.getElementById('searchInput');
-    const sug   = document.getElementById('suggestions');
-    function ocultarSugerencias(){ if (sug) sug.style.display='none'; }
-    function mostrarSugerencias(){ if (sug) sug.style.display='block'; }
+    function ensureActiveAndVerified(user, dataIglesia) {
+      const status = $('status');
+      if (dataIglesia?.estado !== 'activa') {
+        status.textContent = '⏳ Tu iglesia está PENDIENTE. Pedí a un admin que la apruebe.';
+        disableAllForms(true); return false;
+      }
+      if (!user.emailVerified) {
+        status.innerHTML = '⚠️ Verificá tu email. <button id="btnResend" style="margin-left:6px;padding:4px 10px;font-size:.8rem">Reenviar</button>';
+        disableAllForms(true);
+        document.getElementById('btnResend').onclick = async () => {
+          await sendEmailVerification(user);
+          status.textContent = '📧 Verificación reenviada.';
+        };
+        return false;
+      }
+      status.textContent = '✅ ACTIVA';
+      disableAllForms(false);
+      return true;
+    }
 
-    function buildSugerencias(text){
-      const q = (text||'').toLowerCase().trim();
-      if (!q) { ocultarSugerencias(); return; }
-      const match = iglesias
-        .filter(i => iglesiaCoincide(i, q))
-        .slice(0,8);
-      if (!match.length){ ocultarSugerencias(); return; }
-      if (sug) {
-        sug.innerHTML = match.map(i => {
-          // Buscar qué campo matcheó para mostrarlo como hint
-          const tagMatch = (i.tags||[]).find(t => t.toLowerCase().includes(q));
-          const hint = tagMatch ? `🏷️ ${tagMatch}` : (i.ciudad||'');
-          return `<div class="suggestion" data-value="${(i.nombre||'').replace(/"/g,'&quot;')}">
-            <span>${i.nombre || '-'}</span>
-            <small>${hint}</small>
-          </div>`;
-        }).join('');
-        mostrarSugerencias();
-        [...sug.querySelectorAll('.suggestion')].forEach(el=>{
-          el.addEventListener('click', ()=>{
-            input.value = el.getAttribute('data-value') || '';
-            buscarIglesias();
-          });
+    /* ─── SESIÓN ─── */
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+      uid = user.uid;
+      $('emailLbl').textContent = user.email || '';
+
+      const snap = await getDoc(doc(db, 'iglesias', uid));
+      if (!snap.exists()) { msg.textContent = 'No se encontró tu iglesia.'; disableAllForms(true); return; }
+      iglesiaDoc = snap.data();
+
+      renderTags(iglesiaDoc.tags || []);
+
+      if (iglesiaDoc.logoUrl) {
+        $('logoPreviewImg').src = iglesiaDoc.logoUrl;
+        $('logoPreviewImg').style.display = 'block';
+        $('logoPlaceholder').style.display = 'none';
+      }
+
+      if (iglesiaDoc.descripcion) $('ig_descripcion').value = iglesiaDoc.descripcion;
+      if (iglesiaDoc.horarios)    $('ig_horarios').value    = iglesiaDoc.horarios;
+      if (iglesiaDoc.direccion)   $('ig_direccion').value   = iglesiaDoc.direccion;
+      if (iglesiaDoc.provincia)   $('ig_provincia').value   = iglesiaDoc.provincia;
+      if (iglesiaDoc.website)     $('ig_website').value     = iglesiaDoc.website;
+
+      if (iglesiaDoc.videoUrl) {
+        $('videoPreview').src = iglesiaDoc.videoUrl;
+        $('videoPreviewWrap').style.display = 'block';
+      }
+      if (iglesiaDoc.fotoPastorUrl) {
+        $('fotoPastorPreview').src = iglesiaDoc.fotoPastorUrl;
+        $('fotoPastorWrap').style.display = 'block';
+      }
+
+      cargarGaleria();
+
+      const of = iglesiaDoc.ofrendas || {};
+      if (of.activo)        $('of_activo').checked   = true;
+      if (of.descripcion)   $('of_descripcion').value = of.descripcion;
+      if (of.titular)       $('of_titular').value     = of.titular;
+      if (of.cbu)           $('of_cbu').value          = of.cbu;
+      if (of.alias)         $('of_alias').value        = of.alias;
+      if (of.mpLink)        $('of_mplink').value       = of.mpLink;
+      if (of.mercadopago)   $('of_mp').checked         = true;
+      if (of.transferencia) $('of_transf').checked     = true;
+      if (of.efectivo)      $('of_efec').checked       = true;
+
+      const linkEl = $('linkPublico');
+      const linkHref = $('linkPublicoHref');
+      if (linkEl && linkHref) {
+        const url = `${window.location.origin}/iglesia.html?id=${uid}`;
+        linkHref.href = url;
+        linkHref.textContent = url;
+        linkEl.style.display = 'block';
+      }
+
+      ensureActiveAndVerified(user, iglesiaDoc);
+      applyPlanLocks(iglesiaDoc);
+      renderPlanActual();
+      await Promise.all([
+        cargarPredicas(), cargarEventos(), cargarPeticiones(),
+        cargarBautismos(), cargarCantSuscriptores(), cargarEstudios()
+      ]);
+      await initAdsTab();
+    });
+
+    $('btnLogout').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+    window.copiarLink = function() {
+      const url = `${window.location.origin}/iglesia.html?id=${uid}`;
+      navigator.clipboard.writeText(url).then(()=> alert('¡Link copiado!'));
+    };
+
+    window.previsualizarMapa = function() {
+      const dir = ($('ig_direccion').value || '').trim();
+      if (!dir) { alert('Ingresá una dirección primero.'); return; }
+      const q = encodeURIComponent(dir);
+      $('mapaIframe').src = `https://maps.google.com/maps?q=${q}&output=embed&z=15`;
+      $('mapaPreview').style.display = 'block';
+    };
+
+    /* ─── GUARDAR PERFIL ─── */
+    $('btnGuardarPerfil').addEventListener('click', async () => {
+      const btn = $('btnGuardarPerfil');
+      const msgEl = $('perfilMsg');
+      btn.disabled = true; btn.textContent = 'Guardando...';
+      try {
+        await setDoc(doc(db,'iglesias',uid), {
+          descripcion: ($('ig_descripcion').value||'').trim(),
+          horarios:    ($('ig_horarios').value||'').trim(),
+          provincia:   ($('ig_provincia').value||'').trim(),
+          direccion:   ($('ig_direccion').value||'').trim(),
+          website:     ($('ig_website').value||'').trim(),
+          tags:        tagsSeleccionados,
+          ofrendas: {
+            activo:        $('of_activo').checked,
+            descripcion:   ($('of_descripcion').value||'').trim(),
+            titular:       ($('of_titular').value||'').trim(),
+            cbu:           ($('of_cbu').value||'').trim(),
+            alias:         ($('of_alias').value||'').trim(),
+            mpLink:        ($('of_mplink').value||'').trim(),
+            mercadopago:   $('of_mp').checked,
+            transferencia: $('of_transf').checked,
+            efectivo:      $('of_efec').checked,
+          }
+        }, { merge:true });
+        msgEl.textContent = '✅ Perfil guardado correctamente.';
+        msgEl.style.color = '#16a34a';
+      } catch(e) {
+        msgEl.textContent = '❌ Error: ' + e.message;
+        msgEl.style.color = '#dc3545';
+      }
+      btn.disabled = false; btn.textContent = '💾 Guardar cambios';
+    });
+
+    /* ─── TAGS ─── */
+    const TAGS_PREDEFINIDOS = ['Jóvenes','Familiar','Alabanza','Evangelismo','Niños','Español','Online','Bautista','Pentecostal','Evangélica','Metodista','Adventista','Comunidad','Oración','Misiones','Discipulado','Adoración','Carismática','Presbiteriana','Luterana','Anglicana','Menonita','Nazarena'];
+    let tagsSeleccionados = [];
+
+    function renderTags(tagsActuales) {
+      tagsSeleccionados = [...(tagsActuales||[])];
+      const cont = $('tagsDisponibles');
+      if (!cont) return;
+      const todos = [...new Set([...TAGS_PREDEFINIDOS, ...tagsSeleccionados])];
+      cont.innerHTML = todos.map(tag => {
+        const activo = tagsSeleccionados.includes(tag);
+        return `<span class="tag-dash ${activo?'activo':''}" data-tag="${tag}" onclick="toggleTag('${tag}')">${tag}</span>`;
+      }).join('');
+      actualizarLabelTags();
+    }
+
+    window.toggleTag = function(tag) {
+      const idx = tagsSeleccionados.indexOf(tag);
+      if (idx === -1) tagsSeleccionados.push(tag); else tagsSeleccionados.splice(idx,1);
+      document.querySelector(`.tag-dash[data-tag="${tag}"]`)?.classList.toggle('activo');
+      actualizarLabelTags();
+    };
+
+    window.agregarTagCustom = function() {
+      const input = $('tagCustomInput');
+      const val = (input.value||'').trim();
+      if (!val) return;
+      if (!tagsSeleccionados.includes(val)) {
+        tagsSeleccionados.push(val);
+        $('tagsDisponibles').insertAdjacentHTML('beforeend', `<span class="tag-dash activo" data-tag="${val}" onclick="toggleTag('${val}')">${val}</span>`);
+      }
+      input.value = '';
+      actualizarLabelTags();
+    };
+
+    $('tagCustomInput')?.addEventListener('keypress', e => { if(e.key==='Enter') agregarTagCustom(); });
+
+    function actualizarLabelTags() {
+      const lbl = $('tagsSeleccionados');
+      if (lbl) lbl.textContent = tagsSeleccionados.length ? tagsSeleccionados.join(', ') : 'ninguno';
+    }
+
+    /* ─── LOGO ─── */
+    window.onLogoSelect = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { alert('Usá JPG, PNG o WebP.'); return; }
+      if (file.size > 5*1024*1024) { alert('El archivo supera 5MB.'); return; }
+      selectedLogoFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => { $('logoPreviewImg').src = ev.target.result; $('logoPreviewImg').style.display='block'; $('logoPlaceholder').style.display='none'; };
+      reader.readAsDataURL(file);
+      $('btnGuardarLogo').disabled = false;
+      $('logoMsg').textContent = '✏️ ' + file.name + ' — Clic en "Guardar logo" para confirmar.';
+    };
+
+    window.guardarLogo = async function() {
+      if (!selectedLogoFile || !uid) return;
+      const btn = $('btnGuardarLogo'); const prog = $('logoProg'); const bar = $('logoBar'); const msgEl = $('logoMsg');
+      btn.disabled = true; btn.textContent = 'Subiendo...'; prog.style.display = 'block';
+      try {
+        const name = `logo-${Date.now()}.${selectedLogoFile.name.split('.').pop()}`;
+        const ref  = storageRef(storage, `logos/${uid}/${name}`);
+        const task = uploadBytesResumable(ref, selectedLogoFile, { contentType: selectedLogoFile.type });
+        await new Promise((resolve, reject) => { task.on('state_changed', snap => { bar.style.width = Math.round(snap.bytesTransferred/snap.totalBytes*100)+'%'; }, reject, resolve); });
+        const url = await getDownloadURL(task.snapshot.ref);
+        await setDoc(doc(db,'iglesias',uid), { logoUrl: url }, { merge:true });
+        iglesiaDoc.logoUrl = url;
+        msgEl.textContent = '✅ Logo guardado correctamente.';
+        btn.textContent = '💾 Guardar logo'; selectedLogoFile = null;
+      } catch(e) { msgEl.textContent = '❌ Error: ' + e.message; btn.disabled = false; btn.textContent = '💾 Guardar logo'; }
+    };
+
+    /* ─── VIDEO ─── */
+    let selectedVideoFile = null;
+    window.onVideoSelect = function(e) {
+      const file = e.target.files[0]; if (!file) return;
+      if (!['video/mp4','video/quicktime','video/webm'].includes(file.type)) { alert('Usá MP4, MOV o WebM.'); return; }
+      if (file.size > 50*1024*1024) { alert('El video supera 50MB.'); return; }
+      const vid = document.createElement('video'); vid.preload = 'metadata';
+      vid.onloadedmetadata = () => {
+        URL.revokeObjectURL(vid.src);
+        if (vid.duration > 65) { alert('El video supera 1 minuto. Por favor recortalo.'); $('videoInput').value=''; return; }
+        selectedVideoFile = file;
+        $('videoPreview').src = URL.createObjectURL(file); $('videoPreviewWrap').style.display = 'block';
+        $('btnGuardarVideo').disabled = false; $('videoMsg').textContent = '✏️ ' + file.name;
+      };
+      vid.src = URL.createObjectURL(file);
+    };
+
+    window.guardarVideo = async function() {
+      if (!selectedVideoFile || !uid) return;
+      const btn = $('btnGuardarVideo'); const bar = $('videoBar'); const msgEl = $('videoMsg');
+      btn.disabled = true; btn.textContent = 'Subiendo...';
+      try {
+        const path = `videos/${uid}/bienvenida_${Date.now()}.${selectedVideoFile.name.split('.').pop()}`;
+        const ref  = storageRef(storage, path);
+        await new Promise((res, rej) => {
+          const task = uploadBytesResumable(ref, selectedVideoFile, { contentType: selectedVideoFile.type });
+          task.on('state_changed', s => { bar.style.width = Math.round(s.bytesTransferred/s.totalBytes*100)+'%'; }, rej,
+            async () => {
+              const url = await getDownloadURL(task.snapshot.ref);
+              if (iglesiaDoc.videoPath) { try { await deleteObject(storageRef(storage, iglesiaDoc.videoPath)); } catch(_){} }
+              await setDoc(doc(db,'iglesias',uid), { videoUrl: url, videoPath: path }, { merge:true });
+              iglesiaDoc.videoUrl = url; iglesiaDoc.videoPath = path;
+              msgEl.textContent = '✅ Video subido correctamente'; res();
+            }
+          );
         });
+        selectedVideoFile = null; btn.textContent = '💾 Subir video';
+      } catch(e) { msgEl.textContent = '❌ Error: ' + e.message; btn.disabled = false; btn.textContent = '💾 Subir video'; }
+    };
+
+    window.eliminarVideo = async function() {
+      if (!confirm('¿Eliminar el video de bienvenida?')) return;
+      if (iglesiaDoc.videoPath) await deleteObject(storageRef(storage, iglesiaDoc.videoPath)).catch(()=>{});
+      await setDoc(doc(db,'iglesias',uid), { videoUrl: null, videoPath: null }, { merge:true });
+      iglesiaDoc.videoUrl = null; iglesiaDoc.videoPath = null;
+      $('videoPreviewWrap').style.display = 'none'; $('videoPreview').src = '';
+      $('videoMsg').textContent = '🗑️ Video eliminado.';
+    };
+
+    /* ─── FOTO PASTORES ─── */
+    let selectedFotoPastorFile = null;
+    window.onFotoPastorSelect = function(e) {
+      const file = e.target.files[0]; if (!file) return;
+      if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { alert('Usá JPG, PNG o WebP.'); return; }
+      if (file.size > 5*1024*1024) { alert('El archivo supera 5MB.'); return; }
+      selectedFotoPastorFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => { $('fotoPastorPreview').src = ev.target.result; $('fotoPastorWrap').style.display = 'block'; };
+      reader.readAsDataURL(file);
+      $('btnGuardarFotoPastor').disabled = false; $('fotoPastorMsg').textContent = '✏️ ' + file.name;
+    };
+
+    window.guardarFotoPastor = async function() {
+      if (!selectedFotoPastorFile || !uid) return;
+      const btn = $('btnGuardarFotoPastor'); const bar = $('fotoPastorBar'); const msgEl = $('fotoPastorMsg');
+      btn.disabled = true; btn.textContent = 'Subiendo...';
+      try {
+        const path = `pastores/${uid}/foto_${Date.now()}.${selectedFotoPastorFile.name.split('.').pop()}`;
+        const ref  = storageRef(storage, path);
+        const task = uploadBytesResumable(ref, selectedFotoPastorFile, { contentType: selectedFotoPastorFile.type });
+        await new Promise((res, rej) => {
+          task.on('state_changed', s => { bar.style.width = Math.round(s.bytesTransferred/s.totalBytes*100)+'%'; }, rej,
+            async () => {
+              const url = await getDownloadURL(task.snapshot.ref);
+              if (iglesiaDoc.fotoPastorPath) { try { await deleteObject(storageRef(storage, iglesiaDoc.fotoPastorPath)); } catch(_){} }
+              await setDoc(doc(db,'iglesias',uid), { fotoPastorUrl: url, fotoPastorPath: path }, { merge:true });
+              iglesiaDoc.fotoPastorUrl = url; iglesiaDoc.fotoPastorPath = path;
+              msgEl.textContent = '✅ Foto subida correctamente'; res();
+            }
+          );
+        });
+        selectedFotoPastorFile = null; btn.textContent = '💾 Subir foto';
+      } catch(e) { msgEl.textContent = '❌ Error: ' + e.message; btn.disabled = false; btn.textContent = '💾 Subir foto'; }
+    };
+
+    window.eliminarFotoPastor = async function() {
+      if (!confirm('¿Eliminar la foto de los pastores?')) return;
+      if (iglesiaDoc.fotoPastorPath) await deleteObject(storageRef(storage, iglesiaDoc.fotoPastorPath)).catch(()=>{});
+      await setDoc(doc(db,'iglesias',uid), { fotoPastorUrl: null, fotoPastorPath: null }, { merge:true });
+      iglesiaDoc.fotoPastorUrl = null; iglesiaDoc.fotoPastorPath = null;
+      $('fotoPastorWrap').style.display = 'none'; $('fotoPastorPreview').src = '';
+      $('fotoPastorMsg').textContent = '🗑️ Foto eliminada.';
+    };
+
+    /* ─── PRÉDICAS ─── */
+    async function cargarPredicas() {
+      const cont = $('listaPredicas'); if (!cont) return;
+      cont.innerHTML = '';
+      const snap = await getDocs(query(collection(db,'iglesias',uid,'predicas'), orderBy('fecha','desc')));
+      if (snap.empty) { cont.innerHTML = '<div class="muted">Aún no hay prédicas.</div>'; return; }
+      snap.forEach(docu => {
+        const d = docu.data();
+        const badge = d.publico ? '<span class="badge pub">Pública</span>' : '<span class="badge priv">Privada</span>';
+        const yt = d.youtubeId ? `<iframe height="180" src="https://www.youtube.com/embed/${d.youtubeId}" allowfullscreen></iframe>` : '';
+        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${fmtDate(d.fecha)}</div>${yt}<div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
+      });
+      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'predicas',b.dataset.del)); await cargarPredicas(); }; });
+    }
+    $('btnPredicaGuardar').addEventListener('click', async () => {
+      try {
+        const youtubeId = youtubeIdFromUrl($('p_url').value);
+        if (!youtubeId) { msg.textContent='❌ URL de YouTube inválida'; return; }
+        await addDoc(collection(db,'iglesias',uid,'predicas'), { titulo:$('p_titulo').value.trim(), url:$('p_url').value.trim(), youtubeId, fecha:new Date($('p_fecha').value)||new Date(), publico:$('p_publico').checked, creadoEn:serverTimestamp() });
+        $('p_titulo').value=''; $('p_url').value=''; $('p_publico').checked=true;
+        msg.textContent='✅ Prédica guardada.'; await cargarPredicas();
+      } catch(e) { msg.textContent='❌ '+e.message; }
+    });
+
+    /* ─── EVENTOS ─── */
+    async function cargarEventos() {
+      const cont = $('listaEventos'); if (!cont) return;
+      cont.innerHTML = '';
+      const snap = await getDocs(query(collection(db,'iglesias',uid,'eventos'), orderBy('inicio','desc')));
+      if (snap.empty) { cont.innerHTML='<div class="muted">Aún no hay eventos.</div>'; return; }
+      snap.forEach(docu => {
+        const d = docu.data();
+        const badge = d.publico ? '<span class="badge pub">Público</span>' : '<span class="badge priv">Privado</span>';
+        cont.insertAdjacentHTML('beforeend', `<div class="item">${badge} <b>${d.titulo||'(Sin título)'}</b><div class="muted">${d.lugar||''}</div><div class="muted">${fmtDate(d.inicio)}</div><div class="muted">${d.descripcion||''}</div><div class="actions"><button class="danger" data-del="${docu.id}">Eliminar</button></div></div>`);
+      });
+      cont.querySelectorAll('button[data-del]').forEach(b=>{ b.onclick=async()=>{ if(!confirm('¿Eliminar?'))return; await deleteDoc(doc(db,'iglesias',uid,'eventos',b.dataset.del)); await cargarEventos(); }; });
+    }
+    $('btnEventoGuardar').addEventListener('click', async () => {
+      try {
+        await addDoc(collection(db,'iglesias',uid,'eventos'), { titulo:$('e_titulo').value.trim(), lugar:$('e_lugar').value.trim(), inicio:new Date($('e_inicio').value)||new Date(), fin:new Date($('e_fin').value)||new Date(), descripcion:$('e_desc').value.trim(), publico:$('e_publico').checked, creadoEn:serverTimestamp() });
+        $('e_titulo').value=''; $('e_lugar').value=''; $('e_inicio').value=''; $('e_fin').value=''; $('e_desc').value='';
+        msg.textContent='✅ Evento guardado.'; await cargarEventos();
+      } catch(e) { msg.textContent='❌ '+e.message; }
+    });
+
+    /* ─── BLOQUEO POR PLAN ─── */
+    function applyPlanLocks(igData) {
+      const plan = (igData?.subscription?.priceIdOrPlanId || 'free').toLowerCase();
+      const esFree = (plan === 'free');
+      const esPro  = (plan === 'pro');
+
+      // Tabs bloqueados para free y starter
+      const tabsPagas = ['predicas','eventos','bautismos','ads'];
+      tabsPagas.forEach(nombre => {
+        const lock    = $(`lock-${nombre}`);
+        const section = $(`tab-${nombre}`);
+        const tabBtn  = document.querySelector(`[data-tab="tab-${nombre}"]`);
+        if (esFree) {
+          if (lock)    lock.style.display = 'flex';
+          if (section) section.classList.add('tab-locked');
+          if (tabBtn)  tabBtn.classList.add('locked-tab');
+        } else {
+          if (lock)    lock.style.display = 'none';
+          if (section) section.classList.remove('tab-locked');
+          if (tabBtn)  tabBtn.classList.remove('locked-tab');
+        }
+      });
+
+      // Tab Estudios: solo para PRO
+      const lockEstudios = $('lock-estudios');
+      const secEstudios  = $('tab-estudios');
+      const tabEstudios  = document.querySelector('[data-tab="tab-estudios"]');
+      if (!esPro) {
+        if (lockEstudios) lockEstudios.style.display = 'flex';
+        if (secEstudios)  secEstudios.classList.add('tab-locked');
+        if (tabEstudios)  tabEstudios.classList.add('locked-tab');
+      } else {
+        if (lockEstudios) lockEstudios.style.display = 'none';
+        if (secEstudios)  secEstudios.classList.remove('tab-locked');
+        if (tabEstudios)  tabEstudios.classList.remove('locked-tab');
       }
     }
 
-    input?.addEventListener('input', e=> buildSugerencias(e.target.value));
-    input?.addEventListener('keydown', e=> { if(e.key==='Escape') ocultarSugerencias(); });
-    document.addEventListener('click', e=>{
-      const auto = document.getElementById('autocomplete');
-      if (auto && !auto.contains(e.target) && e.target !== input) ocultarSugerencias();
-    });
-    document.getElementById('searchInput')?.addEventListener('keypress', e=> { if(e.key==='Enter') buscarIglesias(); });
+    /* ─── PETICIONES ─── */
+    async function cargarPeticiones() {
+      const cont = $('listaPeticiones');
+      if (!cont || !uid) return;
+      cont.innerHTML = '<div class="hint">Cargando…</div>';
+      try {
+        const snap = await getDocs(query(collection(db,'iglesias',uid,'peticiones'), orderBy('creadoEn','desc')));
+        if (snap.empty) { cont.innerHTML = '<div class="hint">No hay peticiones todavía.</div>'; return; }
+        cont.innerHTML = '';
+        snap.forEach(docu => {
+          const d = docu.data();
+          const fecha = d.creadoEn?.seconds ? new Date(d.creadoEn.seconds*1000).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+          const leida = d.leida === true;
+          cont.insertAdjacentHTML('beforeend', `
+            <div class="inbox-card ${leida?'leida':''}" data-id="${docu.id}">
+              <div class="inbox-header">
+                <div>
+                  <span class="inbox-nombre">🙏 ${escStr(d.nombre||'')} ${d.apellido?escStr(d.apellido):''}</span>
+                  ${d.tel ? `<a href="tel:${escStr(d.tel)}" class="inbox-tel">📞 ${escStr(d.tel)}</a>` : ''}
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                  <span class="inbox-fecha">${fecha}</span>
+                  ${!leida ? `<button class="btn-marcar" onclick="marcarLeida('${docu.id}','peticiones')">✓ Marcar leída</button>` : '<span style="color:#aaa;font-size:.75rem">✓ Leída</span>'}
+                </div>
+              </div>
+              <div class="inbox-mensaje">${escStr(d.mensaje||d.detalle||'')}</div>
+              <div class="actions" style="margin-top:.5rem">
+                ${d.tel ? `<a href="https://wa.me/${(d.tel||'').replace(/\D/g,'')}" target="_blank" class="btn-wa-small">💬 WhatsApp</a>` : ''}
+                <button class="danger" onclick="eliminarItem('${docu.id}','peticiones')">🗑️ Eliminar</button>
+              </div>
+            </div>`);
+        });
+      } catch(e) { cont.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`; }
+    }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await cargarIglesias();
-    });
-  </script>
+    /* ─── BAUTISMOS ─── */
+    async function cargarBautismos() {
+      const cont = $('listaBautismos');
+      if (!cont || !uid) return;
+      cont.innerHTML = '<div class="hint">Cargando…</div>';
+      try {
+        const snap = await getDocs(query(collection(db,'iglesias',uid,'bautismos'), orderBy('creadoEn','desc')));
+        if (snap.empty) { cont.innerHTML = '<div class="hint">No hay inscripciones todavía.</div>'; return; }
+        cont.innerHTML = '';
+        snap.forEach(docu => {
+          const d = docu.data();
+          const fecha = d.creadoEn?.seconds ? new Date(d.creadoEn.seconds*1000).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+          const leido = d.leido === true;
+          cont.insertAdjacentHTML('beforeend', `
+            <div class="inbox-card ${leido?'leida':''}" data-id="${docu.id}">
+              <div class="inbox-header">
+                <div>
+                  <span class="inbox-nombre">💧 ${escStr(d.nombre||'')} ${d.apellido?escStr(d.apellido):''}</span>
+                  ${d.tel ? `<a href="tel:${escStr(d.tel)}" class="inbox-tel">📞 ${escStr(d.tel)}</a>` : ''}
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                  <span class="inbox-fecha">${fecha}</span>
+                  ${!leido ? `<button class="btn-marcar" onclick="marcarLeida('${docu.id}','bautismos')">✓ Marcar leído</button>` : '<span style="color:#aaa;font-size:.75rem">✓ Leído</span>'}
+                </div>
+              </div>
+              ${d.mensaje ? `<div class="inbox-mensaje">${escStr(d.mensaje)}</div>` : ''}
+              <div class="actions" style="margin-top:.5rem">
+                ${d.tel ? `<a href="https://wa.me/${(d.tel||'').replace(/\D/g,'')}" target="_blank" class="btn-wa-small">💬 WhatsApp</a>` : ''}
+                <button class="danger" onclick="eliminarItem('${docu.id}','bautismos')">🗑️ Eliminar</button>
+              </div>
+            </div>`);
+        });
+      } catch(e) { cont.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`; }
+    }
 
-  <!-- ✅ Eventos destacados (Firestore) -->
-  <script type="module">
-    import { db } from './js/firebase-init.js';
-    import { collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    window.marcarLeida = async function(id, coleccion) {
+      const campo = coleccion === 'bautismos' ? 'leido' : 'leida';
+      try {
+        await updateDoc(doc(db,'iglesias',uid,coleccion,id), { [campo]: true });
+        const card = document.querySelector(`.inbox-card[data-id="${id}"]`);
+        if (card) {
+          card.classList.add('leida');
+          const btnM = card.querySelector('.btn-marcar');
+          if (btnM) { const sp = document.createElement('span'); sp.textContent='✓ Leído'; sp.style.cssText='color:#aaa;font-size:.75rem'; btnM.replaceWith(sp); }
+        }
+      } catch(e) { alert('Error: ' + e.message); }
+    };
 
-    async function cargarEventosDestacados(){
-      const grid = document.getElementById('adsGrid');
-      if (!grid) return;
-      grid.innerHTML = '<div class="ad-card" style="padding:14px"><strong>Cargando…</strong></div>';
-      try{
-        const q = query(collection(db,'ads'), where('status','==','approved'), limit(12));
-        const snap = await getDocs(q);
+    window.eliminarItem = async function(id, coleccion) {
+      if (!confirm('¿Eliminar esta entrada?')) return;
+      try {
+        await deleteDoc(doc(db,'iglesias',uid,coleccion,id));
+        document.querySelector(`.inbox-card[data-id="${id}"]`)?.remove();
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    /* ─── PUBLICIDAD ─── */
+    const PLAN_LIMITS = { starter:1, pro:Infinity };
+    async function initAdsTab(){
+      const sub = iglesiaDoc?.subscription || {};
+      const plan = (sub.priceIdOrPlanId||'').toLowerCase();
+      const status = (sub.status||'').toLowerCase();
+      const planChip=$('planChip'); const planCount=$('planCount');
+      if (!['starter','pro'].includes(plan)||status!=='active') {
+        planChip.textContent='Sin plan activo'; planChip.className='chip';
+        planCount.textContent='Para publicar anuncios, activá Starter o Pro.';
+        ['ad_title','ad_href','ad_file','btnCreateAd'].forEach(id=>{const el=$(id);if(el)el.disabled=true;});
+      } else {
+        planChip.textContent=plan.toUpperCase(); planChip.className=`chip ${plan}`;
+      }
+      await listarAds(plan);
+      bindCreateAd(plan);
+    }
+
+    async function listarAds(plan){
+      const list=$('adsList'); list.innerHTML='Cargando…';
+      const snap=await getDocs(collection(db,'ads'));
+      const all=snap.docs.map(d=>({id:d.id,...d.data()})).filter(a=>a.iglesiaUid===uid);
+      const activos=all.filter(a=>['draft','approved'].includes((a.status||'').toLowerCase()));
+      const limit=plan?PLAN_LIMITS[plan]??0:0;
+      if(['starter','pro'].includes(plan)) $('planCount').textContent=`Anuncios activos: ${activos.length} / ${limit===Infinity?'∞':limit}`;
+      if(!all.length){list.innerHTML='<div class="muted">Aún no creaste anuncios.</div>';return;}
+      list.innerHTML='';
+      all.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      for(const ad of all){
+        const st=(ad.status||'draft').toLowerCase();
+        list.insertAdjacentHTML('beforeend',`<div class="ad-card"><img class="ad-img" src="${ad.imageUrl||''}" alt="Anuncio"/><div class="ad-body"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${ad.title||'(Sin título)'}</b><span class="chip ${st}">${st}</span></div>${ad.href?`<div class="small" style="margin-top:6px;word-break:break-all">${ad.href}</div>`:''}</div></div>`);
+      }
+    }
+
+    function bindCreateAd(plan){
+      $('btnCreateAd').onclick=async()=>{
+        if(!['starter','pro'].includes(plan)){alert('Necesitás plan Starter o Pro activo.');return;}
+        const title=($('ad_title').value||'').trim(); const href=($('ad_href').value||'').trim();
+        const file=$('ad_file').files?.[0];
+        if(!title){alert('Ingresá un título.');return;}
+        let imageUrl=null;
+        if(file){
+          if(!['image/jpeg','image/png'].includes(file.type)){alert('Usá JPG o PNG.');return;}
+          if(file.size>5*1024*1024){alert('Máx. 5MB.');return;}
+          try{
+            $('ad_msg').textContent='Subiendo imagen…';
+            await new Promise((res,rej)=>{
+              const ref=storageRef(storage,`ads/${uid}/banner-${Date.now()}-${file.name}`);
+              const task=uploadBytesResumable(ref,file,{contentType:file.type});
+              task.on('state_changed',s=>{$('ad_bar').style.width=Math.round(s.bytesTransferred/s.totalBytes*100)+'%';},rej,async()=>{imageUrl=await getDownloadURL(task.snapshot.ref);res();});
+            });
+            $('ad_msg').textContent='✔ Imagen subida';
+          }catch(e){$('ad_msg').textContent='❌ Error subiendo imagen';return;}
+        }
+        try{
+          const createAd=httpsCallable(fns,'createAd');
+          await createAd({title,href:href||null,imageUrl});
+          alert('Publicidad creada como borrador.');
+          $('ad_title').value='';$('ad_href').value='';$('ad_file').value='';
+          $('ad_bar').style.width='0%';$('ad_msg').textContent='';
+          await listarAds(plan);
+        }catch(e){alert(e?.message||'No se pudo crear la publicidad.');}
+      };
+    }
+
+    /* ─── GALERÍA ─── */
+    async function cargarGaleria() {
+      const grid = $('galeriaGrid'); if (!grid || !uid) return;
+      grid.innerHTML = '<div class="hint">Cargando fotos…</div>';
+      try {
+        const snap = await getDocs(collection(db,'iglesias',uid,'galeria'));
         grid.innerHTML = '';
-        if (snap.empty){
-          grid.innerHTML = '<div class="ad-card" style="padding:14px;color:#666">No hay eventos para mostrar.</div>';
+        if (snap.empty) { grid.innerHTML = '<div class="hint">Aún no subiste fotos.</div>'; return; }
+        snap.docs.sort((a,b)=>(b.data().creadoEn?.seconds||0)-(a.data().creadoEn?.seconds||0)).forEach(d=>renderGaleriaItem(d.id,d.data(),grid));
+      } catch(e) { grid.innerHTML = `<div class="hint" style="color:red">Error: ${e.message}</div>`; }
+    }
+
+    function renderGaleriaItem(id, data, grid) {
+      const div = document.createElement('div'); div.className = 'galeria-item'; div.dataset.id = id;
+      const publica = data.publica !== false;
+      div.innerHTML = `<img src="${data.url}" alt="Foto iglesia" loading="lazy"><div class="galeria-overlay"><button class="galeria-toggle ${publica?'visible-on':''}" onclick="toggleFotoPublica('${id}',${publica})">${publica?'👁️ Pública':'🙈 Oculta'}</button><button class="galeria-del" onclick="borrarFoto('${id}','${data.storagePath||''}')">🗑️</button></div>`;
+      grid.appendChild(div);
+    }
+
+    window.onGaleriaSelect = async function(e) {
+      const files = Array.from(e.target.files); if (!files.length) return;
+      const MAX = 5*1024*1024;
+      const validos = files.filter(f => { if(f.size>MAX){alert(`"${f.name}" supera los 5MB y fue omitida.`);return false;} return true; });
+      if (!validos.length) return;
+      const progEl=$('galeriaProg'), barEl=$('galeriaBar'), msgEl=$('galeriaMsg');
+      progEl.style.display='block'; msgEl.textContent=`Subiendo ${validos.length} foto(s)…`;
+      let subidas=0;
+      for(const file of validos){
+        const path=`galeria/${uid}/${Date.now()}_${file.name}`;
+        const ref=storageRef(storage,path);
+        try{
+          await uploadBytes(ref,file);
+          const url=await getDownloadURL(ref);
+          const docRef=await addDoc(collection(db,'iglesias',uid,'galeria'),{url,storagePath:path,publica:true,creadoEn:serverTimestamp()});
+          const grid=$('galeriaGrid'); const hint=grid.querySelector('.hint'); if(hint)hint.remove();
+          renderGaleriaItem(docRef.id,{url,storagePath:path,publica:true},grid);
+          subidas++; barEl.style.width=`${Math.round((subidas/validos.length)*100)}%`;
+        }catch(err){msgEl.textContent=`Error: ${err.message}`;}
+      }
+      progEl.style.display='none'; barEl.style.width='0%'; msgEl.textContent=`✅ ${subidas} foto(s) subida(s)`; e.target.value='';
+    };
+
+    window.toggleFotoPublica = async function(id, esPublica) {
+      const nueva=!esPublica;
+      try{
+        await updateDoc(doc(db,'iglesias',uid,'galeria',id),{publica:nueva});
+        const item=document.querySelector(`.galeria-item[data-id="${id}"]`);
+        if(item){const btn=item.querySelector('.galeria-toggle');btn.textContent=nueva?'👁️ Pública':'🙈 Oculta';btn.className=`galeria-toggle ${nueva?'visible-on':''}`;btn.onclick=()=>toggleFotoPublica(id,nueva);}
+      }catch(e){alert('Error: '+e.message);}
+    };
+
+    window.borrarFoto = async function(id, storagePath) {
+      if(!confirm('¿Borrar esta foto?'))return;
+      try{
+        await deleteDoc(doc(db,'iglesias',uid,'galeria',id));
+        if(storagePath){try{await deleteObject(storageRef(storage,storagePath));}catch(_){}}
+        const item=document.querySelector(`.galeria-item[data-id="${id}"]`);
+        if(item)item.remove();
+        const grid=$('galeriaGrid');
+        if(grid&&!grid.querySelector('.galeria-item'))grid.innerHTML='<div class="hint">Aún no subiste fotos.</div>';
+      }catch(e){alert('Error: '+e.message);}
+    };
+
+    /* ─── NOTIFICACIONES ─── */
+    async function cargarCantSuscriptores() {
+      try{
+        const snap=await getDocs(collection(db,'suscriptores',uid,'tokens'));
+        const el=$('notifCount'); if(el)el.textContent=`Suscriptores actuales: ${snap.size}`;
+      }catch(e){}
+    }
+
+    $('btnEnviarNotif')?.addEventListener('click', async()=>{
+      const titulo=($('notif_titulo').value||'').trim(), cuerpo=($('notif_cuerpo').value||'').trim(), url=($('notif_url').value||'').trim(), msgEl=$('notifMsg');
+      if(!titulo||!cuerpo){msgEl.textContent='❌ Completá título y mensaje.';return;}
+      const btn=$('btnEnviarNotif'); btn.disabled=true; btn.textContent='Enviando...'; msgEl.textContent='';
+      try{
+        const sendNotification=httpsCallable(fns,'sendPushNotification');
+        const res=await sendNotification({iglesiaId:uid,titulo,cuerpo,url:url||`/iglesia.html?id=${uid}`});
+        msgEl.textContent=`✅ Notificación enviada a ${res.data?.enviados||0} suscriptores.`;
+        msgEl.style.color='#16a34a';
+        $('notif_titulo').value=''; $('notif_cuerpo').value=''; $('notif_url').value='';
+      }catch(e){msgEl.textContent='❌ Error: '+(e.message||'No se pudo enviar');msgEl.style.color='#dc3545';}
+      btn.disabled=false; btn.textContent='📤 Enviar a todos los suscriptores';
+    });
+
+    /* ════════════════════════════════════════════════════════
+       ─── ESTUDIOS BÍBLICOS ─── (TAB NUEVO)
+    ════════════════════════════════════════════════════════ */
+    let estudioFileSeleccionado = null;
+
+    const estDropZone  = document.getElementById('estudioDropZone');
+    const estFileInput = document.getElementById('estudioFileInput');
+
+    if (estDropZone) {
+      estDropZone.addEventListener('click', () => estFileInput.click());
+      estDropZone.addEventListener('dragover', e => { e.preventDefault(); estDropZone.classList.add('drag-over'); });
+      estDropZone.addEventListener('dragleave', () => estDropZone.classList.remove('drag-over'));
+      estDropZone.addEventListener('drop', e => { e.preventDefault(); estDropZone.classList.remove('drag-over'); if(e.dataTransfer.files[0]) setEstudioFile(e.dataTransfer.files[0]); });
+      estFileInput.addEventListener('change', () => { if(estFileInput.files[0]) setEstudioFile(estFileInput.files[0]); });
+    }
+
+    function setEstudioFile(file) {
+      const allowed = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowed.includes(file.type) && !file.name.match(/\.(pdf|doc|docx)$/i)) { alert('Solo se permiten archivos PDF o Word (.docx)'); return; }
+      if (file.size > 20*1024*1024) { alert('El archivo supera los 20 MB'); return; }
+      estudioFileSeleccionado = file;
+      $('estudioFileName').textContent = file.name;
+      $('estudioFilePreview').style.display = 'flex';
+    }
+
+    $('btnSubirEstudio')?.addEventListener('click', async () => {
+      const titulo = ($('estudioTitulo').value||'').trim();
+      const precio = parseInt($('estudioPrice').value) || 0;
+      const desc   = ($('estudioDesc').value||'').trim();
+      const msgEl  = $('estudioMsg');
+
+      if (!titulo) { msgEl.style.color='#c0392b'; msgEl.textContent='⚠️ El título es obligatorio.'; return; }
+      if (!estudioFileSeleccionado) { msgEl.style.color='#c0392b'; msgEl.textContent='⚠️ Seleccioná un archivo.'; return; }
+
+      const btn = $('btnSubirEstudio');
+      btn.disabled = true; btn.textContent = '⏳ Subiendo...'; msgEl.textContent = '';
+
+      const fileName   = `${Date.now()}_${estudioFileSeleccionado.name.replace(/\s+/g,'_')}`;
+      const fileRefSt  = storageRef(storage, `estudios/${uid}/${fileName}`);
+      const progressWrap = $('estudioProgressWrap');
+      const progressBar  = $('estudioProgressBar');
+      const progressText = $('estudioProgressText');
+      progressWrap.style.display = 'block';
+
+      const uploadTask = uploadBytesResumable(fileRefSt, estudioFileSeleccionado);
+      uploadTask.on('state_changed',
+        snap => {
+          const pct = Math.round(snap.bytesTransferred/snap.totalBytes*100);
+          progressBar.style.width = pct+'%';
+          progressText.textContent = `Subiendo... ${pct}%`;
+        },
+        err => {
+          btn.disabled=false; btn.textContent='📤 Publicar estudio';
+          msgEl.style.color='#c0392b'; msgEl.textContent='❌ Error al subir: '+err.message;
+          progressWrap.style.display='none';
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await addDoc(collection(db,'iglesias',uid,'estudios'), {
+            titulo, precio, descripcion: desc,
+            archivoUrl:    downloadURL,
+            archivoNombre: estudioFileSeleccionado.name,
+            archivoTipo:   estudioFileSeleccionado.type.includes('pdf') ? 'pdf' : 'word',
+            visible: true, ventas: 0, creadoEn: serverTimestamp()
+          });
+          progressWrap.style.display='none';
+          btn.disabled=false; btn.textContent='📤 Publicar estudio';
+          msgEl.style.color='#27ae60'; msgEl.textContent='✅ Estudio publicado correctamente.';
+          $('estudioTitulo').value=''; $('estudioPrice').value=''; $('estudioDesc').value='';
+          estudioFileSeleccionado=null;
+          $('estudioFilePreview').style.display='none'; estFileInput.value='';
+          cargarEstudios();
+        }
+      );
+    });
+
+    async function cargarEstudios() {
+      const cont = $('estudiosList'); if (!cont || !uid) return;
+      try {
+        const snap = await getDocs(collection(db,'iglesias',uid,'estudios'));
+        if (snap.empty) {
+          cont.innerHTML = '<p style="color:#999;font-size:14px;text-align:center;padding:20px">Todavía no subiste ningún estudio.</p>';
           return;
         }
+        cont.innerHTML = '';
         snap.forEach(d => {
-          const ad = d.data();
-          const hrefOpen  = ad.href ? `<a class="ad-card" href="${ad.href}" target="_blank" rel="noopener">` : '<div class="ad-card">';
-          const hrefClose = ad.href ? '</a>' : '</div>';
-          const title = (ad.title||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-          const alt   = title || 'Evento destacado';
-          const img   = ad.imageUrl ? `<img class="ad-img" loading="lazy" src="${ad.imageUrl}" alt="${alt}">` : '';
-          grid.insertAdjacentHTML('beforeend', `${hrefOpen}${img}<div class="ad-body"><div class="ad-title">${title}</div><div class="ad-meta">Evento destacado</div></div>${hrefClose}`);
+          const e = d.data();
+          const precioStr = e.precio > 0 ? `$${e.precio.toLocaleString('es-AR')}` : 'Gratis';
+          const tipoIcon  = e.archivoTipo === 'pdf' ? '📕' : '📘';
+          const linkVenta = `${window.location.origin}/comprar-estudio.html?iglesia=${uid}&estudio=${d.id}`;
+          cont.innerHTML += `
+            <div class="estudio-card">
+              <div class="estudio-info">
+                <div class="estudio-title">${tipoIcon} ${escStr(e.titulo)}</div>
+                ${e.descripcion ? `<div class="estudio-desc">${escStr(e.descripcion)}</div>` : ''}
+                <div class="estudio-meta">
+                  <span>📥 ${e.ventas||0} ventas</span>
+                  <span>${e.visible ? '👁️ Visible' : '🙈 Oculto'}</span>
+                  <span>${escStr(e.archivoNombre||'')}</span>
+                </div>
+                <div style="margin-top:6px">
+                  <a href="${linkVenta}" target="_blank" style="font-size:12px;color:#1a56db;font-weight:600">🔗 Ver página de compra</a>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+                <div class="estudio-price">${precioStr}</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <button class="btn-estudio-toggle" onclick="toggleEstudio('${d.id}',${e.visible})">
+                    ${e.visible ? '🙈 Ocultar' : '👁️ Publicar'}
+                  </button>
+                  <button class="btn-estudio-del" onclick="eliminarEstudio('${d.id}','${(e.archivoUrl||'').replace(/'/g,"\\'")}')">
+                    🗑️ Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>`;
         });
-      }catch(e){
-        console.error('Eventos destacados:', e);
-        grid.innerHTML = `<div class="ad-card" style="padding:14px;color:#b91c1c">Error al cargar: ${e.message}</div>`;
+      } catch(e) {
+        cont.innerHTML = '<p style="color:#c0392b;font-size:13px;text-align:center">Error al cargar estudios.</p>';
       }
     }
 
-    document.addEventListener('DOMContentLoaded', cargarEventosDestacados);
-  </script>
+    window.toggleEstudio = async (docId, visible) => {
+      try {
+        await updateDoc(doc(db,'iglesias',uid,'estudios',docId), { visible: !visible });
+        cargarEstudios();
+      } catch(e) { alert('Error: '+e.message); }
+    };
 
-  <!-- ✅ PWA: Service Worker + Instalación + Actualización automática -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const reg = await navigator.serviceWorker.register('/service-worker.js');
-          console.log('[PWA] Service Worker registrado ✅');
+    window.eliminarEstudio = async (docId, archivoUrl) => {
+      if (!confirm('¿Eliminar este estudio? Esta acción no se puede deshacer.')) return;
+      try {
+        if (archivoUrl) { try { await deleteObject(storageRef(storage, archivoUrl)); } catch(_){} }
+        await deleteDoc(doc(db,'iglesias',uid,'estudios',docId));
+        cargarEstudios();
+      } catch(e) { alert('Error: '+e.message); }
+    };
 
-          // ── ACTUALIZACIÓN SILENCIOSA AUTOMÁTICA ──
-          reg.addEventListener('updatefound', () => {
-            const newSW = reg.installing;
-            newSW.addEventListener('statechange', () => {
-              if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                // Activar el nuevo SW inmediatamente sin preguntarle al usuario
-                newSW.postMessage('skipWaiting');
-              }
-            });
-          });
+    /* ─── PLAN ─── */
+    const PLANES_INFO = {
+      free:    { nombre:'FREE',    icon:'🆓', precio:'$0/mes',      color:'#555',    beneficios:['Página pública','Peticiones de oración'] },
+      starter: { nombre:'STARTER', icon:'⭐', precio:'$10.000/mes', color:'#764ba2', beneficios:['Todo FREE','Prédicas y eventos','1 anuncio','Ofrendas'] },
+      pro:     { nombre:'PRO',     icon:'🚀', precio:'$30.000/mes', color:'#FF6B5B', beneficios:['Todo Starter','Estudios bíblicos','Anuncios ilimitados','5 admins'] },
+    };
 
-          // Recargar la página cuando el SW nuevo toma control (solo si venía de una actualización)
-          let swRefreshing = false;
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (swRefreshing) return;
-            swRefreshing = true;
-            // Solo recargamos si el usuario NO está en medio de una sesión activa
-            // (esperamos a que la página esté oculta, o recargamos silenciosamente en background)
-            if (document.hidden) {
-              window.location.reload();
-            } else {
-              // Guardar flag y recargar en la próxima visita a index.html
-              sessionStorage.setItem('sw_updated', '1');
-            }
-          });
+    function renderPlanActual() {
+      const sub   = iglesiaDoc?.subscription || {};
+      const plan  = (sub.priceIdOrPlanId||'free').toLowerCase();
+      const status= (sub.status||'').toLowerCase();
+      const info  = PLANES_INFO[plan] || PLANES_INFO.free;
 
-          // Si venimos de una actualización, ya está fresco, no hacer nada
-          sessionStorage.removeItem('sw_updated');
+      $('planIconBig').textContent      = info.icon;
+      $('planNombreActual').textContent  = `Plan ${info.nombre} — ${info.precio}`;
+      $('planEstadoActual').textContent  = status==='active' ? '✅ Activo' : status ? `Estado: ${status}` : '✅ Activo';
+      $('planBeneficiosActual').innerHTML= info.beneficios.map(b=>`<span style="margin-right:1rem">✔ ${b}</span>`).join('');
 
-          reg.update();
-
-          setTimeout(() => pedirPermisoNotificaciones(reg), 3000);
-        } catch (err) {
-          console.error('[PWA] Error SW:', err);
-        }
+      ['free','starter','pro'].forEach(p => {
+        const card=$(`pc-${p}`); const btn=card?.querySelector('.plan-btn');
+        if(p===plan){ card?.classList.add('activo'); if(btn){btn.textContent='✓ Plan actual';btn.disabled=true;} }
+        else         { card?.classList.remove('activo'); if(btn){btn.textContent='Seleccionar';btn.disabled=false;} }
       });
 
-      // controllerchange se maneja dentro de mostrarBannerActualizacion
-    }
-
-    async function pedirPermisoNotificaciones(reg) {
-      if (!('Notification' in window) || !('PushManager' in window)) return;
-      if (Notification.permission === 'granted') { await suscribirPush(reg); return; }
-      if (Notification.permission === 'default') {
-        const perm = await Notification.requestPermission();
-        if (perm === 'granted') await suscribirPush(reg);
+      const hist=$('historialPagos');
+      if(sub.subscriptionId){
+        hist.innerHTML=`<div style="background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:10px;line-height:1.8"><div>📌 ID suscripción: <code>${sub.subscriptionId}</code></div><div>📦 Plan: <b>${info.nombre}</b></div><div>🔄 Estado: <b>${sub.status||'—'}</b></div></div>`;
+      }else{
+        hist.innerHTML='<div style="color:#aaa">Sin historial de pagos registrado.</div>';
       }
     }
 
-    async function suscribirPush(reg) {
-      try {
-        const VAPID_KEY = 'TU_VAPID_PUBLIC_KEY_DE_FIREBASE_AQUI';
-        await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidToUint8(VAPID_KEY) });
-      } catch (e) { console.warn('[PWA] Push no disponible:', e.message); }
-    }
+    window.cambiarPlan = async function(nuevoPlan) {
+      const planActual=(iglesiaDoc?.subscription?.priceIdOrPlanId||'free').toLowerCase();
+      if(nuevoPlan===planActual) return;
+      if(nuevoPlan==='free'){
+        if(!confirm('¿Querés bajar al plan FREE? Perderás tus beneficios actuales.')) return;
+        try{
+          await setDoc(doc(db,'iglesias',uid),{subscription:{priceIdOrPlanId:'free',status:'active',subscriptionId:null}},{merge:true});
+          iglesiaDoc.subscription={priceIdOrPlanId:'free',status:'active',subscriptionId:null};
+          renderPlanActual(); applyPlanLocks(iglesiaDoc);
+          alert('✅ Cambiaste al plan FREE.');
+        }catch(e){alert('Error: '+e.message);}
+        return;
+      }
+      const planNombre=nuevoPlan==='starter'?'Starter ($10.000/mes)':'Pro ($30.000/mes)';
+      if(!confirm(`¿Querés cambiar al plan ${planNombre}?\n\nSerás redirigido al proceso de pago.`)) return;
+      window.location.href=`suscripcion.html?plan=${nuevoPlan}`;
+    };
 
-    function vapidToUint8(base64) {
-      const pad = '='.repeat((4 - base64.length % 4) % 4);
-      const b64 = (base64 + pad).replace(/-/g, '+').replace(/_/g, '/');
-      return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-    }
-
-    let deferredPrompt = null;
-    const btnNav    = document.getElementById('btn-instalar');
-    const banner    = document.getElementById('install-banner');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (btnNav) btnNav.style.display = 'inline-block';
-      if (!sessionStorage.getItem('pwa-banner-cerrado') && banner) banner.style.display = 'flex';
-    });
-
-    async function instalarApp() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      if (btnNav) btnNav.style.display = 'none';
-      if (banner) banner.style.display = 'none';
-    }
-
-    document.getElementById('btn-instalar')?.addEventListener('click', instalarApp);
-    document.getElementById('btn-instalar-banner')?.addEventListener('click', instalarApp);
-    document.getElementById('btn-cerrar-banner')?.addEventListener('click', () => {
-      if (banner) banner.style.display = 'none';
-      sessionStorage.setItem('pwa-banner-cerrado', '1');
-    });
-    window.addEventListener('appinstalled', () => {
-      if (btnNav) btnNav.style.display = 'none';
-      if (banner) banner.style.display = 'none';
-    });
+    document.querySelector('[data-tab="tab-plan"]').addEventListener('click', renderPlanActual);
   </script>
-
 </body>
 </html>
