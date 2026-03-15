@@ -211,6 +211,7 @@
     <button class="tab-btn" data-tab="tab-bautismos">💧 Bautismos</button>
     <button class="tab-btn" data-tab="tab-ads">Publicidad</button>
     <button class="tab-btn" data-tab="tab-estudios">📚 Estudios</button>
+    <button class="tab-btn" data-tab="tab-envivo">🔴 En Vivo</button>
     <button class="tab-btn" data-tab="tab-plan">💳 Plan</button>
   </div>
 
@@ -598,6 +599,77 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════
+         TAB: EN VIVO 🔴
+    ═══════════════════════════════════════════════════════ -->
+    <section id="tab-envivo" class="tab card" style="position:relative">
+      <!-- Overlay Pro -->
+      <div class="lock-overlay" id="lock-envivo">
+        <div class="lock-icon">🔴🔒</div>
+        <h3>En Vivo — Plan Pro</h3>
+        <p>Transmitís en vivo y tu stream aparece en la sección "En Vivo" del inicio. Exclusivo del plan Pro.</p>
+        <button class="btn-upgrade" onclick="document.querySelector('[data-tab=tab-plan]').click()">Ver planes →</button>
+      </div>
+
+      <h2>🔴 En Vivo</h2>
+      <p class="small">Activá tu transmisión en vivo y aparecerá automáticamente en el inicio de la plataforma para que todos la vean.</p>
+
+      <!-- Estado actual -->
+      <div id="envivoEstado" style="border-radius:14px;padding:18px;margin:16px 0;border:2px solid #eee;background:#fafafa;text-align:center">
+        <div style="font-size:2.5rem;margin-bottom:8px">📡</div>
+        <div style="font-weight:700;font-size:1rem" id="envivoEstadoLabel">Sin transmisión activa</div>
+        <div style="font-size:.85rem;color:#888;margin-top:4px" id="envivoEstadoSub">Completá el formulario para iniciar</div>
+      </div>
+
+      <!-- Formulario -->
+      <div style="background:#f8f9fa;border-radius:14px;padding:20px;border:1px solid #eee">
+        <h3 style="margin:0 0 16px;font-size:1rem;font-weight:700">📡 Configurar transmisión</h3>
+
+        <div class="row">
+          <div>
+            <label>Título del stream *</label>
+            <input id="lv_titulo" type="text" placeholder="Ej: Culto dominical en vivo" maxlength="80">
+          </div>
+          <div>
+            <label>Plataforma</label>
+            <select id="lv_plataforma">
+              <option value="youtube">YouTube Live</option>
+              <option value="facebook">Facebook Live</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label>Link de la transmisión *</label>
+          <input id="lv_url" type="url" placeholder="Ej: https://www.youtube.com/watch?v=... o https://www.facebook.com/...">
+          <div class="hint">Pegá el link directo de tu stream en YouTube o Facebook.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label>Descripción (opcional)</label>
+          <input id="lv_descripcion" type="text" placeholder="Ej: Predicación del pastor Juan, tema: La fe..." maxlength="120">
+        </div>
+
+        <!-- Botones acción -->
+        <div class="actions" style="margin-top:16px">
+          <button id="btnIniciarEnVivo" style="background:#dc2626;padding:12px 24px;font-size:1rem">
+            🔴 Iniciar En Vivo
+          </button>
+          <button id="btnFinalizarEnVivo" style="background:#6b7280;display:none;padding:12px 24px;font-size:1rem">
+            ⏹ Finalizar transmisión
+          </button>
+        </div>
+        <div id="envivoMsg" class="hint" style="margin-top:8px;min-height:1rem"></div>
+      </div>
+
+      <!-- Info -->
+      <div style="margin-top:16px;background:#fff8f7;border:1px solid #ffd5d0;border-radius:10px;padding:1rem;font-size:.85rem;color:#555;line-height:1.7">
+        💡 <b>¿Cómo funciona?</b><br>
+        Al hacer clic en "Iniciar En Vivo", tu stream aparece en la sección <b>En Vivo</b> del inicio para todos los visitantes.<br>
+        Cuando termines tu transmisión, hacé clic en <b>"Finalizar"</b> para que desaparezca del inicio.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
          TAB: PLAN
     ═══════════════════════════════════════════════════════ -->
     <section id="tab-plan" class="tab card">
@@ -661,8 +733,8 @@
             <li>✅ Todo lo de Starter</li>
             <li>✅ Anuncios ilimitados</li>
             <li>✅ 📚 Estudios bíblicos</li>
+            <li>✅ 🔴 Transmisiones en vivo</li>
             <li>✅ Hasta 5 administradores</li>
-            <li>✅ Estadísticas de visitas</li>
           </ul>
           <button class="plan-btn" data-plan="pro" onclick="cambiarPlan('pro')" style="background:linear-gradient(135deg,#FF6B5B,#e63946)">Seleccionar</button>
         </div>
@@ -814,7 +886,8 @@
       renderPlanActual();
       await Promise.all([
         cargarPredicas(), cargarEventos(), cargarPeticiones(),
-        cargarBautismos(), cargarCantSuscriptores(), cargarEstudios()
+        cargarBautismos(), cargarCantSuscriptores(), cargarEstudios(),
+        cargarEstadoEnVivo()
       ]);
       await initAdsTab();
     });
@@ -1115,6 +1188,20 @@
         if (lockEstudios) lockEstudios.style.display = 'none';
         if (secEstudios)  secEstudios.classList.remove('tab-locked');
         if (tabEstudios)  tabEstudios.classList.remove('locked-tab');
+      }
+
+      // Tab En Vivo: solo para PRO
+      const lockEnVivo = $('lock-envivo');
+      const secEnVivo  = $('tab-envivo');
+      const tabEnVivo  = document.querySelector('[data-tab="tab-envivo"]');
+      if (!esPro) {
+        if (lockEnVivo) lockEnVivo.style.display = 'flex';
+        if (secEnVivo)  secEnVivo.classList.add('tab-locked');
+        if (tabEnVivo)  tabEnVivo.classList.add('locked-tab');
+      } else {
+        if (lockEnVivo) lockEnVivo.style.display = 'none';
+        if (secEnVivo)  secEnVivo.classList.remove('tab-locked');
+        if (tabEnVivo)  tabEnVivo.classList.remove('locked-tab');
       }
     }
 
@@ -1496,6 +1583,119 @@
         cargarEstudios();
       } catch(e) { alert('Error: '+e.message); }
     };
+
+    /* ════════════════════════════════════════════════════════
+       ─── EN VIVO ───
+    ════════════════════════════════════════════════════════ */
+    async function cargarEstadoEnVivo() {
+      if (!uid) return;
+      try {
+        const snap = await getDoc(doc(db, 'envivo', uid));
+        if (snap.exists() && snap.data().activo) {
+          const d = snap.data();
+          mostrarEnVivoActivo(d);
+        } else {
+          mostrarEnVivoInactivo();
+        }
+      } catch(e) { console.warn('En Vivo:', e.message); }
+    }
+
+    function mostrarEnVivoActivo(d) {
+      const estadoEl  = $('envivoEstado');
+      const labelEl   = $('envivoEstadoLabel');
+      const subEl     = $('envivoEstadoSub');
+      const btnInic   = $('btnIniciarEnVivo');
+      const btnFin    = $('btnFinalizarEnVivo');
+      estadoEl.style.borderColor  = '#dc2626';
+      estadoEl.style.background   = '#fff5f5';
+      labelEl.innerHTML = '🔴 <span style="color:#dc2626">Transmisión activa</span>';
+      subEl.textContent = d.titulo || 'En vivo ahora';
+      if (d.url) { $('lv_url').value = d.url; }
+      if (d.titulo) { $('lv_titulo').value = d.titulo; }
+      if (d.plataforma) { $('lv_plataforma').value = d.plataforma; }
+      if (d.descripcion) { $('lv_descripcion').value = d.descripcion; }
+      btnInic.style.display = 'none';
+      btnFin.style.display  = 'inline-block';
+    }
+
+    function mostrarEnVivoInactivo() {
+      const estadoEl = $('envivoEstado');
+      const labelEl  = $('envivoEstadoLabel');
+      const subEl    = $('envivoEstadoSub');
+      const btnInic  = $('btnIniciarEnVivo');
+      const btnFin   = $('btnFinalizarEnVivo');
+      estadoEl.style.borderColor = '#eee';
+      estadoEl.style.background  = '#fafafa';
+      labelEl.textContent = 'Sin transmisión activa';
+      subEl.textContent   = 'Completá el formulario para iniciar';
+      btnInic.style.display = 'inline-block';
+      btnFin.style.display  = 'none';
+    }
+
+    $('btnIniciarEnVivo')?.addEventListener('click', async () => {
+      const titulo      = ($('lv_titulo').value||'').trim();
+      const url         = ($('lv_url').value||'').trim();
+      const plataforma  = $('lv_plataforma').value || 'youtube';
+      const descripcion = ($('lv_descripcion').value||'').trim();
+      const msgEl       = $('envivoMsg');
+
+      if (!titulo) { msgEl.style.color='#dc2626'; msgEl.textContent='⚠️ Ingresá un título.'; return; }
+      if (!url)    { msgEl.style.color='#dc2626'; msgEl.textContent='⚠️ Pegá el link de la transmisión.'; return; }
+
+      const btn = $('btnIniciarEnVivo');
+      btn.disabled = true; btn.textContent = '⏳ Activando...'; msgEl.textContent = '';
+
+      try {
+        // Obtener datos de la iglesia para mostrar en el index
+        const igSnap = await getDoc(doc(db, 'iglesias', uid));
+        const igData = igSnap.data() || {};
+
+        await setDoc(doc(db, 'envivo', uid), {
+          activo:      true,
+          titulo,
+          url,
+          plataforma,
+          descripcion,
+          iglesiaId:   uid,
+          nombre:      igData.nombre   || '',
+          ciudad:      igData.ciudad   || '',
+          logoUrl:     igData.logoUrl  || '',
+          iniciadoEn:  serverTimestamp(),
+          updatedAt:   serverTimestamp()
+        });
+
+        msgEl.style.color = '#16a34a';
+        msgEl.textContent = '✅ ¡Transmisión activa! Ya aparece en el inicio.';
+        mostrarEnVivoActivo({ titulo, url, plataforma, descripcion });
+      } catch(e) {
+        msgEl.style.color = '#dc2626';
+        msgEl.textContent = '❌ Error: ' + e.message;
+      }
+      btn.disabled = false; btn.textContent = '🔴 Iniciar En Vivo';
+    });
+
+    $('btnFinalizarEnVivo')?.addEventListener('click', async () => {
+      if (!confirm('¿Finalizar la transmisión? Desaparecerá del inicio.')) return;
+      const btn   = $('btnFinalizarEnVivo');
+      const msgEl = $('envivoMsg');
+      btn.disabled = true; btn.textContent = '⏳ Finalizando...';
+      try {
+        await setDoc(doc(db, 'envivo', uid), {
+          activo:     false,
+          finalizadoEn: serverTimestamp()
+        }, { merge: true });
+        msgEl.style.color = '#16a34a';
+        msgEl.textContent = '✅ Transmisión finalizada.';
+        mostrarEnVivoInactivo();
+        $('lv_titulo').value = '';
+        $('lv_url').value    = '';
+        $('lv_descripcion').value = '';
+      } catch(e) {
+        msgEl.style.color = '#dc2626';
+        msgEl.textContent = '❌ Error: ' + e.message;
+      }
+      btn.disabled = false; btn.textContent = '⏹ Finalizar transmisión';
+    });
 
     /* ─── PLAN ─── */
     const PLANES_INFO = {
