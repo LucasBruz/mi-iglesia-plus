@@ -4,6 +4,7 @@
 //    - Publicidad (Starter/Pro con límite)
 //    - Admin Panel (Aprobación iglesias, ads, preonboarding, asignar planes)
 //    - Mercado Pago (pago único + suscripciones mensuales + webhooks)
+//    - Estudios Bíblicos (preferencia de pago por estudio)
 //  Admin autorizado: miiglesia.on@gmail.com
 // ==============================================
 
@@ -18,7 +19,6 @@ const db = admin.firestore();
 // =============================
 const ADMINS = ["miiglesia.on@gmail.com"];
 
-// Helpers
 function norm(v) { return String(v || "").toLowerCase(); }
 function nowTs() { return admin.firestore.Timestamp.now(); }
 function assertAdmin(req) {
@@ -406,7 +406,6 @@ exports.mpSubscriptionWebhook = onRequest(
 exports.sendPushNotification = onCall(
   { region: "us-central1" },
   async (req) => {
-    // Solo el dueño de la iglesia puede enviar notificaciones
     if (!req.auth) throw new HttpsError("unauthenticated", "Iniciá sesión");
 
     const { iglesiaId, titulo, cuerpo, url } = req.data;
@@ -415,34 +414,27 @@ exports.sendPushNotification = onCall(
       throw new HttpsError("invalid-argument", "Faltan datos: iglesiaId, titulo, cuerpo");
     }
 
-    // Verificar que el que llama es el dueño de esa iglesia
     const isAdmin = ADMINS.includes((req.auth.token?.email || "").toLowerCase());
     if (req.auth.uid !== iglesiaId && !isAdmin) {
       throw new HttpsError("permission-denied", "No tenés permiso para enviar notificaciones de esta iglesia");
     }
 
-    // Obtener todos los tokens de suscriptores
     const tokensSnap = await db.collection(`suscriptores/${iglesiaId}/tokens`).get();
-
     if (tokensSnap.empty) return { enviados: 0 };
 
     const tokens = tokensSnap.docs.map(d => d.data().token).filter(Boolean);
-
     if (!tokens.length) return { enviados: 0 };
 
-    // Obtener nombre de la iglesia para la notificación
     const iglesiaSnap = await db.doc(`iglesias/${iglesiaId}`).get();
     const nombreIglesia = iglesiaSnap.data()?.nombre || "Mi Iglesia+";
     const logoUrl = iglesiaSnap.data()?.logoUrl || null;
 
-    // Enviar en lotes de 500 (límite FCM)
     const BATCH_SIZE = 500;
     let enviados = 0;
     const tokensInvalidos = [];
 
     for (let i = 0; i < tokens.length; i += BATCH_SIZE) {
       const lote = tokens.slice(i, i + BATCH_SIZE);
-
       const message = {
         notification: {
           title: `${nombreIglesia}: ${titulo}`,
@@ -456,9 +448,7 @@ exports.sendPushNotification = onCall(
             vibrate: [200, 100, 200],
             click_action: url || `/iglesia.html?id=${iglesiaId}`
           },
-          fcm_options: {
-            link: url || `/iglesia.html?id=${iglesiaId}`
-          }
+          fcm_options: { link: url || `/iglesia.html?id=${iglesiaId}` }
         },
         tokens: lote
       };
@@ -466,8 +456,6 @@ exports.sendPushNotification = onCall(
       try {
         const response = await admin.messaging().sendEachForMulticast(message);
         enviados += response.successCount;
-
-        // Limpiar tokens inválidos
         response.responses.forEach((r, idx) => {
           if (!r.success) {
             const code = r.error?.code;
@@ -482,25 +470,90 @@ exports.sendPushNotification = onCall(
       }
     }
 
-    // Eliminar tokens inválidos de Firestore
     if (tokensInvalidos.length) {
       const batch = db.batch();
       tokensInvalidos.forEach(token => {
         batch.delete(db.doc(`suscriptores/${iglesiaId}/tokens/${token}`));
       });
       await batch.commit();
-      console.log(`Eliminados ${tokensInvalidos.length} tokens inválidos`);
     }
 
-    // Guardar registro del envío
     await db.collection(`iglesias/${iglesiaId}/notificaciones`).add({
-      titulo,
-      cuerpo,
-      url: url || null,
-      enviados,
+      titulo, cuerpo, url: url || null, enviados,
       creadoEn: admin.firestore.FieldValue.serverTimestamp()
     });
 
     return { enviados };
+  }
+);
+
+// ========================================================
+//  📚 ESTUDIOS BÍBLICOS - Preferencia de pago MP
+// ========================================================
+
+exports.createEstudioPreference = onRequest(
+  { region: "us-central1", cors: ["https://www.miiglesia.online", "https://miiglesia.online"] },
+  async (req, res) => {
+    if (req.method === "OPTIONS") { res.status(204).send(""); return; }
+    if (req.method !== "POST") { res.status(405).send("Method Not Allowed"); return; }
+
+    const { iglesiaId, estudioId, titulo, precio, comprador } = req.body;
+
+    if (!iglesiaId || !estudioId || !titulo || precio == null) {
+      res.status(400).json({ error: "Faltan datos del estudio" });
+      return;
+    }
+
+    // Verificar que el estudio existe y está visible
+    try {
+      const estSnap = await db.doc(`iglesias/${iglesiaId}/estudios/${estudioId}`).get();
+      if (!estSnap.exists || !estSnap.data().visible) {
+        res.status(404).json({ error: "Estudio no encontrado o no disponible" });
+        return;
+      }
+    } catch (e) {
+      res.status(500).json({ error: "Error verificando el estudio" });
+      return;
+    }
+
+    const baseUrl = "https://www.miiglesia.online";
+
+    try {
+      const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${MP_ACCESS_TOKEN}`
+        },
+        body: JSON.stringify({
+          items: [{
+            id: estudioId,
+            title: titulo,
+            quantity: 1,
+            unit_price: Number(precio),
+            currency_id: "ARS"
+          }],
+          payer: {
+            name:  comprador?.nombre || "",
+            email: comprador?.email  || ""
+          },
+          back_urls: {
+            success: `${baseUrl}/comprar-estudio.html?iglesia=${iglesiaId}&estudio=${estudioId}&status=approved`,
+            failure: `${baseUrl}/comprar-estudio.html?iglesia=${iglesiaId}&estudio=${estudioId}&status=failure`,
+            pending: `${baseUrl}/comprar-estudio.html?iglesia=${iglesiaId}&estudio=${estudioId}&status=pending`
+          },
+          auto_return: "approved",
+          external_reference: `estudio__${iglesiaId}__${estudioId}__${Date.now()}`,
+          notification_url: "https://us-central1-miiglesia-plus.cloudfunctions.net/mpWebhook"
+        })
+      });
+
+      const data = await response.json();
+      if (!data.init_point) throw new Error(JSON.stringify(data));
+      res.json({ init_point: data.init_point });
+    } catch (e) {
+      console.error("createEstudioPreference error:", e);
+      res.status(500).json({ error: e.message });
+    }
   }
 );
