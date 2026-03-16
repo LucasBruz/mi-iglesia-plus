@@ -786,7 +786,7 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
     import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, getDocs, deleteDoc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, orderBy, getDocs, deleteDoc, updateDoc, increment, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
     import { getStorage, ref as storageRef, uploadBytesResumable, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
     import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js';
 
@@ -1349,8 +1349,8 @@
 
     async function listarAds(plan){
       const list=$('adsList'); list.innerHTML='Cargando…';
-      const snap=await getDocs(collection(db,'ads'));
-      const all=snap.docs.map(d=>({id:d.id,...d.data()})).filter(a=>a.iglesiaUid===uid);
+      const snap=await getDocs(query(collection(db,'ads'), where('iglesiaUid','==',uid)));
+      const all=snap.docs.map(d=>({id:d.id,...d.data()}));
       const activos=all.filter(a=>['draft','approved'].includes((a.status||'').toLowerCase()));
       const limit=plan?PLAN_LIMITS[plan]??0:0;
       if(['starter','pro'].includes(plan)) $('planCount').textContent=`Anuncios activos: ${activos.length} / ${limit===Infinity?'∞':limit}`;
