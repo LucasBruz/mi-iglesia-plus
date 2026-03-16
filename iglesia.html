@@ -213,7 +213,8 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-    import { getFirestore, doc, getDoc, collection, getDocs, query, where, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where, setDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
     import { getMessaging, getToken, deleteToken } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js';
 
     const firebaseConfig = {
@@ -226,11 +227,59 @@
     };
     const app       = initializeApp(firebaseConfig);
     const db        = getFirestore(app);
+    const auth      = getAuth(app);
     const messaging = getMessaging(app);
 
     const VAPID_KEY  = 'BC3jOJ8lqkrHbiPrZ98XMeyRsmWbT4kqIjFWLIWRb2mSR8lKsIaDLNqmCnuvMFi2kpdUc59ugbKDv6bKQO2j8HE';
     const params     = new URLSearchParams(window.location.search);
     const iglesiaId  = params.get('id');
+    let   usuarioUid = null;
+
+    // ── SEGUIR IGLESIA ──
+    onAuthStateChanged(auth, async (user) => {
+      usuarioUid = user?.uid || null;
+      if (user && iglesiaId) {
+        try {
+          const snap = await getDoc(doc(db, 'usuarios', user.uid));
+          if (snap.exists()) {
+            const siguiendo = snap.data().siguiendo || [];
+            actualizarBtnSeguir(siguiendo.includes(iglesiaId));
+          }
+        } catch(_) {}
+      }
+    });
+
+    function actualizarBtnSeguir(siguiendo) {
+      const btn = document.getElementById('btnSeguir');
+      if (!btn) return;
+      if (siguiendo) {
+        btn.textContent = '✅ Siguiendo';
+        btn.style.background = 'rgba(255,255,255,0.25)';
+      } else {
+        btn.textContent = '⭐ Seguir';
+        btn.style.background = 'rgba(255,255,255,0.15)';
+      }
+    }
+
+    window.toggleSeguir = async function() {
+      if (!usuarioUid) {
+        window.location.href = `login-usuario.html`;
+        return;
+      }
+      const btn = document.getElementById('btnSeguir');
+      const siguiendo = btn.textContent.includes('Siguiendo');
+      btn.disabled = true;
+      try {
+        if (siguiendo) {
+          await updateDoc(doc(db,'usuarios',usuarioUid), { siguiendo: arrayRemove(iglesiaId) });
+          actualizarBtnSeguir(false);
+        } else {
+          await updateDoc(doc(db,'usuarios',usuarioUid), { siguiendo: arrayUnion(iglesiaId) });
+          actualizarBtnSeguir(true);
+        }
+      } catch(e) { alert('Error: ' + e.message); }
+      btn.disabled = false;
+    };
 
     function fmtFecha(d) {
       try {
@@ -381,6 +430,7 @@
           <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
             <button id="btnNotif" onclick="toggleNotificaciones()" style="padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;font-size:.88rem;color:#fff;background:var(--primary);border:none;transition:all .2s">🔔 Recibir notificaciones</button>
             <button class="share-btn" onclick="compartir()">🔗 Compartir</button>
+            <button id="btnSeguir" onclick="toggleSeguir()" style="padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;font-size:.88rem;color:#fff;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.35);transition:all .2s">⭐ Seguir</button>
           </div>
         </div>`;
 
