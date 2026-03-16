@@ -338,24 +338,8 @@
       document.querySelector('link[rel="canonical"]').setAttribute('href', igUrl);
       document.querySelector('meta[property="og:image"]').setAttribute('content', igImagen);
 
-      // Actualizar share bar con URL y nombre de la iglesia
-      const shareText = `🙏 Visitá la página de ${igNombre} en Mi Iglesia+ `;
-      const waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + igUrl);
-      document.getElementById('btnShareWA').href = waUrl;
-      // Guardar URL actual para copiar
+      // Guardar URL para la burbuja de compartir
       window._shareUrl = igUrl;
-
-      // Mostrar botón nativo en mobile
-      if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-        document.getElementById('btnShareNative').style.display = 'inline-block';
-        document.getElementById('btnShareWA').style.display = 'none';
-        document.getElementById('btnCopiarLink').style.display = 'none';
-      }
-
-      // Ocultar share bar si ya fue cerrada en esta sesión
-      if (sessionStorage.getItem('share-bar-cerrada')) {
-        document.getElementById('share-bar').style.display = 'none';
-      }
 
       // Schema.org
       const schema = document.createElement('script');
