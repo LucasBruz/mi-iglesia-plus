@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Crear cuenta | Mi Iglesia+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--primary:#FF6B5B;--dark:#1a1a1a;--border:#e0e0e0;--gray:#666}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Poppins,sans-serif;background:#f5f5f5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+    .card{background:#fff;border-radius:20px;padding:2rem;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+    .logo{display:flex;align-items:center;gap:.5rem;justify-content:center;margin-bottom:1.5rem;text-decoration:none}
+    .logo img{height:42px;border-radius:10px}
+    .logo span{font-size:1.3rem;font-weight:800;color:var(--dark)}
+    .logo span b{color:var(--primary)}
+    h1{font-size:1.4rem;font-weight:800;text-align:center;margin-bottom:.3rem}
+    .sub{text-align:center;color:var(--gray);font-size:.88rem;margin-bottom:1.5rem}
+    .form-group{margin-bottom:1rem}
+    label{display:block;font-size:.82rem;font-weight:700;margin-bottom:.3rem;color:var(--dark)}
+    input{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-family:Poppins;font-size:.92rem;transition:border-color .2s}
+    input:focus{outline:none;border-color:var(--primary)}
+    .btn{width:100%;padding:.85rem;border:0;border-radius:12px;font-family:Poppins;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:.3rem}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{opacity:.9}
+    .btn-google{background:#fff;color:#333;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;gap:.6rem}
+    .btn-google:hover{background:#f9f9f9}
+    .divider{display:flex;align-items:center;gap:.8rem;margin:1rem 0;color:#aaa;font-size:.82rem}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .msg{text-align:center;font-size:.85rem;min-height:1.2rem;margin-top:.8rem;font-weight:600}
+    .footer-link{text-align:center;margin-top:1.2rem;font-size:.85rem;color:var(--gray)}
+    .footer-link a{color:var(--primary);font-weight:700;text-decoration:none}
+    .avatar-pick{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-bottom:1rem}
+    .avatar-pick .av{width:72px;height:72px;border-radius:50%;background:#f0f0f0;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;overflow:hidden;transition:border-color .2s}
+    .avatar-pick .av:hover{border-color:var(--primary)}
+    .avatar-pick .av img{width:100%;height:100%;object-fit:cover}
+    .avatar-pick span{font-size:.78rem;color:var(--gray)}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <a class="logo" href="index.html">
+      <img src="assets/logo.png" alt="Mi Iglesia+">
+      <span>Mi <b>Iglesia+</b></span>
+    </a>
+    <h1>Crear tu cuenta</h1>
+    <p class="sub">Seguí iglesias, guardá favoritos y mucho más</p>
+
+    <!-- Avatar -->
+    <div class="avatar-pick">
+      <div class="av" id="avatarPreview" onclick="document.getElementById('avatarInput').click()">
+        <span id="avatarIcon">👤</span>
+        <img id="avatarImg" src="" style="display:none">
+      </div>
+      <span>Foto de perfil (opcional)</span>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="onAvatarSelect(event)">
+    </div>
+
+    <div class="form-group">
+      <label>Nombre completo *</label>
+      <input id="reg_nombre" type="text" placeholder="Tu nombre">
+    </div>
+    <div class="form-group">
+      <label>Email *</label>
+      <input id="reg_email" type="email" placeholder="tu@email.com">
+    </div>
+    <div class="form-group">
+      <label>Contraseña *</label>
+      <input id="reg_pass" type="password" placeholder="Mínimo 6 caracteres">
+    </div>
+    <button class="btn btn-primary" id="btnRegistrar">Crear cuenta</button>
+
+    <div class="divider">o</div>
+
+    <button class="btn btn-google" id="btnGoogle">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continuar con Google
+    </button>
+
+    <div id="regMsg" class="msg"></div>
+    <div class="footer-link">¿Ya tenés cuenta? <a href="login-usuario.html">Ingresá acá</a></div>
+    <div class="footer-link" style="margin-top:.5rem">¿Sos una iglesia? <a href="registro.html">Registrá tu iglesia</a></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    };
+
+    const app      = initializeApp(firebaseConfig);
+    const auth     = getAuth(app);
+    const db       = getFirestore(app);
+    const storage  = getStorage(app);
+    const provider = new GoogleAuthProvider();
+
+    let avatarFile = null;
+
+    window.onAvatarSelect = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      avatarFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('avatarImg').src = ev.target.result;
+        document.getElementById('avatarImg').style.display = 'block';
+        document.getElementById('avatarIcon').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    };
+
+    async function subirAvatar(uid, file) {
+      if (!file) return null;
+      const ref2 = ref(storage, `avatares/${uid}/foto.${file.name.split('.').pop()}`);
+      await uploadBytes(ref2, file);
+      return await getDownloadURL(ref2);
+    }
+
+    async function guardarUsuario(uid, nombre, email, fotoUrl) {
+      await setDoc(doc(db, 'usuarios', uid), {
+        nombre, email,
+        fotoUrl:    fotoUrl || '',
+        siguiendo:  [],
+        tipo:       'usuario',
+        creadoEn:   serverTimestamp()
+      }, { merge: true });
+    }
+
+    function mostrarError(texto) {
+      const el = document.getElementById('regMsg');
+      el.style.color = '#dc3545';
+      el.textContent = texto;
+    }
+
+    // ── Registro con email ──
+    document.getElementById('btnRegistrar').addEventListener('click', async () => {
+      const nombre = document.getElementById('reg_nombre').value.trim();
+      const email  = document.getElementById('reg_email').value.trim();
+      const pass   = document.getElementById('reg_pass').value;
+      const btn    = document.getElementById('btnRegistrar');
+      const msgEl  = document.getElementById('regMsg');
+
+      if (!nombre) { mostrarError('Ingresá tu nombre.'); return; }
+      if (!email)  { mostrarError('Ingresá tu email.'); return; }
+      if (pass.length < 6) { mostrarError('La contraseña debe tener al menos 6 caracteres.'); return; }
+
+      btn.disabled = true; btn.textContent = 'Creando cuenta...'; msgEl.textContent = '';
+
+      try {
+        const cred    = await createUserWithEmailAndPassword(auth, email, pass);
+        const uid     = cred.user.uid;
+        const fotoUrl = await subirAvatar(uid, avatarFile);
+        await updateProfile(cred.user, { displayName: nombre, ...(fotoUrl ? { photoURL: fotoUrl } : {}) });
+        await guardarUsuario(uid, nombre, email, fotoUrl);
+        window.location.href = 'perfil.html';
+      } catch(e) {
+        const msgs = {
+          'auth/email-already-in-use': 'Ese email ya está registrado. <a href="login-usuario.html">Ingresá acá</a>',
+          'auth/invalid-email':        'Email inválido.',
+          'auth/weak-password':        'Contraseña muy débil.'
+        };
+        mostrarError(msgs[e.code] || e.message);
+        btn.disabled = false; btn.textContent = 'Crear cuenta';
+      }
+    });
+
+    // ── Registro con Google ──
+    document.getElementById('btnGoogle').addEventListener('click', async () => {
+      const btn   = document.getElementById('btnGoogle');
+      const msgEl = document.getElementById('regMsg');
+      btn.disabled = true; msgEl.textContent = '';
+      try {
+        const result  = await signInWithPopup(auth, provider);
+        const user    = result.user;
+        await guardarUsuario(user.uid, user.displayName||'', user.email||'', user.photoURL||'');
+        window.location.href = 'perfil.html';
+      } catch(e) {
+        mostrarError(e.code === 'auth/popup-closed-by-user' ? 'Ceraste el popup antes de completar.' : e.message);
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
