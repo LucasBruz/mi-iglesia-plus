@@ -318,6 +318,19 @@
         </div>
       </div>
 
+      <!-- CANAL YOUTUBE -->
+      <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">📺 Canal de YouTube</h3>
+      <div class="row">
+        <div>
+          <label>ID del canal de YouTube (opcional)</label>
+          <input id="ig_youtubeChannelId" placeholder="Ej: UCxxxxxxxxxxxxxxxxxxxxxx">
+          <div class="hint">
+            El ID del canal se encuentra en YouTube: entrá a tu canal → <b>Personalizar canal</b> → <b>Información básica</b> → copiá el ID que empieza con <b>UC...</b><br>
+            Cuando estés transmitiendo en vivo, el stream aparecerá automáticamente en tu página pública. Si no estás en vivo, se muestra tu último video.
+          </div>
+        </div>
+      </div>
+
       <!-- GALERÍA -->
       <h3 style="margin:1.5rem 0 .5rem;font-size:1rem">🖼️ Galería de fotos</h3>
       <p class="small" style="margin-bottom:.8rem">Subí fotos de tu iglesia para mostrar en tu página pública.</p>
@@ -866,7 +879,8 @@
       if (iglesiaDoc.horarios)    $('ig_horarios').value    = iglesiaDoc.horarios;
       if (iglesiaDoc.direccion)   $('ig_direccion').value   = iglesiaDoc.direccion;
       if (iglesiaDoc.provincia)   $('ig_provincia').value   = iglesiaDoc.provincia;
-      if (iglesiaDoc.website)     $('ig_website').value     = iglesiaDoc.website;
+      if (iglesiaDoc.website)           $('ig_website').value           = iglesiaDoc.website;
+      if (iglesiaDoc.youtubeChannelId)  $('ig_youtubeChannelId').value  = iglesiaDoc.youtubeChannelId;
 
       if (iglesiaDoc.videoUrl) {
         $('videoPreview').src = iglesiaDoc.videoUrl;
@@ -936,7 +950,8 @@
           horarios:    ($('ig_horarios').value||'').trim(),
           provincia:   ($('ig_provincia').value||'').trim(),
           direccion:   ($('ig_direccion').value||'').trim(),
-          website:     ($('ig_website').value||'').trim(),
+          website:           ($('ig_website').value||'').trim(),
+          youtubeChannelId:  ($('ig_youtubeChannelId').value||'').trim(),
           tags:        tagsSeleccionados,
           ofrendas: {
             activo:        $('of_activo').checked,
