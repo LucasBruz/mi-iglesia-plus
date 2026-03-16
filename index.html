@@ -722,59 +722,88 @@
       const grid    = document.getElementById('enVivoGrid');
       if (!seccion || !grid) return;
 
-      try {
-        const q    = query(collection(db, 'envivo'), where('activo', '==', true));
-        const snap = await getDocs(q);
+      const ahora = new Date();
 
-        if (snap.empty) { seccion.style.display = 'none'; return; }
+      try {
+        // Traer activos EN VIVO
+        const qVivo   = query(collection(db, 'envivo'), where('activo', '==', true));
+        // Traer replays (activo=false, replay=true)
+        const qReplay = query(collection(db, 'envivo'), where('replay', '==', true));
+
+        const [snapVivo, snapReplay] = await Promise.all([
+          getDocs(qVivo).catch(()=>({docs:[]})),
+          getDocs(qReplay).catch(()=>({docs:[]}))
+        ]);
+
+        // Filtrar replays que no hayan vencido (replayHasta > ahora)
+        const replaysValidos = snapReplay.docs.filter(d => {
+          const rh = d.data().replayHasta;
+          if (!rh) return false;
+          return new Date(rh) > ahora;
+        });
+
+        const totalItems = snapVivo.docs.length + replaysValidos.length;
+        if (totalItems === 0) { seccion.style.display = 'none'; return; }
 
         grid.innerHTML = '';
-        snap.forEach(d => {
-          const s = d.data();
-          const esYT = s.plataforma === 'youtube' || (s.url||'').includes('youtube') || (s.url||'').includes('youtu.be');
 
-          // Extraer ID de YouTube para embed
-          const ytMatch = (s.url||'').match(/(?:v=|youtu\.be\/|live\/)([A-Za-z0-9_-]{11})/);
-          const ytId    = ytMatch ? ytMatch[1] : null;
-
-          const embedHtml = esYT && ytId
-            ? `<iframe class="envivo-embed" src="https://www.youtube.com/embed/${ytId}?autoplay=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
-            : `<a href="${s.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);font-size:.9rem;text-decoration:none;gap:8px">
-                 <span style="font-size:2rem">📺</span> Ver en Facebook Live
-               </a>`;
-
-          const logoHtml = s.logoUrl
-            ? `<img src="${s.logoUrl}" alt="${s.nombre}" class="envivo-logo">`
-            : `<div class="envivo-logo" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem">⛪</div>`;
-
-          const ciudad = s.ciudad ? `📍 ${s.ciudad}` : '';
-
-          grid.insertAdjacentHTML('beforeend', `
-            <div class="envivo-card">
-              ${embedHtml}
-              <div class="envivo-body">
-                <div class="envivo-badge"><span class="envivo-badge-dot"></span> EN VIVO</div>
-                <div class="envivo-header">
-                  ${logoHtml}
-                  <div>
-                    <p class="envivo-nombre">${escStr(s.nombre||'Iglesia')}</p>
-                    <p class="envivo-ciudad">${escStr(ciudad)}</p>
-                  </div>
-                </div>
-                <p class="envivo-titulo">${escStr(s.titulo||'')}</p>
-                ${s.descripcion ? `<p style="font-size:.82rem;color:rgba(255,255,255,.5);margin:0">${escStr(s.descripcion)}</p>` : ''}
-                <a href="${s.url}" target="_blank" rel="noopener" class="btn-ver-envivo">
-                  ${esYT ? '▶ Ver en YouTube' : '▶ Ver en Facebook'}
-                </a>
-              </div>
-            </div>`);
-        });
+        // Primero mostrar los EN VIVO
+        snapVivo.docs.forEach(d => renderItem(d.data(), false, grid));
+        // Luego los replays
+        replaysValidos.forEach(d => renderItem(d.data(), true, grid));
 
         seccion.style.display = 'block';
       } catch(e) {
         console.warn('En Vivo:', e.message);
         seccion.style.display = 'none';
       }
+    }
+
+    function renderItem(s, esReplay, grid) {
+      const esYT   = s.plataforma === 'youtube' || (s.url||'').includes('youtube') || (s.url||'').includes('youtu.be');
+      const ytMatch = (s.url||'').match(/(?:v=|youtu\.be\/|live\/)([A-Za-z0-9_-]{11})/);
+      const ytId    = ytMatch ? ytMatch[1] : null;
+
+      const embedHtml = esYT && ytId
+        ? `<iframe class="envivo-embed" src="https://www.youtube.com/embed/${ytId}?autoplay=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
+        : `<a href="${s.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);font-size:.9rem;text-decoration:none;gap:8px">
+             <span style="font-size:2rem">📺</span> ${esReplay ? 'Ver repetición' : 'Ver en Facebook Live'}
+           </a>`;
+
+      const logoHtml = s.logoUrl
+        ? `<img src="${s.logoUrl}" alt="${s.nombre}" class="envivo-logo">`
+        : `<div class="envivo-logo" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem">⛪</div>`;
+
+      const ciudad = s.ciudad ? `📍 ${s.ciudad}` : '';
+
+      // Badge diferente para replay
+      const badgeHtml = esReplay
+        ? `<div class="envivo-badge" style="background:#6b7280"><span style="margin-right:4px">📺</span> REPETICIÓN</div>`
+        : `<div class="envivo-badge"><span class="envivo-badge-dot"></span> EN VIVO</div>`;
+
+      const btnLabel = esReplay
+        ? (esYT ? '📺 Ver repetición en YouTube' : '📺 Ver repetición en Facebook')
+        : (esYT ? '▶ Ver en YouTube' : '▶ Ver en Facebook');
+
+      grid.insertAdjacentHTML('beforeend', `
+        <div class="envivo-card">
+          ${embedHtml}
+          <div class="envivo-body">
+            ${badgeHtml}
+            <div class="envivo-header">
+              ${logoHtml}
+              <div>
+                <p class="envivo-nombre">${escStr(s.nombre||'Iglesia')}</p>
+                <p class="envivo-ciudad">${escStr(ciudad)}</p>
+              </div>
+            </div>
+            <p class="envivo-titulo">${escStr(s.titulo||'')}</p>
+            ${s.descripcion ? `<p style="font-size:.82rem;color:rgba(255,255,255,.5);margin:0">${escStr(s.descripcion)}</p>` : ''}
+            <a href="${s.url}" target="_blank" rel="noopener" class="btn-ver-envivo" ${esReplay?'style="background:#6b7280"':''}>
+              ${btnLabel}
+            </a>
+          </div>
+        </div>`);
     }
 
     function escStr(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
