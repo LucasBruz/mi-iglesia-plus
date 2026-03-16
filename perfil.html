@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Mi Perfil | Mi Iglesia+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--primary:#FF6B5B;--dark:#1a1a1a;--border:#e0e0e0;--gray:#666;--bg:#fafafa}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Poppins,sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
+
+    /* NAV */
+    nav{background:#fff;padding:.8rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-weight:800;font-size:1.1rem;color:var(--dark)}
+    .nav-logo img{height:36px;border-radius:8px}
+    .nav-logo span{color:var(--primary)}
+    .btn{display:inline-block;padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-family:Poppins;text-decoration:none;border:0;cursor:pointer;font-size:.88rem;transition:all .2s}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-secondary{background:#f0f0f0;color:var(--dark)}
+
+    /* HERO PERFIL */
+    .perfil-hero{
+      background:linear-gradient(135deg,#1a1a1a,#2d2d2d);
+      padding:2.5rem 1.5rem 2rem;
+      position:relative;overflow:hidden;
+    }
+    .perfil-hero::before{content:'';position:absolute;inset:0;background-image:url('assets/fondo.png');background-size:cover;background-position:center;z-index:0;opacity:.4}
+    .perfil-hero::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:1}
+    .perfil-hero-content{position:relative;z-index:2;max-width:700px;margin:0 auto;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+    .avatar-wrap{position:relative;flex-shrink:0}
+    .avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.3);background:#333;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:#fff}
+    .avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .avatar-edit{position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--primary);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem}
+    .perfil-nombre{color:#fff;font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
+    .perfil-email{color:rgba(255,255,255,.6);font-size:.88rem}
+    .perfil-stats{display:flex;gap:1.5rem;margin-top:.8rem}
+    .stat{text-align:center}
+    .stat .val{font-size:1.3rem;font-weight:800;color:#fff}
+    .stat .lbl{font-size:.75rem;color:rgba(255,255,255,.6)}
+
+    /* TABS */
+    .tabs{display:flex;border-bottom:1px solid var(--border);background:#fff;padding:0 1rem;overflow-x:auto;scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab-btn{padding:.9rem 1.2rem;border:0;background:none;font-family:Poppins;font-weight:700;font-size:.88rem;color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+    /* CONTENIDO */
+    .container{max-width:700px;margin:0 auto;padding:1.5rem 1rem}
+
+    /* EDITAR PERFIL */
+    .edit-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+    .edit-card h3{font-size:1rem;font-weight:700;margin-bottom:1rem}
+    .form-group{margin-bottom:1rem}
+    .form-group label{display:block;font-size:.82rem;font-weight:700;margin-bottom:.3rem}
+    .form-group input{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:Poppins;font-size:.9rem}
+    .form-group input:focus{outline:none;border-color:var(--primary)}
+    .hint{font-size:.78rem;color:var(--gray);margin-top:.3rem}
+
+    /* IGLESIAS SEGUIDAS */
+    .iglesia-item{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem;margin-bottom:.8rem;transition:box-shadow .2s}
+    .iglesia-item:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .iglesia-logo{width:48px;height:48px;border-radius:10px;object-fit:contain;background:#f5f5f5;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .iglesia-logo img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+    .iglesia-info{flex:1}
+    .iglesia-nombre{font-weight:700;font-size:.95rem}
+    .iglesia-ciudad{color:var(--gray);font-size:.82rem}
+    .btn-dejar{background:#fee2e2;color:#b91c1c;border:0;border-radius:8px;padding:.4rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:Poppins;flex-shrink:0}
+    .btn-dejar:hover{background:#fca5a5}
+    .empty-state{text-align:center;padding:3rem 1rem;color:var(--gray)}
+    .empty-state .icon{font-size:3rem;margin-bottom:.8rem}
+    .empty-state p{font-size:.92rem;margin-bottom:1rem}
+
+    /* LOADING */
+    .spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:3rem auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:600px){
+      .perfil-hero-content{flex-direction:column;text-align:center;align-items:center}
+      .perfil-stats{justify-content:center}
+      nav{padding:.7rem 1rem}
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo.png" alt="Mi Iglesia+">
+      Mi <span>&nbsp;Iglesia+</span>
+    </a>
+    <button class="btn btn-secondary" id="btnLogout">Salir</button>
+  </nav>
+
+  <!-- HERO -->
+  <div class="perfil-hero">
+    <div class="perfil-hero-content">
+      <div class="avatar-wrap">
+        <div class="avatar" id="avatarDisplay">👤</div>
+        <div class="avatar-edit" onclick="document.getElementById('avatarInputEdit').click()" title="Cambiar foto">✏️</div>
+        <input type="file" id="avatarInputEdit" accept="image/*" style="display:none" onchange="onAvatarEdit(event)">
+      </div>
+      <div>
+        <div class="perfil-nombre" id="heroNombre">Cargando…</div>
+        <div class="perfil-email" id="heroEmail"></div>
+        <div class="perfil-stats">
+          <div class="stat"><div class="val" id="statSiguiendo">0</div><div class="lbl">Iglesias</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-iglesias">⛪ Mis Iglesias</button>
+    <button class="tab-btn" data-tab="tab-editar">✏️ Editar perfil</button>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="container">
+
+    <!-- TAB: Iglesias seguidas -->
+    <div id="tab-iglesias">
+      <div id="iglesiasList"><div class="spinner"></div></div>
+    </div>
+
+    <!-- TAB: Editar perfil -->
+    <div id="tab-editar" style="display:none">
+      <div class="edit-card">
+        <h3>Datos personales</h3>
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input id="edit_nombre" type="text" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input id="edit_email" type="email" disabled style="background:#f5f5f5;color:#999">
+          <div class="hint">El email no se puede cambiar</div>
+        </div>
+        <button class="btn btn-primary" id="btnGuardarPerfil" style="width:100%;padding:.8rem">💾 Guardar cambios</button>
+        <div id="editMsg" style="text-align:center;font-size:.85rem;margin-top:.8rem;min-height:1.2rem;font-weight:600"></div>
+      </div>
+
+      <div class="edit-card" style="border-color:#fee2e2">
+        <h3 style="color:#b91c1c">⚠️ Zona peligrosa</h3>
+        <p style="font-size:.85rem;color:var(--gray);margin-bottom:1rem">Estas acciones no se pueden deshacer.</p>
+        <button class="btn" id="btnCambiarPass" style="background:#fff3cd;color:#856404;width:100%;margin-bottom:.5rem">🔑 Cambiar contraseña</button>
+        <div id="passMsg" style="font-size:.82rem;color:#16a34a;text-align:center;min-height:1rem;margin-bottom:.5rem"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    };
+
+    const app     = initializeApp(firebaseConfig);
+    const auth    = getAuth(app);
+    const db      = getFirestore(app);
+    const storage = getStorage(app);
+    let uid = null;
+    let userData = null;
+
+    // ── TABS ──
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['tab-iglesias','tab-editar'].forEach(id => {
+          document.getElementById(id).style.display = 'none';
+        });
+        document.getElementById(btn.dataset.tab).style.display = 'block';
+      });
+    });
+
+    // ── SESIÓN ──
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'login-usuario.html'; return; }
+      uid = user.uid;
+
+      const snap = await getDoc(doc(db, 'usuarios', uid));
+      if (!snap.exists()) {
+        // Si no tiene perfil de usuario, puede ser una iglesia → redirigir
+        const igSnap = await getDoc(doc(db, 'iglesias', uid));
+        if (igSnap.exists()) { window.location.href = 'dashboard.html'; return; }
+        // Crear perfil básico
+        userData = { nombre: user.displayName||'', email: user.email||'', fotoUrl: user.photoURL||'', siguiendo: [] };
+        await setDoc(doc(db,'usuarios',uid), { ...userData, tipo:'usuario', creadoEn: new Date() });
+      } else {
+        userData = snap.data();
+      }
+
+      renderHero(user);
+      cargarIglesiasSeguidas();
+      cargarEditar(user);
+    });
+
+    function renderHero(user) {
+      const nombre = userData.nombre || user.displayName || 'Usuario';
+      const foto   = userData.fotoUrl || user.photoURL || '';
+      document.getElementById('heroNombre').textContent = nombre;
+      document.getElementById('heroEmail').textContent  = user.email || '';
+      document.getElementById('statSiguiendo').textContent = (userData.siguiendo||[]).length;
+
+      const av = document.getElementById('avatarDisplay');
+      if (foto) {
+        av.innerHTML = `<img src="${foto}" alt="${nombre}">`;
+      } else {
+        av.textContent = nombre.charAt(0).toUpperCase() || '👤';
+      }
+    }
+
+    // ── IGLESIAS SEGUIDAS ──
+    async function cargarIglesiasSeguidas() {
+      const cont = document.getElementById('iglesiasList');
+      const ids  = userData.siguiendo || [];
+
+      if (!ids.length) {
+        cont.innerHTML = `<div class="empty-state">
+          <div class="icon">⛪</div>
+          <p>Todavía no seguís ninguna iglesia.</p>
+          <a class="btn btn-primary" href="index.html">Explorar iglesias</a>
+        </div>`;
+        return;
+      }
+
+      cont.innerHTML = '<div class="spinner"></div>';
+      try {
+        const iglesias = await Promise.all(
+          ids.map(id => getDoc(doc(db,'iglesias',id)).then(s => s.exists() ? {id, ...s.data()} : null))
+        );
+        const validas = iglesias.filter(Boolean);
+
+        if (!validas.length) {
+          cont.innerHTML = `<div class="empty-state"><div class="icon">⛪</div><p>No se encontraron iglesias.</p></div>`;
+          return;
+        }
+
+        cont.innerHTML = '';
+        validas.forEach(ig => {
+          const logoHtml = ig.logoUrl
+            ? `<div class="iglesia-logo"><img src="${ig.logoUrl}" alt="${ig.nombre}"></div>`
+            : `<div class="iglesia-logo">⛪</div>`;
+
+          cont.insertAdjacentHTML('beforeend', `
+            <div class="iglesia-item">
+              ${logoHtml}
+              <div class="iglesia-info">
+                <div class="iglesia-nombre">${escStr(ig.nombre||'')}</div>
+                <div class="iglesia-ciudad">📍 ${escStr(ig.ciudad||'')}${ig.provincia?', '+escStr(ig.provincia):''}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:.4rem;align-items:flex-end">
+                <a href="iglesia.html?id=${ig.id}" class="btn btn-primary" style="font-size:.78rem;padding:.4rem .9rem">Ver iglesia</a>
+                <button class="btn-dejar" onclick="dejarDeSeguir('${ig.id}')">✕ Dejar de seguir</button>
+              </div>
+            </div>`);
+        });
+      } catch(e) {
+        cont.innerHTML = `<p style="color:#dc3545;text-align:center">Error: ${e.message}</p>`;
+      }
+    }
+
+    window.dejarDeSeguir = async function(iglesiaId) {
+      if (!confirm('¿Dejar de seguir esta iglesia?')) return;
+      try {
+        await updateDoc(doc(db,'usuarios',uid), { siguiendo: arrayRemove(iglesiaId) });
+        userData.siguiendo = userData.siguiendo.filter(id => id !== iglesiaId);
+        document.getElementById('statSiguiendo').textContent = userData.siguiendo.length;
+        cargarIglesiasSeguidas();
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    // ── EDITAR PERFIL ──
+    function cargarEditar(user) {
+      document.getElementById('edit_nombre').value = userData.nombre || user.displayName || '';
+      document.getElementById('edit_email').value  = user.email || '';
+    }
+
+    document.getElementById('btnGuardarPerfil').addEventListener('click', async () => {
+      const nombre = document.getElementById('edit_nombre').value.trim();
+      const msgEl  = document.getElementById('editMsg');
+      const btn    = document.getElementById('btnGuardarPerfil');
+      if (!nombre) { msgEl.style.color='#dc3545'; msgEl.textContent='Ingresá tu nombre.'; return; }
+      btn.disabled = true; btn.textContent = 'Guardando...';
+      try {
+        await updateDoc(doc(db,'usuarios',uid), { nombre });
+        userData.nombre = nombre;
+        document.getElementById('heroNombre').textContent = nombre;
+        msgEl.style.color = '#16a34a'; msgEl.textContent = '✅ Perfil actualizado.';
+      } catch(e) { msgEl.style.color='#dc3545'; msgEl.textContent='Error: '+e.message; }
+      btn.disabled = false; btn.textContent = '💾 Guardar cambios';
+    });
+
+    document.getElementById('btnCambiarPass').addEventListener('click', async () => {
+      const user  = auth.currentUser;
+      const msgEl = document.getElementById('passMsg');
+      if (!user?.email) return;
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        msgEl.textContent = '✅ Te enviamos un email para cambiar tu contraseña.';
+      } catch(e) { msgEl.style.color='#dc3545'; msgEl.textContent='Error: '+e.message; }
+    });
+
+    // ── CAMBIAR FOTO ──
+    window.onAvatarEdit = async function(e) {
+      const file = e.target.files[0];
+      if (!file || !uid) return;
+      try {
+        const r   = ref(storage, `avatares/${uid}/foto.${file.name.split('.').pop()}`);
+        await uploadBytes(r, file);
+        const url = await getDownloadURL(r);
+        await updateDoc(doc(db,'usuarios',uid), { fotoUrl: url });
+        userData.fotoUrl = url;
+        document.getElementById('avatarDisplay').innerHTML = `<img src="${url}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      } catch(e) { alert('Error al subir foto: ' + e.message); }
+    };
+
+    // ── LOGOUT ──
+    document.getElementById('btnLogout').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    });
+
+    function escStr(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  </script>
+</body>
+</html>
