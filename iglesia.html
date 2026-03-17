@@ -123,7 +123,8 @@
     /* PRÉDICAS */
     .predicas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
     .predica-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden}
-    .predica-card iframe{width:100%;aspect-ratio:16/9;display:block;border:0}
+    .predica-card .yt-thumb{display:block}
+    .yt-thumb:hover > div > div { transform:scale(1.1) }
     .predica-body{padding:.8rem}
     .predica-body h4{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
     .predica-body .fecha{color:var(--gray);font-size:.8rem}
@@ -520,7 +521,14 @@
 
       const predicasItems = predicas.length ? predicas.map(p => `
         <div class="predica-card">
-          <iframe src="https://www.youtube.com/embed/${escHtml(p.youtubeId)}" allowfullscreen loading="lazy"></iframe>
+          <div class="yt-thumb" onclick="playVideo(this,'${escHtml(p.youtubeId)}')" style="aspect-ratio:16/9;position:relative;cursor:pointer;background:#000;border-radius:0">
+            <img src="https://img.youtube.com/vi/${escHtml(p.youtubeId)}/hqdefault.jpg" alt="${escHtml(p.titulo||'Prédica')}" style="width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+              <div style="width:56px;height:56px;background:rgba(255,0,0,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .2s">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </div>
           <div class="predica-body">
             <h4>${escHtml(p.titulo||'Prédica')}</h4>
             <div class="fecha">${fmtFecha(p.fecha).full}</div>
@@ -602,8 +610,13 @@
             const ytId    = ytMatch ? ytMatch[1] : null;
 
             const embedHtml = esYT && ytId
-              ? `<div style="border-radius:14px;overflow:hidden;aspect-ratio:16/9;background:#000">
-                   <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytId}" allowfullscreen style="border:0;display:block"></iframe>
+              ? `<div class="yt-thumb" onclick="playVideo(this,'${ytId}')" style="aspect-ratio:16/9;position:relative;cursor:pointer;background:#000;border-radius:14px;overflow:hidden">
+                   <img src="https://img.youtube.com/vi/${ytId}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${ytId}/hqdefault.jpg'" alt="${escHtml(ev.titulo||'Transmisión')}" style="width:100%;height:100%;object-fit:cover;display:block">
+                   <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3)">
+                     <div style="width:64px;height:64px;background:rgba(255,0,0,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.5)">
+                       <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                     </div>
+                   </div>
                  </div>`
               : `<a href="${escHtml(ev.url)}" target="_blank" rel="noopener"
                    style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;background:#1a1a1a;border-radius:14px;color:#fff;text-decoration:none;gap:.8rem;font-size:1rem;font-weight:700">
@@ -633,16 +646,16 @@
           <div class="container">
             <h2 class="section-title" style="color:#fff">
               📺 <span>Canal en Vivo</span>
-              <span style="font-size:.75rem;font-weight:600;background:#dc2626;color:#fff;padding:2px 10px;border-radius:999px;margin-left:.5rem;animation:pulse 2s infinite">🔴 EN VIVO</span>
+              <span style="font-size:.75rem;font-weight:600;background:#dc2626;color:#fff;padding:2px 10px;border-radius:999px;margin-left:.5rem">🔴 EN VIVO</span>
             </h2>
-            <div style="border-radius:14px;overflow:hidden;aspect-ratio:16/9;background:#111">
-              <iframe
-                width="100%" height="100%"
-                src="https://www.youtube.com/embed/live_stream?channel=${escHtml(ig.youtubeChannelId)}&autoplay=0&rel=0"
-                allowfullscreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                style="border:0;display:block;width:100%;height:100%"
-              ></iframe>
+            <div class="yt-thumb" onclick="playChannelVideo(this,'${escHtml(ig.youtubeChannelId)}')" style="aspect-ratio:16/9;position:relative;cursor:pointer;background:#111;border-radius:14px;overflow:hidden">
+              <img src="https://img.youtube.com/vi/live_stream/hqdefault.jpg" alt="Canal en vivo" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.7" onerror="this.style.display='none'">
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem">
+                <div style="width:64px;height:64px;background:rgba(220,38,38,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.5)">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <span style="color:#fff;font-weight:700;font-size:.9rem">Tocá para ver el canal en vivo</span>
+              </div>
             </div>
             <p style="color:rgba(255,255,255,.4);font-size:.78rem;margin-top:.6rem;text-align:center">
               Cuando la iglesia esté transmitiendo en vivo, el stream aparece automáticamente aquí.
@@ -704,6 +717,22 @@
       const lb = document.getElementById('lightbox');
       const img = document.getElementById('lightboxImg');
       img.src = url; lb.style.display='flex'; document.body.style.overflow='hidden';
+    };
+
+    window.playVideo = function(el, ytId) {
+      el.innerHTML = `<iframe width="100%" height="100%"
+        src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0"
+        allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        style="border:0;display:block;width:100%;height:100%"></iframe>`;
+      el.style.cursor = 'default';
+    };
+
+    window.playChannelVideo = function(el, channelId) {
+      el.innerHTML = `<iframe width="100%" height="100%"
+        src="https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1&rel=0"
+        allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        style="border:0;display:block;width:100%;height:100%"></iframe>`;
+      el.style.cursor = 'default';
     };
 
     render().catch(e => {
