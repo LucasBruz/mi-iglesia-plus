@@ -129,6 +129,22 @@
     .predica-body h4{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
     .predica-body .fecha{color:var(--gray);font-size:.8rem}
 
+    /* EN VIVO - badge pulsante */
+    @keyframes pulse-red {
+      0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,.6); }
+      50%      { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+    }
+    .badge-live {
+      display:inline-flex;align-items:center;gap:.4rem;
+      background:#dc2626;color:#fff;
+      padding:4px 14px;border-radius:999px;
+      font-size:.78rem;font-weight:700;
+      animation: pulse-red 1.6s ease-in-out infinite;
+    }
+    .badge-live::before {
+      content:'';width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block;
+    }
+
     /* FORMULARIOS PÚBLICOS */
     .form-box{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;gap:.2rem}
     .form-icon{font-size:2rem;margin-bottom:.3rem}
@@ -203,7 +219,6 @@
 
   <div class="page-footer" style="position:relative">
     <p>Powered by <a href="index.html">Mi Iglesia+</a> - Conectados en un mismo lugar</p>
-    <!-- Burbuja compartir dentro del footer, pegada a la derecha -->
     <button id="share-bubble" onclick="toggleSharePopup()" title="Compartir esta iglesia"
       style="position:absolute;right:1.2rem;top:50%;transform:translateY(-50%);width:40px;height:40px;background:#FF6B5B;border-radius:50%;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(255,107,91,.5);transition:transform .2s,box-shadow .2s">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -354,6 +369,13 @@
 
     window.toggleNotificaciones = toggleNotificaciones;
 
+    // ── EXTRAER YOUTUBE VIDEO ID ──
+    function extraerYtId(url) {
+      if (!url) return null;
+      const m = url.match(/(?:v=|youtu\.be\/|embed\/|live\/)([A-Za-z0-9_-]{11})/);
+      return m ? m[1] : null;
+    }
+
     async function render() {
       const app = document.getElementById('app');
 
@@ -388,7 +410,6 @@
       document.querySelector('link[rel="canonical"]').setAttribute('href', igUrl);
       document.querySelector('meta[property="og:image"]').setAttribute('content', igImagen);
 
-      // Guardar URL para la burbuja de compartir
       window._shareUrl = igUrl;
 
       // Schema.org
@@ -596,20 +617,86 @@
           </a>
         </div>` : '';
 
-      // ── TRANSMISIONES RECIENTES ──
-      let transmisionesHtml = '';
-      try {
-        const envivoSnap = await getDoc(doc(db, 'envivo', iglesiaId));
-        if (envivoSnap.exists()) {
-          const ev = envivoSnap.data();
-          const ahora = new Date();
-          // Mostrar si es replay activo (activo=false, replay=true, replayHasta > ahora)
-          if (!ev.activo && ev.replay && ev.replayHasta && new Date(ev.replayHasta) > ahora) {
-            const esYT   = ev.plataforma === 'youtube' || (ev.url||'').includes('youtube') || (ev.url||'').includes('youtu.be');
-            const ytMatch = (ev.url||'').match(/(?:v=|youtu\.be\/|live\/)([A-Za-z0-9_-]{11})/);
-            const ytId    = ytMatch ? ytMatch[1] : null;
+      // ── EN VIVO AUTOMÁTICO ──
+      // Lee Firestore y construye la sección correcta según el estado:
+      //   activo=true  → muestra stream EN VIVO con embed automático
+      //   replay=true  → muestra transmisión reciente hasta medianoche
+      //   ninguno      → si tiene youtubeChannelId, muestra el canal
+      let enVivoHtml   = '';
+      let replayHtml   = '';
+      let youtubeHtml  = '';
 
-            const embedHtml = esYT && ytId
+      try {
+        const evSnap2 = await getDoc(doc(db, 'envivo', iglesiaId));
+        const ahora   = new Date();
+
+        if (evSnap2.exists()) {
+          const ev = evSnap2.data();
+
+          // ── CASO 1: EN VIVO ACTIVO ──
+          if (ev.activo) {
+            const ytId = extraerYtId(ev.url);
+
+            let embedHtml = '';
+            if (ytId) {
+              // URL de YouTube con videoId → embed directo con autoplay
+              embedHtml = `
+                <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
+                  <iframe width="100%" height="100%"
+                    src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0"
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    style="border:0;display:block;width:100%;height:100%"></iframe>
+                </div>`;
+            } else if ((ev.url||'').includes('facebook') || (ev.url||'').includes('fb.watch') || (ev.url||'').includes('fb.me')) {
+              // Facebook Live → botón para abrir
+              embedHtml = `
+                <a href="${escHtml(ev.url)}" target="_blank" rel="noopener"
+                  style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;background:linear-gradient(135deg,#1877f2,#0a5dc2);border-radius:14px;color:#fff;text-decoration:none;gap:1rem;font-size:1rem;font-weight:700">
+                  <span style="font-size:2.5rem">🔵</span>
+                  <div>
+                    <div style="font-size:1.1rem;font-weight:800">Ver en Facebook Live</div>
+                    <div style="font-size:.85rem;opacity:.8;margin-top:.3rem">Tocá para ir al stream</div>
+                  </div>
+                </a>`;
+            } else if (ig.youtubeChannelId) {
+              // No hay URL todavía pero tiene canal → embed del canal en vivo
+              embedHtml = `
+                <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
+                  <iframe width="100%" height="100%"
+                    src="https://www.youtube.com/embed/live_stream?channel=${escHtml(ig.youtubeChannelId)}&autoplay=1&rel=0"
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    style="border:0;display:block;width:100%;height:100%"></iframe>
+                </div>`;
+            } else {
+              // Sin URL y sin canal → aviso genérico
+              embedHtml = `
+                <div style="aspect-ratio:16/9;border-radius:14px;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
+                  <div style="font-size:3rem">📡</div>
+                  <div style="color:#fff;font-weight:700;font-size:1rem">Transmisión en progreso</div>
+                  <div style="color:rgba(255,255,255,.5);font-size:.85rem">El link del stream estará disponible en breve</div>
+                </div>`;
+            }
+
+            enVivoHtml = `
+              <section class="section" style="background:#0d0d0d;padding-top:2rem;padding-bottom:2rem">
+                <div class="container">
+                  <h2 class="section-title" style="color:#fff">
+                    🔴 <span>En Vivo</span>
+                    <span class="badge-live" style="margin-left:.5rem">EN VIVO</span>
+                  </h2>
+                  ${embedHtml}
+                  ${ev.titulo ? `<p style="color:rgba(255,255,255,.9);font-size:1rem;font-weight:700;margin-top:.8rem">${escHtml(ev.titulo)}</p>` : ''}
+                  ${ev.descripcion ? `<p style="color:rgba(255,255,255,.5);font-size:.85rem;margin-top:.3rem">${escHtml(ev.descripcion)}</p>` : ''}
+                </div>
+              </section>`;
+
+          // ── CASO 2: REPLAY DEL DÍA ──
+          } else if (!ev.activo && ev.replay && ev.replayHasta && new Date(ev.replayHasta) > ahora) {
+            const ytId = extraerYtId(ev.url);
+
+            const embedHtml = ytId
               ? `<div class="yt-thumb" onclick="playVideo(this,'${ytId}')" style="aspect-ratio:16/9;position:relative;cursor:pointer;background:#000;border-radius:14px;overflow:hidden">
                    <img src="https://img.youtube.com/vi/${ytId}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${ytId}/hqdefault.jpg'" alt="${escHtml(ev.titulo||'Transmisión')}" style="width:100%;height:100%;object-fit:cover;display:block">
                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3)">
@@ -623,7 +710,7 @@
                    <span style="font-size:2rem">📺</span> Ver repetición en Facebook
                  </a>`;
 
-            transmisionesHtml = `
+            replayHtml = `
               <section class="section" style="background:#111;padding-top:2rem;padding-bottom:2rem">
                 <div class="container">
                   <h2 class="section-title" style="color:#fff">
@@ -640,44 +727,43 @@
         }
       } catch(_) {}
 
-      // ── CANAL YOUTUBE EN VIVO ──
-      const youtubeHtml = ig.youtubeChannelId ? `
-        <section class="section" style="background:#000;padding-top:2rem;padding-bottom:2rem">
-          <div class="container">
-            <h2 class="section-title" style="color:#fff">
-              📺 <span>Canal en Vivo</span>
-              <span style="font-size:.75rem;font-weight:600;background:#dc2626;color:#fff;padding:2px 10px;border-radius:999px;margin-left:.5rem">🔴 EN VIVO</span>
-            </h2>
-            <div class="yt-thumb" onclick="playChannelVideo(this,'${escHtml(ig.youtubeChannelId)}')"
-              style="aspect-ratio:16/9;position:relative;cursor:pointer;border-radius:14px;overflow:hidden;
-                     background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)">
-              <!-- Patrón de fondo -->
-              <div style="position:absolute;inset:0;opacity:.08;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px"></div>
-              <!-- Contenido centrado -->
-              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
-                <!-- Logo YouTube -->
-                <svg width="64" height="45" viewBox="0 0 64 45" fill="none">
-                  <rect width="64" height="45" rx="10" fill="#FF0000"/>
-                  <path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/>
-                </svg>
-                <div style="text-align:center">
-                  <div style="color:#fff;font-weight:800;font-size:1rem;margin-bottom:.3rem">${escHtml(ig.nombre||'')}</div>
-                  <div style="color:rgba(255,255,255,.6);font-size:.85rem">Tocá para ver el canal</div>
-                </div>
-                <!-- Botón play -->
-                <div style="display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:.5rem 1.2rem">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                  <span style="color:#fff;font-weight:700;font-size:.85rem">Ver en vivo</span>
+      // ── CANAL YOUTUBE (solo si NO hay en vivo ni replay activos) ──
+      if (!enVivoHtml && !replayHtml && ig.youtubeChannelId) {
+        youtubeHtml = `
+          <section class="section" style="background:#000;padding-top:2rem;padding-bottom:2rem">
+            <div class="container">
+              <h2 class="section-title" style="color:#fff">
+                📺 <span>Canal de YouTube</span>
+              </h2>
+              <div class="yt-thumb" onclick="playChannelVideo(this,'${escHtml(ig.youtubeChannelId)}')"
+                style="aspect-ratio:16/9;position:relative;cursor:pointer;border-radius:14px;overflow:hidden;
+                       background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)">
+                <div style="position:absolute;inset:0;opacity:.08;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px"></div>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
+                  <svg width="64" height="45" viewBox="0 0 64 45" fill="none">
+                    <rect width="64" height="45" rx="10" fill="#FF0000"/>
+                    <path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/>
+                  </svg>
+                  <div style="text-align:center">
+                    <div style="color:#fff;font-weight:800;font-size:1rem;margin-bottom:.3rem">${escHtml(ig.nombre||'')}</div>
+                    <div style="color:rgba(255,255,255,.6);font-size:.85rem">Tocá para ver el canal</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:.5rem 1.2rem">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    <span style="color:#fff;font-weight:700;font-size:.85rem">Ver canal</span>
+                  </div>
                 </div>
               </div>
+              <p style="color:rgba(255,255,255,.4);font-size:.78rem;margin-top:.6rem;text-align:center">
+                Cuando la iglesia esté transmitiendo en vivo, el stream aparece aquí automáticamente.
+              </p>
             </div>
-            <p style="color:rgba(255,255,255,.4);font-size:.78rem;margin-top:.6rem;text-align:center">
-              Cuando la iglesia esté transmitiendo en vivo, el stream aparece aquí automáticamente.
-            </p>
-          </div>
-        </section>` : '';
+          </section>`;
+      }
 
-      app.innerHTML = heroHtml + websiteHtml + youtubeHtml + transmisionesHtml + videoHtml + fotoPastorHtml + infoHtml + galeriaHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
+      // ── ARMAR PÁGINA ──
+      // El En Vivo va primero (arriba del todo, muy visible)
+      app.innerHTML = heroHtml + websiteHtml + enVivoHtml + replayHtml + youtubeHtml + videoHtml + fotoPastorHtml + infoHtml + galeriaHtml + ofrendarHtml + eventosHtml + predicasHtml + peticionesHtml;
 
       renderBtnNotif(estaSuscripto());
       activarFormularios();
@@ -812,7 +898,6 @@
   (function(){
     let popupAbierto = false;
 
-    // Setear link WhatsApp — se llama al abrir el popup, siempre con el valor más fresco
     function actualizarShareLinks() {
       const el = document.getElementById('shareWaLinkIglesia');
       if (!el) return;
