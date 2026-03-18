@@ -701,17 +701,13 @@
                   <div><div style="font-size:1.1rem;font-weight:800">Ver en Facebook Live</div>
                   <div style="font-size:.85rem;opacity:.8;margin-top:.3rem">Tocá para ir al stream</div></div></a>`;
               }
-              // Sin ytId → pantalla de espera con contador de reintento
-              return `<div id="envivo-embed-wrap" style="aspect-ratio:16/9;border-radius:14px;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
-                <div style="font-size:3rem">📡</div>
-                <div style="color:#fff;font-weight:700;font-size:1rem">Buscando transmisión en vivo…</div>
-                <div style="color:rgba(255,255,255,.5);font-size:.85rem">Reintentando en <span id="retry-countdown">30</span>s</div>
-                <div style="display:flex;gap:.8rem;margin-top:.3rem">
-                  <a href="https://www.youtube.com/channel/${escHtml(ig.youtubeChannelId||'')}/live" target="_blank" rel="noopener"
-                    style="display:inline-flex;align-items:center;gap:.4rem;background:#FF0000;color:#fff;border-radius:999px;padding:.5rem 1.2rem;text-decoration:none;font-size:.85rem;font-weight:700">
-                    <span style="width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block"></span>
-                    Abrir en YouTube
-                  </a>
+              // Sin ytId → pantalla de espera animada, reintenta cada 30s automáticamente
+              return `<div id="envivo-embed-wrap" style="aspect-ratio:16/9;border-radius:14px;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem">
+                <div style="width:56px;height:56px;border:4px solid rgba(255,255,255,.15);border-top-color:#FF0000;border-radius:50%;animation:spin .9s linear infinite"></div>
+                <div style="text-align:center">
+                  <div style="color:#fff;font-weight:800;font-size:1rem;margin-bottom:.4rem">🔴 Transmisión en vivo</div>
+                  <div style="color:rgba(255,255,255,.6);font-size:.85rem">Conectando con el stream…</div>
+                  <div style="color:rgba(255,255,255,.35);font-size:.78rem;margin-top:.5rem">Cargando en <span id="retry-countdown">30</span>s</div>
                 </div>
               </div>`;
             };
