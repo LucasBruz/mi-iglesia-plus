@@ -333,20 +333,27 @@
 
 
   <!-- VERSÍCULO DEL DÍA -->
-  <section id="versiculo-section" style="background:#0f0f1a;padding:3.5rem 1.5rem;position:relative;overflow:hidden">
+  <section id="versiculo-section" style="background:linear-gradient(135deg,#FF6B5B 0%,#e63946 50%,#FF6B5B 100%);background-size:200% 200%;animation:vpGradient 6s ease infinite;padding:4rem 1.5rem 3.5rem;position:relative;overflow:hidden;margin-top:-60px">
+    <!-- Fade superior que se mezcla con el hero -->
+    <div style="position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,transparent 100%);pointer-events:none;z-index:1"></div>
     <div id="vp-canvas" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
     <style>
       .vp-particle{position:absolute;border-radius:50%;opacity:0;animation:vpFloat linear infinite}
       @keyframes vpFloat{0%{transform:translateY(0) scale(0);opacity:0}10%{opacity:.5}90%{opacity:.1}100%{transform:translateY(-110vh) scale(1.4);opacity:0}}
-      #versiculo-card{max-width:660px;margin:0 auto;text-align:center;position:relative;z-index:2;opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s ease}
+      @keyframes vpGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+      @keyframes vpShimmer{0%{transform:translateX(-100%) skewX(-15deg)}100%{transform:translateX(300%) skewX(-15deg)}}
+      @keyframes vpPulse{0%,100%{opacity:.06}50%{opacity:.14}}
+      #versiculo-section::before{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.18) 50%,transparent 60%);animation:vpShimmer 4s ease-in-out infinite;pointer-events:none;z-index:1}
+      #versiculo-section::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(255,255,255,.08) 0%,transparent 60%);animation:vpPulse 3s ease-in-out infinite;pointer-events:none;z-index:1}
+      #versiculo-card{max-width:660px;margin:0 auto;text-align:center;position:relative;z-index:3;opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s ease}
       #versiculo-card.visible{opacity:1;transform:translateY(0)}
-      .vp-label{font-size:.7rem;font-weight:700;letter-spacing:.2em;color:rgba(255,107,91,.65);text-transform:uppercase;margin-bottom:1.4rem;display:flex;align-items:center;justify-content:center;gap:.8rem}
-      .vp-label::before,.vp-label::after{content:'';flex:0 0 28px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,91,.4),transparent)}
-      .vp-comilla{font-size:5rem;line-height:.5;color:rgba(255,107,91,.15);font-family:Georgia,serif;display:block;margin-bottom:.2rem}
-      .vp-texto{font-size:1.22rem;font-weight:500;color:rgba(255,255,255,.92);line-height:1.85;margin:0 0 1.4rem;font-style:italic}
-      .vp-divider{width:40px;height:2px;background:linear-gradient(90deg,transparent,#FF6B5B,transparent);margin:0 auto 1.1rem;border-radius:999px}
-      .vp-ref{display:inline-block;font-size:.86rem;font-weight:700;color:#FF6B5B;background:rgba(255,107,91,.08);border:1px solid rgba(255,107,91,.2);border-radius:999px;padding:.35rem 1.1rem;letter-spacing:.06em;transition:all .3s}
-      .vp-ref:hover{background:rgba(255,107,91,.18);border-color:rgba(255,107,91,.5)}
+      .vp-label{font-size:.7rem;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.7);text-transform:uppercase;margin-bottom:1.4rem;display:flex;align-items:center;justify-content:center;gap:.8rem}
+      .vp-label::before,.vp-label::after{content:'';flex:0 0 28px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)}
+      .vp-comilla{font-size:5rem;line-height:.5;color:rgba(255,255,255,.2);font-family:Georgia,serif;display:block;margin-bottom:.2rem}
+      .vp-texto{font-size:1.22rem;font-weight:500;color:rgba(255,255,255,.95);line-height:1.85;margin:0 0 1.4rem;font-style:italic;text-shadow:0 1px 8px rgba(0,0,0,.15)}
+      .vp-divider{width:40px;height:2px;background:rgba(255,255,255,.4);margin:0 auto 1.1rem;border-radius:999px}
+      .vp-ref{display:inline-block;font-size:.86rem;font-weight:700;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:.35rem 1.1rem;letter-spacing:.06em;transition:all .3s}
+      .vp-ref:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.6)}
       @media(max-width:600px){.vp-texto{font-size:1.02rem}.vp-comilla{font-size:3.5rem}}
     </style>
     <div id="versiculo-card">
@@ -818,7 +825,7 @@
     // Partículas flotantes
     const canvas = document.getElementById('vp-canvas');
     if (canvas) {
-      const COLORS = ['#FF6B5B','#FF8C7A','#FFB3A7','rgba(255,255,255,.6)'];
+      const COLORS = ['rgba(255,255,255,.8)','rgba(255,255,255,.4)','rgba(255,255,255,.6)','rgba(255,255,255,.2)'];
       for (let i = 0; i < 20; i++) {
         const p = document.createElement('div');
         const size = 2 + Math.random() * 4;
