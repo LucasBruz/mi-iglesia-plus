@@ -376,6 +376,21 @@
       return m ? m[1] : null;
     }
 
+    // ── BUSCAR VIDEO EN VIVO DE UN CANAL VIA YOUTUBE DATA API v3 ──
+    async function buscarLiveEnCanal(channelId) {
+      try {
+        const YT_KEY = 'AIzaSyBjaCZFeVK0d_TfplPgzhbWYwXzb_11MBE';
+        const res  = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?part=id&channelId=${channelId}&eventType=live&type=video&key=${YT_KEY}`
+        );
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+          return data.items[0].id.videoId;
+        }
+        return null;
+      } catch(_) { return null; }
+    }
+
     async function render() {
       const app = document.getElementById('app');
 
@@ -635,11 +650,17 @@
 
           // ── CASO 1: EN VIVO ACTIVO ──
           if (ev.activo) {
-            const ytId = extraerYtId(ev.url);
+            // Prioridad: 1) URL manual con videoId  2) API YouTube automática  3) Facebook  4) fallback
+            let ytId = extraerYtId(ev.url);
+
+            // Si no hay videoId en la URL pero hay canal → buscar automáticamente via API
+            if (!ytId && ig.youtubeChannelId && !(ev.url||'').includes('facebook') && !(ev.url||'').includes('fb.')) {
+              ytId = await buscarLiveEnCanal(ig.youtubeChannelId);
+            }
 
             let embedHtml = '';
             if (ytId) {
-              // URL de YouTube con videoId → embed directo con autoplay
+              // Video en vivo encontrado → embed directo con autoplay
               embedHtml = `
                 <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
                   <iframe width="100%" height="100%"
@@ -660,17 +681,29 @@
                   </div>
                 </a>`;
             } else if (ig.youtubeChannelId) {
-              // No hay URL todavía pero tiene canal → embed del canal en vivo
+              // API no encontró stream activo pero tiene canal → botón directo
               embedHtml = `
-                <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
-                  <iframe width="100%" height="100%"
-                    src="https://www.youtube.com/embed/live_stream?channel=${escHtml(ig.youtubeChannelId)}&autoplay=1&rel=0"
-                    allowfullscreen
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    style="border:0;display:block;width:100%;height:100%"></iframe>
-                </div>`;
+                <a href="https://www.youtube.com/channel/${escHtml(ig.youtubeChannelId)}/live" target="_blank" rel="noopener"
+                  style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;
+                         background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);
+                         border-radius:14px;text-decoration:none;cursor:pointer;
+                         border:2px solid rgba(255,0,0,.4)">
+                  <div style="text-align:center">
+                    <div style="margin-bottom:.8rem">
+                      <svg width="72" height="50" viewBox="0 0 64 45" fill="none">
+                        <rect width="64" height="45" rx="10" fill="#FF0000"/>
+                        <path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/>
+                      </svg>
+                    </div>
+                    <div style="color:#fff;font-weight:800;font-size:1.1rem;margin-bottom:.4rem">${escHtml(ig.nombre)}</div>
+                    <div style="display:inline-flex;align-items:center;gap:.5rem;background:#FF0000;border-radius:999px;padding:.5rem 1.4rem">
+                      <span style="width:9px;height:9px;border-radius:50%;background:#fff;display:inline-block"></span>
+                      <span style="color:#fff;font-weight:700;font-size:.9rem">Ver transmisión en vivo</span>
+                    </div>
+                    <div style="color:rgba(255,255,255,.4);font-size:.75rem;margin-top:.7rem">Se abre en YouTube</div>
+                  </div>
+                </a>`;
             } else {
-              // Sin URL y sin canal → aviso genérico
               embedHtml = `
                 <div style="aspect-ratio:16/9;border-radius:14px;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
                   <div style="font-size:3rem">📡</div>
@@ -828,11 +861,8 @@
     };
 
     window.playChannelVideo = function(el, channelId) {
-      el.innerHTML = `<iframe width="100%" height="100%"
-        src="https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1&rel=0"
-        allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        style="border:0;display:block;width:100%;height:100%"></iframe>`;
-      el.style.cursor = 'default';
+      // YouTube no permite embed de canal — abrir directo en YouTube
+      window.open(`https://www.youtube.com/channel/${channelId}`, '_blank');
     };
 
     render().catch(e => {
