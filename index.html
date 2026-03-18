@@ -331,6 +331,33 @@
     </div>
   </section>
 
+
+  <!-- VERSÍCULO DEL DÍA -->
+  <section id="versiculo-section" style="background:#0f0f1a;padding:3.5rem 1.5rem;position:relative;overflow:hidden">
+    <div id="vp-canvas" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+    <style>
+      .vp-particle{position:absolute;border-radius:50%;opacity:0;animation:vpFloat linear infinite}
+      @keyframes vpFloat{0%{transform:translateY(0) scale(0);opacity:0}10%{opacity:.5}90%{opacity:.1}100%{transform:translateY(-110vh) scale(1.4);opacity:0}}
+      #versiculo-card{max-width:660px;margin:0 auto;text-align:center;position:relative;z-index:2;opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s ease}
+      #versiculo-card.visible{opacity:1;transform:translateY(0)}
+      .vp-label{font-size:.7rem;font-weight:700;letter-spacing:.2em;color:rgba(255,107,91,.65);text-transform:uppercase;margin-bottom:1.4rem;display:flex;align-items:center;justify-content:center;gap:.8rem}
+      .vp-label::before,.vp-label::after{content:'';flex:0 0 28px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,91,.4),transparent)}
+      .vp-comilla{font-size:5rem;line-height:.5;color:rgba(255,107,91,.15);font-family:Georgia,serif;display:block;margin-bottom:.2rem}
+      .vp-texto{font-size:1.22rem;font-weight:500;color:rgba(255,255,255,.92);line-height:1.85;margin:0 0 1.4rem;font-style:italic}
+      .vp-divider{width:40px;height:2px;background:linear-gradient(90deg,transparent,#FF6B5B,transparent);margin:0 auto 1.1rem;border-radius:999px}
+      .vp-ref{display:inline-block;font-size:.86rem;font-weight:700;color:#FF6B5B;background:rgba(255,107,91,.08);border:1px solid rgba(255,107,91,.2);border-radius:999px;padding:.35rem 1.1rem;letter-spacing:.06em;transition:all .3s}
+      .vp-ref:hover{background:rgba(255,107,91,.18);border-color:rgba(255,107,91,.5)}
+      @media(max-width:600px){.vp-texto{font-size:1.02rem}.vp-comilla{font-size:3.5rem}}
+    </style>
+    <div id="versiculo-card">
+      <div class="vp-label">✦ Versículo del día ✦</div>
+      <span class="vp-comilla">"</span>
+      <p class="vp-texto" id="versiculo-texto">Cargando…</p>
+      <div class="vp-divider"></div>
+      <span class="vp-ref" id="versiculo-ref"></span>
+    </div>
+  </section>
+
   <!-- EVENTOS DESTACADOS -->
   <section class="ads-section" id="publicidad">
     <div class="container">
@@ -520,7 +547,7 @@
         <p>Fundador de Mi Iglesia+</p>
       </div>
     </div>
-    <p>&copy; 2026 Mi Iglesia+ - Conectados en un mismo lugar</p>
+    <p>&copy; 2026 Mi Iglesia+. Conectados en un mismo lugar.</p>
   </footer>
 
   <!-- SCRIPTS -->
@@ -713,7 +740,95 @@
     document.addEventListener('DOMContentLoaded', cargarEventosDestacados);
   </script>
 
-  <!-- En Vivo -->
+  <!-- Versículo del día -->
+  <script>
+  (function(){
+    const VERSICULOS = [
+      { texto: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.", ref: "Juan 3:16" },
+      { texto: "Todo lo puedo en Cristo que me fortalece.", ref: "Filipenses 4:13" },
+      { texto: "El Señor es mi pastor; nada me faltará.", ref: "Salmos 23:1" },
+      { texto: "Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia.", ref: "Proverbios 3:5" },
+      { texto: "Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal.", ref: "Jeremías 29:11" },
+      { texto: "No os ha sobrevenido ninguna tentación que no sea humana; pero fiel es Dios, que no os dejará ser tentados más de lo que podéis resistir.", ref: "1 Corintios 10:13" },
+      { texto: "El amor es sufrido, es benigno; el amor no tiene envidia, el amor no es jactancioso, no se envanece.", ref: "1 Corintios 13:4" },
+      { texto: "Por nada estéis afanosos, sino sean conocidas vuestras peticiones delante de Dios en toda oración y ruego, con acción de gracias.", ref: "Filipenses 4:6" },
+      { texto: "Mas buscad primeramente el reino de Dios y su justicia, y todas estas cosas os serán añadidas.", ref: "Mateo 6:33" },
+      { texto: "Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar.", ref: "Mateo 11:28" },
+      { texto: "No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios que te esfuerzo.", ref: "Isaías 41:10" },
+      { texto: "El Señor es mi luz y mi salvación; ¿a quién temeré?", ref: "Salmos 27:1" },
+      { texto: "Esfuérzate y sé valiente; no temas ni desmayes, porque Jehová tu Dios estará contigo en dondequiera que vayas.", ref: "Josué 1:9" },
+      { texto: "Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien.", ref: "Romanos 8:28" },
+      { texto: "Porque con Dios nada hay imposible.", ref: "Lucas 1:37" },
+      { texto: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.", ref: "Salmos 119:105" },
+      { texto: "El nombre de Jehová es torre fuerte; a él corre el justo, y está a salvo.", ref: "Proverbios 18:10" },
+      { texto: "Dios es nuestro amparo y fortaleza, nuestro pronto auxilio en las tribulaciones.", ref: "Salmos 46:1" },
+      { texto: "Sean fuertes y valientes. No teman ni se asusten, porque el Señor su Dios los acompañará dondequiera que vayan.", ref: "Josué 1:9 (NVI)" },
+      { texto: "Confía en el Señor con todo tu corazón, y no te apoyes en tu propio entendimiento.", ref: "Proverbios 3:5 (NVI)" },
+      { texto: "Yo soy la vid, vosotros los pámpanos; el que permanece en mí, y yo en él, éste lleva mucho fruto.", ref: "Juan 15:5" },
+      { texto: "Jehová peleará por vosotros, y vosotros estaréis tranquilos.", ref: "Éxodo 14:14" },
+      { texto: "El que comenzó en vosotros la buena obra, la perfeccionará hasta el día de Jesucristo.", ref: "Filipenses 1:6" },
+      { texto: "Mas los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas.", ref: "Isaías 40:31" },
+      { texto: "En el amor no hay temor, sino que el perfecto amor echa fuera el temor.", ref: "1 Juan 4:18" },
+      { texto: "Bendito sea el Dios y Padre de nuestro Señor Jesucristo, Padre de misericordias y Dios de toda consolación.", ref: "2 Corintios 1:3" },
+      { texto: "El corazón alegre constituye buen remedio; mas el espíritu triste seca los huesos.", ref: "Proverbios 17:22" },
+      { texto: "Toda la Escritura es inspirada por Dios, y útil para enseñar, para redargüir, para corregir, para instruir en justicia.", ref: "2 Timoteo 3:16" },
+      { texto: "Si alguno está en Cristo, nueva criatura es; las cosas viejas pasaron; he aquí todas son hechas nuevas.", ref: "2 Corintios 5:17" },
+      { texto: "Porque la gracia de Dios se ha manifestado para salvación a todos los hombres.", ref: "Tito 2:11" },
+      { texto: "Humillaos, pues, bajo la poderosa mano de Dios, para que él os exalte cuando fuere tiempo.", ref: "1 Pedro 5:6" },
+      { texto: "Echando toda vuestra ansiedad sobre él, porque él tiene cuidado de vosotros.", ref: "1 Pedro 5:7" },
+      { texto: "Y el Dios de paz estará con vosotros.", ref: "Filipenses 4:9" },
+      { texto: "Jesús le dijo: Yo soy la resurrección y la vida; el que cree en mí, aunque esté muerto, vivirá.", ref: "Juan 11:25" },
+      { texto: "Porque no nos ha dado Dios espíritu de cobardía, sino de poder, de amor y de dominio propio.", ref: "2 Timoteo 1:7" },
+      { texto: "Pero los que esperan en Jehová renovarán sus fuerzas.", ref: "Isaías 40:31" },
+      { texto: "Dad gracias en todo, porque esta es la voluntad de Dios para con vosotros en Cristo Jesús.", ref: "1 Tesalonicenses 5:18" },
+      { texto: "Jehová tu Dios en medio de ti, poderoso, él salvará; se gozará sobre ti con alegría.", ref: "Sofonías 3:17" },
+      { texto: "Con Cristo estoy juntamente crucificado, y ya no vivo yo, mas vive Cristo en mí.", ref: "Gálatas 2:20" },
+      { texto: "El Señor es fiel, y él os afirmará y guardará del mal.", ref: "2 Tesalonicenses 3:3" },
+      { texto: "Pedid, y se os dará; buscad, y hallaréis; llamad, y se os abrirá.", ref: "Mateo 7:7" },
+      { texto: "Porque el Hijo del Hombre vino a buscar y a salvar lo que se había perdido.", ref: "Lucas 19:10" },
+      { texto: "Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí.", ref: "Juan 14:6" },
+      { texto: "Cercano está Jehová a los quebrantados de corazón; y salva a los contritos de espíritu.", ref: "Salmos 34:18" },
+      { texto: "Regocijaos en el Señor siempre. Otra vez digo: ¡Regocijaos!", ref: "Filipenses 4:4" },
+      { texto: "Bienaventurados los de limpio corazón, porque ellos verán a Dios.", ref: "Mateo 5:8" },
+      { texto: "El Señor es bueno, fortaleza en el día de la angustia.", ref: "Nahúm 1:7" },
+      { texto: "Y conoceréis la verdad, y la verdad os hará libres.", ref: "Juan 8:32" },
+      { texto: "Mas gracias sean dadas a Dios, que nos da la victoria por medio de nuestro Señor Jesucristo.", ref: "1 Corintios 15:57" },
+      { texto: "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.", ref: "Salmos 91:1" },
+      { texto: "Amad a vuestros enemigos, bendecid a los que os maldicen.", ref: "Mateo 5:44" },
+      { texto: "Porque mayor es el que está en vosotros, que el que está en el mundo.", ref: "1 Juan 4:4" }
+    ];
+
+    // Elegir versículo según el día del año (mismo versículo todo el día, cambia cada día)
+    const hoy  = new Date();
+    const idx  = (hoy.getFullYear() * 365 + hoy.getMonth() * 31 + hoy.getDate()) % VERSICULOS.length;
+    const v    = VERSICULOS[idx];
+
+    document.getElementById('versiculo-texto').textContent = v.texto;
+    document.getElementById('versiculo-ref').textContent   = v.ref;
+
+    // Animación de entrada al hacer scroll
+    const card = document.getElementById('versiculo-card');
+    if (card) {
+      const obs = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { card.classList.add('visible'); obs.disconnect(); }
+      }, { threshold: .15 });
+      obs.observe(card);
+    }
+
+    // Partículas flotantes
+    const canvas = document.getElementById('vp-canvas');
+    if (canvas) {
+      const COLORS = ['#FF6B5B','#FF8C7A','#FFB3A7','rgba(255,255,255,.6)'];
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        const size = 2 + Math.random() * 4;
+        p.className = 'vp-particle';
+        p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;bottom:-10px;background:${COLORS[Math.floor(Math.random()*COLORS.length)]};animation-duration:${7+Math.random()*10}s;animation-delay:${Math.random()*9}s`;
+        canvas.appendChild(p);
+      }
+    }
+  })();
+  </script>
   <script type="module">
     import { db } from './js/firebase-init.js';
     import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
