@@ -795,38 +795,62 @@
         }
       } catch(_) {}
 
-      // ── CANAL YOUTUBE (solo si NO hay en vivo ni replay activos) ──
-      if (!enVivoHtml && !replayHtml && ig.youtubeChannelId) {
-        youtubeHtml = `
-          <section class="section" style="background:#000;padding-top:2rem;padding-bottom:2rem">
-            <div class="container">
-              <h2 class="section-title" style="color:#fff">
-                📺 <span>Canal de YouTube</span>
-              </h2>
-              <div class="yt-thumb" onclick="playChannelVideo(this,'${escHtml(ig.youtubeChannelId)}')"
-                style="aspect-ratio:16/9;position:relative;cursor:pointer;border-radius:14px;overflow:hidden;
-                       background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)">
-                <div style="position:absolute;inset:0;opacity:.08;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px"></div>
-                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
-                  <svg width="64" height="45" viewBox="0 0 64 45" fill="none">
-                    <rect width="64" height="45" rx="10" fill="#FF0000"/>
-                    <path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/>
-                  </svg>
-                  <div style="text-align:center">
-                    <div style="color:#fff;font-weight:800;font-size:1rem;margin-bottom:.3rem">${escHtml(ig.nombre||'')}</div>
-                    <div style="color:rgba(255,255,255,.6);font-size:.85rem">Tocá para ver el canal</div>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:.5rem 1.2rem">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                    <span style="color:#fff;font-weight:700;font-size:.85rem">Ver canal</span>
-                  </div>
+      // ── CANAL YOUTUBE: consulta API directo, sin depender de Firestore ──
+      if (ig.youtubeChannelId && !enVivoHtml) {
+        // Buscar si hay stream en vivo ahora mismo en el canal
+        const liveVideoId = await buscarLiveEnCanal(ig.youtubeChannelId);
+
+        if (liveVideoId) {
+          // ¡Está en vivo! Mostrar embed directo del video
+          enVivoHtml = `
+            <section class="section" style="background:#0d0d0d;padding-top:2rem;padding-bottom:2rem">
+              <div class="container">
+                <h2 class="section-title" style="color:#fff">
+                  🔴 <span>En Vivo</span>
+                  <span class="badge-live" style="margin-left:.5rem">EN VIVO</span>
+                </h2>
+                <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
+                  <iframe width="100%" height="100%"
+                    src="https://www.youtube.com/embed/${liveVideoId}?autoplay=1&rel=0"
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    style="border:0;display:block;width:100%;height:100%"></iframe>
                 </div>
               </div>
-              <p style="color:rgba(255,255,255,.4);font-size:.78rem;margin-top:.6rem;text-align:center">
-                Cuando la iglesia esté transmitiendo en vivo, el stream aparece aquí automáticamente.
-              </p>
-            </div>
-          </section>`;
+            </section>`;
+        } else if (!replayHtml) {
+          // No está en vivo → mostrar canal normal (último video)
+          youtubeHtml = `
+            <section class="section" style="background:#000;padding-top:2rem;padding-bottom:2rem">
+              <div class="container">
+                <h2 class="section-title" style="color:#fff">
+                  📺 <span>Canal de YouTube</span>
+                </h2>
+                <div class="yt-thumb" onclick="playChannelVideo(this,'${escHtml(ig.youtubeChannelId)}')"
+                  style="aspect-ratio:16/9;position:relative;cursor:pointer;border-radius:14px;overflow:hidden;
+                         background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)">
+                  <div style="position:absolute;inset:0;opacity:.08;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px"></div>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
+                    <svg width="64" height="45" viewBox="0 0 64 45" fill="none">
+                      <rect width="64" height="45" rx="10" fill="#FF0000"/>
+                      <path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/>
+                    </svg>
+                    <div style="text-align:center">
+                      <div style="color:#fff;font-weight:800;font-size:1rem;margin-bottom:.3rem">${escHtml(ig.nombre||'')}</div>
+                      <div style="color:rgba(255,255,255,.6);font-size:.85rem">Tocá para ver el canal</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:.5rem 1.2rem">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                      <span style="color:#fff;font-weight:700;font-size:.85rem">Ver canal</span>
+                    </div>
+                  </div>
+                </div>
+                <p style="color:rgba(255,255,255,.4);font-size:.78rem;margin-top:.6rem;text-align:center">
+                  Cuando la iglesia esté transmitiendo en vivo, el stream aparece aquí automáticamente.
+                </p>
+              </div>
+            </section>`;
+        }
       }
 
       // ── ARMAR PÁGINA ──
