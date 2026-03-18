@@ -328,40 +328,25 @@
         <a class="btn btn-secondary" href="#buscar" onclick="irABuscador(event)">Ver Iglesias</a>
         <a class="btn btn-primary" href="biblia.html">📖 Leer la Biblia</a>
       </div>
-    </div>
-  </section>
 
-
-  <!-- VERSÍCULO DEL DÍA -->
-  <section id="versiculo-section" style="background:linear-gradient(135deg,#FF6B5B 0%,#e63946 50%,#FF6B5B 100%);background-size:200% 200%;animation:vpGradient 6s ease infinite;padding:4rem 1.5rem 3.5rem;position:relative;overflow:hidden;margin-top:-60px">
-    <!-- Fade superior que se mezcla con el hero -->
-    <div style="position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,transparent 100%);pointer-events:none;z-index:1"></div>
-    <div id="vp-canvas" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-    <style>
-      .vp-particle{position:absolute;border-radius:50%;opacity:0;animation:vpFloat linear infinite}
-      @keyframes vpFloat{0%{transform:translateY(0) scale(0);opacity:0}10%{opacity:.5}90%{opacity:.1}100%{transform:translateY(-110vh) scale(1.4);opacity:0}}
-      @keyframes vpGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-      @keyframes vpShimmer{0%{transform:translateX(-100%) skewX(-15deg)}100%{transform:translateX(300%) skewX(-15deg)}}
-      @keyframes vpPulse{0%,100%{opacity:.06}50%{opacity:.14}}
-      #versiculo-section::before{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.18) 50%,transparent 60%);animation:vpShimmer 4s ease-in-out infinite;pointer-events:none;z-index:1}
-      #versiculo-section::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(255,255,255,.08) 0%,transparent 60%);animation:vpPulse 3s ease-in-out infinite;pointer-events:none;z-index:1}
-      #versiculo-card{max-width:660px;margin:0 auto;text-align:center;position:relative;z-index:3;opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s ease}
-      #versiculo-card.visible{opacity:1;transform:translateY(0)}
-      .vp-label{font-size:.7rem;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.7);text-transform:uppercase;margin-bottom:1.4rem;display:flex;align-items:center;justify-content:center;gap:.8rem}
-      .vp-label::before,.vp-label::after{content:'';flex:0 0 28px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)}
-      .vp-comilla{font-size:5rem;line-height:.5;color:rgba(255,255,255,.2);font-family:Georgia,serif;display:block;margin-bottom:.2rem}
-      .vp-texto{font-size:1.22rem;font-weight:500;color:rgba(255,255,255,.95);line-height:1.85;margin:0 0 1.4rem;font-style:italic;text-shadow:0 1px 8px rgba(0,0,0,.15)}
-      .vp-divider{width:40px;height:2px;background:rgba(255,255,255,.4);margin:0 auto 1.1rem;border-radius:999px}
-      .vp-ref{display:inline-block;font-size:.86rem;font-weight:700;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:.35rem 1.1rem;letter-spacing:.06em;transition:all .3s}
-      .vp-ref:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.6)}
-      @media(max-width:600px){.vp-texto{font-size:1.02rem}.vp-comilla{font-size:3.5rem}}
-    </style>
-    <div id="versiculo-card">
-      <div class="vp-label">✦ Versículo del día ✦</div>
-      <span class="vp-comilla">"</span>
-      <p class="vp-texto" id="versiculo-texto">Cargando…</p>
-      <div class="vp-divider"></div>
-      <span class="vp-ref" id="versiculo-ref"></span>
+      <!-- VERSÍCULO FLOTANTE -->
+      <div id="versiculo-card" style="
+        margin-top:2.2rem;
+        background:rgba(255,255,255,.1);
+        backdrop-filter:blur(12px);
+        -webkit-backdrop-filter:blur(12px);
+        border:1px solid rgba(255,255,255,.2);
+        border-radius:16px;
+        padding:1.2rem 1.6rem;
+        max-width:580px;
+        margin-left:auto;margin-right:auto;
+        opacity:0;transform:translateY(16px);
+        transition:opacity .9s ease,transform .9s ease;
+      ">
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,.55);text-transform:uppercase;margin-bottom:.6rem">✦ Versículo del día ✦</div>
+        <p id="versiculo-texto" style="font-size:.97rem;font-style:italic;color:rgba(255,255,255,.92);line-height:1.7;margin:0 0 .7rem">Cargando…</p>
+        <span id="versiculo-ref" style="font-size:.78rem;font-weight:700;color:#FF6B5B;background:rgba(255,107,91,.15);border:1px solid rgba(255,107,91,.3);border-radius:999px;padding:.2rem .8rem;display:inline-block"></span>
+      </div>
     </div>
   </section>
 
@@ -813,14 +798,9 @@
     document.getElementById('versiculo-texto').textContent = v.texto;
     document.getElementById('versiculo-ref').textContent   = v.ref;
 
-    // Animación de entrada al hacer scroll
+    // Animación de entrada al cargar
     const card = document.getElementById('versiculo-card');
-    if (card) {
-      const obs = new IntersectionObserver(([e]) => {
-        if (e.isIntersecting) { card.classList.add('visible'); obs.disconnect(); }
-      }, { threshold: .15 });
-      obs.observe(card);
-    }
+    if (card) setTimeout(() => { card.style.opacity='1'; card.style.transform='translateY(0)'; }, 600);
 
     // Partículas flotantes
     const canvas = document.getElementById('vp-canvas');
