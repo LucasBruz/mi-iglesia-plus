@@ -377,9 +377,10 @@
     }
 
     // ── BUSCAR VIDEO EN VIVO DE UN CANAL VIA YOUTUBE DATA API v3 ──
+    const YT_KEY = 'AIzaSyBjaCZFeVK0d_TfplPgzhbWYwXzb_11MBE';
+
     async function buscarLiveEnCanal(channelId) {
       try {
-        const YT_KEY = 'AIzaSyBjaCZFeVK0d_TfplPgzhbWYwXzb_11MBE';
         const res  = await fetch(
           `https://www.googleapis.com/youtube/v3/search?part=id&channelId=${channelId}&eventType=live&type=video&key=${YT_KEY}`
         );
@@ -389,6 +390,30 @@
         }
         return null;
       } catch(_) { return null; }
+    }
+
+    // ── REINTENTO AUTOMÁTICO CADA 30s SI NO HAY STREAM AÚN ──
+    function iniciarReintento(channelId) {
+      if (window._liveRetryInterval) clearInterval(window._liveRetryInterval);
+      let intentos = 0;
+      const MAX_INTENTOS = 20;
+      window._liveRetryInterval = setInterval(async () => {
+        intentos++;
+        if (intentos > MAX_INTENTOS) { clearInterval(window._liveRetryInterval); return; }
+        const ytId = await buscarLiveEnCanal(channelId);
+        if (ytId) {
+          clearInterval(window._liveRetryInterval);
+          const placeholder = document.getElementById('live-placeholder');
+          if (placeholder) {
+            placeholder.outerHTML = `<div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="border:0;display:block;width:100%;height:100%"></iframe></div>`;
+          }
+          const msg = document.getElementById('live-retry-msg');
+          if (msg) msg.remove();
+        } else {
+          const msg = document.getElementById('live-retry-msg');
+          if (msg) msg.textContent = `🔄 Buscando el stream en vivo... (${intentos}/${MAX_INTENTOS})`;
+        }
+      }, 30000);
     }
 
     async function render() {
@@ -650,7 +675,7 @@
 
           // ── CASO 1: EN VIVO ACTIVO ──
           if (ev.activo) {
-            // Prioridad: 1) URL manual con videoId  2) API YouTube automática  3) Facebook  4) fallback
+            // Prioridad: 1) URL manual con videoId  2) API YouTube automática  3) Facebook  4) fallback con reintento
             let ytId = extraerYtId(ev.url);
 
             // Si no hay videoId en la URL pero hay canal → buscar automáticamente via API
@@ -658,59 +683,40 @@
               ytId = await buscarLiveEnCanal(ig.youtubeChannelId);
             }
 
-            let embedHtml = '';
-            if (ytId) {
-              // Video en vivo encontrado → embed directo con autoplay
-              embedHtml = `
-                <div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
+            // Función para construir el embed HTML según el ytId
+            const buildEmbedHtml = (videoId) => {
+              if (videoId) {
+                return `<div id="envivo-embed-wrap" style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
                   <iframe width="100%" height="100%"
-                    src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0"
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
                     allowfullscreen
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     style="border:0;display:block;width:100%;height:100%"></iframe>
                 </div>`;
-            } else if ((ev.url||'').includes('facebook') || (ev.url||'').includes('fb.watch') || (ev.url||'').includes('fb.me')) {
-              // Facebook Live → botón para abrir
-              embedHtml = `
-                <a href="${escHtml(ev.url)}" target="_blank" rel="noopener"
+              }
+              if ((ev.url||'').includes('facebook') || (ev.url||'').includes('fb.watch') || (ev.url||'').includes('fb.me')) {
+                return `<a href="${escHtml(ev.url)}" target="_blank" rel="noopener"
                   style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;background:linear-gradient(135deg,#1877f2,#0a5dc2);border-radius:14px;color:#fff;text-decoration:none;gap:1rem;font-size:1rem;font-weight:700">
                   <span style="font-size:2.5rem">🔵</span>
-                  <div>
-                    <div style="font-size:1.1rem;font-weight:800">Ver en Facebook Live</div>
-                    <div style="font-size:.85rem;opacity:.8;margin-top:.3rem">Tocá para ir al stream</div>
-                  </div>
-                </a>`;
-            } else if (ig.youtubeChannelId) {
-              // API no encontró stream activo pero tiene canal → botón directo
-              embedHtml = `
-                <a href="https://www.youtube.com/channel/${escHtml(ig.youtubeChannelId)}/live" target="_blank" rel="noopener"
-                  style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;
-                         background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);
-                         border-radius:14px;text-decoration:none;cursor:pointer;
-                         border:2px solid rgba(255,0,0,.4)">
-                  <div style="text-align:center">
-                    <div style="margin-bottom:.8rem">
-                      <svg width="72" height="50" viewBox="0 0 64 45" fill="none">
-                        <rect width="64" height="45" rx="10" fill="#FF0000"/>
-                        <path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/>
-                      </svg>
-                    </div>
-                    <div style="color:#fff;font-weight:800;font-size:1.1rem;margin-bottom:.4rem">${escHtml(ig.nombre)}</div>
-                    <div style="display:inline-flex;align-items:center;gap:.5rem;background:#FF0000;border-radius:999px;padding:.5rem 1.4rem">
-                      <span style="width:9px;height:9px;border-radius:50%;background:#fff;display:inline-block"></span>
-                      <span style="color:#fff;font-weight:700;font-size:.9rem">Ver transmisión en vivo</span>
-                    </div>
-                    <div style="color:rgba(255,255,255,.4);font-size:.75rem;margin-top:.7rem">Se abre en YouTube</div>
-                  </div>
-                </a>`;
-            } else {
-              embedHtml = `
-                <div style="aspect-ratio:16/9;border-radius:14px;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
-                  <div style="font-size:3rem">📡</div>
-                  <div style="color:#fff;font-weight:700;font-size:1rem">Transmisión en progreso</div>
-                  <div style="color:rgba(255,255,255,.5);font-size:.85rem">El link del stream estará disponible en breve</div>
-                </div>`;
-            }
+                  <div><div style="font-size:1.1rem;font-weight:800">Ver en Facebook Live</div>
+                  <div style="font-size:.85rem;opacity:.8;margin-top:.3rem">Tocá para ir al stream</div></div></a>`;
+              }
+              // Sin ytId → pantalla de espera con contador de reintento
+              return `<div id="envivo-embed-wrap" style="aspect-ratio:16/9;border-radius:14px;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
+                <div style="font-size:3rem">📡</div>
+                <div style="color:#fff;font-weight:700;font-size:1rem">Buscando transmisión en vivo…</div>
+                <div style="color:rgba(255,255,255,.5);font-size:.85rem">Reintentando en <span id="retry-countdown">30</span>s</div>
+                <div style="display:flex;gap:.8rem;margin-top:.3rem">
+                  <a href="https://www.youtube.com/channel/${escHtml(ig.youtubeChannelId||'')}/live" target="_blank" rel="noopener"
+                    style="display:inline-flex;align-items:center;gap:.4rem;background:#FF0000;color:#fff;border-radius:999px;padding:.5rem 1.2rem;text-decoration:none;font-size:.85rem;font-weight:700">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block"></span>
+                    Abrir en YouTube
+                  </a>
+                </div>
+              </div>`;
+            };
+
+            const embedHtml = buildEmbedHtml(ytId);
 
             enVivoHtml = `
               <section class="section" style="background:#0d0d0d;padding-top:2rem;padding-bottom:2rem">
@@ -719,11 +725,44 @@
                     🔴 <span>En Vivo</span>
                     <span class="badge-live" style="margin-left:.5rem">EN VIVO</span>
                   </h2>
-                  ${embedHtml}
+                  <div id="envivo-section-inner">
+                    ${embedHtml}
+                  </div>
                   ${ev.titulo ? `<p style="color:rgba(255,255,255,.9);font-size:1rem;font-weight:700;margin-top:.8rem">${escHtml(ev.titulo)}</p>` : ''}
                   ${ev.descripcion ? `<p style="color:rgba(255,255,255,.5);font-size:.85rem;margin-top:.3rem">${escHtml(ev.descripcion)}</p>` : ''}
                 </div>
               </section>`;
+
+            // Si no encontró ytId y hay canal → arrancar reintento automático cada 30s
+            if (!ytId && ig.youtubeChannelId) {
+              window._liveRetryChannelId = ig.youtubeChannelId;
+              window._liveRetryCount = 30;
+              if (window._liveRetryInterval) clearInterval(window._liveRetryInterval);
+              window._liveRetryInterval = setInterval(async () => {
+                window._liveRetryCount--;
+                const countEl = document.getElementById('retry-countdown');
+                if (countEl) countEl.textContent = window._liveRetryCount;
+                if (window._liveRetryCount <= 0) {
+                  window._liveRetryCount = 30;
+                  // Reintentar API
+                  const nuevoId = await buscarLiveEnCanal(window._liveRetryChannelId);
+                  if (nuevoId) {
+                    // ¡Encontró el stream! Reemplazar el embed
+                    clearInterval(window._liveRetryInterval);
+                    const inner = document.getElementById('envivo-section-inner');
+                    if (inner) {
+                      inner.innerHTML = `<div style="aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000">
+                        <iframe width="100%" height="100%"
+                          src="https://www.youtube.com/embed/${nuevoId}?autoplay=1&rel=0"
+                          allowfullscreen
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          style="border:0;display:block;width:100%;height:100%"></iframe>
+                      </div>`;
+                    }
+                  }
+                }
+              }, 1000);
+            }
 
           // ── CASO 2: REPLAY DEL DÍA ──
           } else if (!ev.activo && ev.replay && ev.replayHasta && new Date(ev.replayHasta) > ahora) {
