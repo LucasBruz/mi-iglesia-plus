@@ -743,9 +743,10 @@
                    </div>
                  </div>`
               : `<a href="${escHtml(ev.url||'#')}" target="_blank" rel="noopener"
-                   style="display:flex;align-items:center;justify-content:center;gap:1rem;aspect-ratio:16/9;background:${btnColor};border-radius:14px;color:#fff;text-decoration:none;font-weight:700;font-size:1rem">
-                   <svg width="48" height="34" viewBox="0 0 64 45" fill="none"><rect width="64" height="45" rx="10" fill="rgba(255,255,255,.2)"/><path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/></svg>
-                   ${btnLabel}
+                   style="display:flex;align-items:center;justify-content:center;gap:1rem;aspect-ratio:16/9;background:#111;border-radius:14px;color:#fff;text-decoration:none;font-weight:700;font-size:1rem;position:relative;overflow:hidden">
+                   <img src="assets/logo.png" alt="" style="position:absolute;width:80px;height:80px;object-fit:contain;opacity:.08;pointer-events:none">
+                   <svg width="48" height="34" viewBox="0 0 64 45" fill="none"><rect width="64" height="45" rx="10" fill="${btnColor}"/><path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/></svg>
+                   <span>${btnLabel}</span>
                  </a>`;
 
             const btnExterno = ev.url ? `
