@@ -826,7 +826,7 @@
   </script>
   <script type="module">
     import { db } from './js/firebase-init.js';
-    import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+    import { collection, getDocs, query, where, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
     async function cargarEnVivo() {
       const seccion = document.getElementById('seccionEnVivo');
@@ -858,7 +858,7 @@
 
         grid.innerHTML = '';
 
-        // Primero mostrar los EN VIVO
+        // Mostrar EN VIVO — youtubeChannelId ya viene en el doc de envivo
         snapVivo.docs.forEach(d => renderItem(d.data(), false, grid));
         // Luego los replays
         replaysValidos.forEach(d => renderItem(d.data(), true, grid));
@@ -871,15 +871,30 @@
     }
 
     function renderItem(s, esReplay, grid) {
-      const esYT   = s.plataforma === 'youtube' || (s.url||'').includes('youtube') || (s.url||'').includes('youtu.be');
-      const ytMatch = (s.url||'').match(/(?:v=|youtu\.be\/|live\/)([A-Za-z0-9_-]{11})/);
+      const esYT    = s.plataforma === 'youtube' || (s.url||'').includes('youtube') || (s.url||'').includes('youtu.be');
+      const ytMatch = (s.url||'').match(/(?:v=|youtu\.be\/|live\/|embed\/)([A-Za-z0-9_-]{11})/);
       const ytId    = ytMatch ? ytMatch[1] : null;
+      const chId    = s.youtubeChannelId || '';
 
-      const embedHtml = esYT && ytId
-        ? `<iframe class="envivo-embed" src="https://www.youtube.com/embed/${ytId}?autoplay=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
-        : `<a href="${s.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);font-size:.9rem;text-decoration:none;gap:8px">
-             <span style="font-size:2rem">📺</span> ${esReplay ? 'Ver repetición' : 'Ver en Facebook Live'}
-           </a>`;
+      let embedHtml;
+      if (esYT && ytId) {
+        // Video específico con ID
+        embedHtml = `<iframe class="envivo-embed" src="https://www.youtube.com/embed/${ytId}?autoplay=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+      } else if (chId) {
+        // Canal de YouTube — click to play
+        const chSrc = `https://www.youtube.com/embed/live_stream?channel=${chId}&autoplay=1`;
+        embedHtml = `<div class="envivo-embed" style="cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.8rem;background:#111"
+          onclick="const i=document.createElement('iframe');i.src='${chSrc}';i.style='border:0;width:100%;height:100%';i.allowFullscreen=true;this.innerHTML='';this.appendChild(i);this.style.cursor='default'">
+          <svg width="56" height="40" viewBox="0 0 64 45" fill="none"><rect width="64" height="45" rx="10" fill="#FF0000"/><path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/></svg>
+          <span style="color:rgba(255,255,255,.7);font-size:.85rem;font-family:Poppins,sans-serif">▶ Tocá para ver en vivo</span>
+        </div>`;
+      } else {
+        // Solo link Facebook u otro
+        embedHtml = `<a href="${s.url||'#'}" target="_blank" rel="noopener" class="envivo-embed" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.6rem;text-decoration:none;background:rgba(255,255,255,.05)">
+          <span style="font-size:2.5rem">📺</span>
+          <span style="color:rgba(255,255,255,.6);font-size:.9rem">${esReplay ? 'Ver repetición en Facebook' : 'Ver en Facebook Live'}</span>
+        </a>`;
+      }
 
       const logoHtml = s.logoUrl
         ? `<img src="${s.logoUrl}" alt="${s.nombre}" class="envivo-logo">`
