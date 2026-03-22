@@ -874,26 +874,28 @@
       const esYT    = s.plataforma === 'youtube' || (s.url||'').includes('youtube') || (s.url||'').includes('youtu.be');
       const ytMatch = (s.url||'').match(/(?:v=|youtu\.be\/|live\/|embed\/)([A-Za-z0-9_-]{11})/);
       const ytId    = ytMatch ? ytMatch[1] : null;
-      const chId    = s.youtubeChannelId || '';
+      const igUrl   = s.iglesiaId ? `iglesia.html?id=${s.iglesiaId}` : '#';
 
       let embedHtml;
       if (esYT && ytId) {
-        // Video específico con ID
+        // Video con ID — embed directo
         embedHtml = `<iframe class="envivo-embed" src="https://www.youtube.com/embed/${ytId}?autoplay=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
-      } else if (chId) {
-        // Canal de YouTube — click to play
-        const chSrc = `https://www.youtube.com/embed/live_stream?channel=${chId}&autoplay=1`;
-        embedHtml = `<div class="envivo-embed" style="cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.8rem;background:#111"
-          onclick="const i=document.createElement('iframe');i.src='${chSrc}';i.style='border:0;width:100%;height:100%';i.allowFullscreen=true;this.innerHTML='';this.appendChild(i);this.style.cursor='default'">
-          <svg width="56" height="40" viewBox="0 0 64 45" fill="none"><rect width="64" height="45" rx="10" fill="#FF0000"/><path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/></svg>
-          <span style="color:rgba(255,255,255,.7);font-size:.85rem;font-family:Poppins,sans-serif">▶ Tocá para ver en vivo</span>
-        </div>`;
-      } else {
-        // Solo link Facebook u otro
-        embedHtml = `<a href="${s.url||'#'}" target="_blank" rel="noopener" class="envivo-embed" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.6rem;text-decoration:none;background:rgba(255,255,255,.05)">
-          <span style="font-size:2.5rem">📺</span>
-          <span style="color:rgba(255,255,255,.6);font-size:.9rem">${esReplay ? 'Ver repetición en Facebook' : 'Ver en Facebook Live'}</span>
+      } else if (s.url) {
+        // Sin ID extraíble — área clickeable que abre el link
+        embedHtml = `<a href="${escStr(s.url)}" target="_blank" rel="noopener"
+          class="envivo-embed"
+          style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.8rem;text-decoration:none;background:#111;cursor:pointer">
+          <svg width="56" height="40" viewBox="0 0 64 45" fill="none">
+            ${esYT ? '<rect width="64" height="45" rx="10" fill="#FF0000"/><path d="M26 13.5L44 22.5L26 31.5V13.5Z" fill="white"/>' : '<rect width="64" height="45" rx="10" fill="#1877F2"/><text x="32" y="30" text-anchor="middle" fill="white" font-size="22" font-family="sans-serif" font-weight="bold">f</text>'}
+          </svg>
+          <span style="color:rgba(255,255,255,.8);font-size:.85rem;font-family:Poppins,sans-serif">
+            ${esReplay ? '▶ Ver repetición' : '▶ Tocá para ver en vivo'}
+          </span>
         </a>`;
+      } else {
+        embedHtml = `<div class="envivo-embed" style="background:#111;display:flex;align-items:center;justify-content:center">
+          <span style="color:rgba(255,255,255,.4);font-size:.9rem">Sin transmisión disponible</span>
+        </div>`;
       }
 
       const logoHtml = s.logoUrl
@@ -908,8 +910,8 @@
         : `<div class="envivo-badge"><span class="envivo-badge-dot"></span> EN VIVO</div>`;
 
       const btnLabel = esReplay
-        ? (esYT ? '📺 Ver repetición en YouTube' : '📺 Ver repetición en Facebook')
-        : (esYT ? '▶ Ver en YouTube' : '▶ Ver en Facebook');
+        ? '📺 Ver repetición en la iglesia'
+        : '⛪ Ver página de la iglesia';
 
       grid.insertAdjacentHTML('beforeend', `
         <div class="envivo-card">
@@ -925,7 +927,7 @@
             </div>
             <p class="envivo-titulo">${escStr(s.titulo||'')}</p>
             ${s.descripcion ? `<p style="font-size:.82rem;color:rgba(255,255,255,.5);margin:0">${escStr(s.descripcion)}</p>` : ''}
-            <a href="${s.url}" target="_blank" rel="noopener" class="btn-ver-envivo" ${esReplay?'style="background:#6b7280"':''}>
+            <a href="${igUrl}" class="btn-ver-envivo" ${esReplay?'style="background:#6b7280"':''}>
               ${btnLabel}
             </a>
           </div>
