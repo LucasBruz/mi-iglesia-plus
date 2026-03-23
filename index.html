@@ -1648,12 +1648,18 @@ Siempre respondés en español rioplatense (Argentina), con un tono cercano y am
     }
 
     // Cuando se abre por primera vez, marcar como visto
-    const origToggle = window.toggleLuzChat;
     window.toggleLuzChat = function() {
-      sessionStorage.setItem('luz_opened', '1');
-      badge.style.display = 'none';
-      origToggle();
-    };
+  chatAbierto = !chatAbierto;
+  if (chatAbierto) {
+    sessionStorage.setItem('luz_opened', '1');
+    badge.style.display = 'none';
+    chat.classList.add('abierto');
+    renderHistorial();
+    setTimeout(() => input.focus(), 200);
+  } else {
+    chat.classList.remove('abierto');
+  }
+};
 
   })();
   </script>
