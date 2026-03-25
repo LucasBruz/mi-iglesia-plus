@@ -772,10 +772,10 @@
   ══════════════════════════════════════════ -->
 
   <!-- Tooltip -->
-  <div id="luz-tooltip">✨ Hablá con Luz, tu asistente espiritual</div>
+  <div id="luz-tooltip">✨ Hablá con Luz, tu asistente</div>
 
   <!-- Burbuja -->
-  <button id="luz-bubble" onclick="toggleLuzChat()" title="Luz — Asistente Espiritual" aria-label="Abrir asistente espiritual Luz">
+  <button id="luz-bubble" onclick="toggleLuzChat()" title="Luz — Asistente" aria-label="Abrir asistente Luz">
     ✨
   </button>
 
@@ -1392,7 +1392,7 @@
     function renderHistorial() {
       msgs.innerHTML = '';
       if (historial.length === 0) {
-        agregarMensajeBot('¡Hola! Soy **Luz** ✨, tu asistente espiritual. Estoy aquí para acompañarte con versículos, oraciones y reflexiones bíblicas. ¿En qué te puedo ayudar hoy?');
+        agregarMensajeBot('¡Hola! Soy **Luz** ✨, tu asistente. Estoy aquí para acompañarte con versículos, oraciones y reflexiones bíblicas. ¿En qué te puedo ayudar hoy?');
       } else {
         historial.forEach(m => {
           if (m.role === 'assistant') agregarMensajeBotPuro(m.content);
