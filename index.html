@@ -1365,38 +1365,30 @@
   })();
   </script>
 
-  <!-- ══════════════════════════════════════════
+ <!-- ══════════════════════════════════════════
        LUZ — SCRIPT PRINCIPAL (powered by Google Gemini)
   ══════════════════════════════════════════ -->
   <script>
   (function(){
 
-    // ══════════════════════════════════════════
-    // 👇 PEGÁ TU API KEY DE GEMINI AQUÍ ABAJO
-    // ══════════════════════════════════════════
-    const GEMINI_API_KEY = 'AIzaSyDd-Sujmkj4SsBLceTsfT1MAamjwmsNMeE';
-    // ══════════════════════════════════════════
+    const GEMINI_API_KEY = 'AIzaSyDd-Sujmkj4SsBLceTsfT1MAamjwmsNMeE'; // ← tu key
 
-    // ── Estado ──
     const LUZ_HIST = 'luz_chat_history';
     let chatAbierto = false;
     let esperando   = false;
     let historial   = [];
 
-    // ── Elementos ──
-    const chat     = document.getElementById('luz-chat');
-    const msgs     = document.getElementById('luz-messages');
-    const input    = document.getElementById('luz-input');
-    const sendBtn  = document.getElementById('luz-send');
-    const badge    = document.getElementById('luz-badge');
+    const chat    = document.getElementById('luz-chat');
+    const msgs    = document.getElementById('luz-messages');
+    const input   = document.getElementById('luz-input');
+    const sendBtn = document.getElementById('luz-send');
+    const badge   = document.getElementById('luz-badge');
 
-    // ── Recuperar historial de sessionStorage ──
     try {
       const saved = sessionStorage.getItem(LUZ_HIST);
       if (saved) historial = JSON.parse(saved);
-    } catch(e) {}
+    } catch(e) { historial = []; }
 
-    // ── Renderizar historial al abrir ──
     function renderHistorial() {
       msgs.innerHTML = '';
       if (historial.length === 0) {
@@ -1410,7 +1402,6 @@
       scrollAbajo();
     }
 
-    // ── Toggle del chat ──
     window.toggleLuzChat = function() {
       chatAbierto = !chatAbierto;
       if (chatAbierto) {
@@ -1424,44 +1415,49 @@
       }
     };
 
-    // ── Sugerencias rápidas ──
     window.luzSuggest = function(el) {
       input.value = el.textContent.trim().replace(/^[^\s]+\s/, '');
       luzEnviar();
     };
 
-    // ── Enviar mensaje ──
     window.luzEnviar = async function() {
       const texto = input.value.trim();
       if (!texto || esperando) return;
 
-      // Verificar que la key esté configurada
-      if (!GEMINI_API_KEY || GEMINI_API_KEY === 'PEGA_TU_API_KEY_AQUI') {
-        agregarMensajeBotPuro('⚙️ Necesitás configurar tu API Key de Gemini en el archivo index.html. Buscá la línea que dice PEGA_TU_API_KEY_AQUI y reemplazala con tu key.');
-        return;
-      }
-
       input.value = '';
       autoResize();
       agregarMensajeUsuario(texto);
+
+      // ── Agregar al historial y limpiar antes de enviar ──
       historial.push({ role: 'user', content: texto });
+      const contentsLimpios = limpiarHistorial(historial);
 
       mostrarTyping();
       esperando = true;
       sendBtn.disabled = true;
 
       try {
-        const respuesta = await llamarGeminiAPI(GEMINI_API_KEY, historial);
+        const respuesta = await llamarGeminiAPI(GEMINI_API_KEY, contentsLimpios);
         quitarTyping();
         agregarMensajeBot(respuesta);
         historial.push({ role: 'assistant', content: respuesta });
         try { sessionStorage.setItem(LUZ_HIST, JSON.stringify(historial.slice(-20))); } catch(e) {}
       } catch(err) {
         quitarTyping();
-        if (err.status === 400 || err.status === 403) {
-          agregarMensajeBotPuro('🔑 La API Key de Gemini no es válida. Verificá que la copiaste correctamente en el archivo.');
+        // Si falló, sacar el último mensaje user del historial para no dejarlo colgado
+        if (historial[historial.length - 1]?.role === 'user') historial.pop();
+        console.error('[Luz] Error Gemini:', err.status, err.message);
+
+        if (err.status === 403 || err.status === 401) {
+          agregarMensajeBotPuro('🔑 API Key inválida o sin permisos. Verificá que la key tenga habilitada la "Generative Language API" en Google AI Studio.');
+        } else if (err.status === 400) {
+          agregarMensajeBotPuro('⚠️ Error en el formato de la solicitud (400). Borrando historial y volvé a intentar.');
+          historial = [];
+          sessionStorage.removeItem(LUZ_HIST);
+        } else if (err.status === 429) {
+          agregarMensajeBotPuro('⏳ Demasiadas consultas. Esperá unos segundos y volvé a intentar 🙏');
         } else {
-          agregarMensajeBotPuro('Hubo un problema al conectarme. Intentá de nuevo en un momento 🙏');
+          agregarMensajeBotPuro(`⚠️ Error ${err.status||'de red'}: ${err.message}. Revisá tu conexión o la consola del navegador 🙏`);
         }
       } finally {
         esperando = false;
@@ -1470,8 +1466,33 @@
       }
     };
 
-    // ── Llamada a la API de Google Gemini ──
-    async function llamarGeminiAPI(apiKey, mensajes) {
+    // ── Limpia el historial para que Gemini lo acepte:
+    //    - Solo roles "user" y "model"
+    //    - No pueden haber dos del mismo rol seguidos
+    //    - Debe empezar con "user"
+    function limpiarHistorial(mensajes) {
+      const mapped = mensajes.map(m => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.content }]
+      }));
+
+      // Combinar mensajes consecutivos del mismo rol
+      const limpio = mapped.reduce((acc, m) => {
+        if (acc.length > 0 && acc[acc.length - 1].role === m.role) {
+          acc[acc.length - 1].parts[0].text += '\n' + m.parts[0].text;
+        } else {
+          acc.push({ role: m.role, parts: [{ text: m.parts[0].text }] });
+        }
+        return acc;
+      }, []);
+
+      // Asegurarse de que empiece con "user"
+      while (limpio.length > 0 && limpio[0].role !== 'user') limpio.shift();
+
+      return limpio;
+    }
+
+    async function llamarGeminiAPI(apiKey, contents) {
       const systemPrompt = `Sos Luz, una asistente espiritual cálida, empática y sabia, especializada en la fe cristiana evangélica. Tu misión es acompañar a las personas con:
 - Versículos bíblicos relevantes y su explicación
 - Guía en oración
@@ -1481,35 +1502,39 @@
 
 Siempre respondés en español rioplatense (Argentina), con un tono cercano y amoroso, como una amiga de fe. Nunca juzgás. Cuando sea apropiado, citás versículos bíblicos con su referencia exacta. Sos concisa pero profunda — tus respuestas tienen entre 3 y 8 oraciones normalmente. Si alguien pasa por algo difícil, primero lo escuchás con empatía y luego ofrecés consuelo desde la Escritura.`;
 
-      const contents = mensajes.map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }]
-      }));
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemPrompt }] },
-            contents: contents,
-            generationConfig: { maxOutputTokens: 600 }
-          })
-        }
-      );
+      let response;
+      try {
+        response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system_instruction: { parts: [{ text: systemPrompt }] },
+              contents: contents,
+              generationConfig: { maxOutputTokens: 600 }
+            })
+          }
+        );
+      } catch(networkErr) {
+        // Error de red / CORS
+        const e = new Error('Error de red: ' + networkErr.message);
+        e.status = 0;
+        throw e;
+      }
 
       if (!response.ok) {
-        const err = new Error('API error');
-        err.status = response.status;
-        throw err;
+        let msg = response.statusText;
+        try { const d = await response.json(); msg = d?.error?.message || msg; } catch(_) {}
+        const e = new Error(msg);
+        e.status = response.status;
+        throw e;
       }
 
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude responder en este momento.';
     }
 
-    // ── Helpers de UI ──
     function agregarMensajeBot(texto) {
       const html = texto.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       const div = document.createElement('div');
@@ -1551,15 +1576,10 @@ Siempre respondés en español rioplatense (Argentina), con un tono cercano y am
       scrollAbajo();
     }
 
-    function quitarTyping() {
-      document.getElementById('luz-typing')?.remove();
-    }
+    function quitarTyping() { document.getElementById('luz-typing')?.remove(); }
 
-    function scrollAbajo() {
-      setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
-    }
+    function scrollAbajo() { setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50); }
 
-    // ── Auto-resize textarea ──
     function autoResize() {
       input.style.height = 'auto';
       input.style.height = Math.min(input.scrollHeight, 90) + 'px';
@@ -1567,13 +1587,9 @@ Siempre respondés en español rioplatense (Argentina), con un tono cercano y am
 
     input.addEventListener('input', autoResize);
     input.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        luzEnviar();
-      }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); luzEnviar(); }
     });
 
-    // ── Badge ──
     if (!sessionStorage.getItem('luz_opened')) {
       setTimeout(() => { badge.style.display = 'block'; }, 4000);
     }
