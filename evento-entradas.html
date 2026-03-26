@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Comprar Entrada | Mi Iglesia+</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #FF6B5B;
+      --primary-dark: #e85444;
+      --primary-light: #fff0ee;
+      --dark: #0f0f0f;
+      --gray: #6b7280;
+      --gray-light: #9ca3af;
+      --border: #e5e7eb;
+      --bg: #f9fafb;
+      --white: #fff;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(0,0,0,.08);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: .75rem 1.5rem;
+      display: flex; align-items: center; gap: .6rem;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display:flex; align-items:center; gap:.5rem; text-decoration:none; }
+    .nav-logo img { height:32px; width:32px; border-radius:8px; object-fit:contain; }
+    .nav-logo-text { font-size:.95rem; font-weight:800; color:var(--dark); }
+    .nav-logo-text span { color:var(--primary); }
+
+    /* LAYOUT */
+    .page-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* EVENTO HEADER */
+    .evento-header {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .evento-banner {
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      background: #111;
+      display: block;
+    }
+    .evento-info {
+      padding: 1.25rem 1.5rem;
+    }
+    .evento-iglesia {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: .75rem;
+    }
+    .evento-iglesia img {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    .evento-iglesia-nombre {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--gray);
+    }
+    .evento-titulo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: .5rem;
+    }
+    .evento-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: .5rem;
+    }
+    .evento-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .3rem .8rem;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--gray);
+    }
+    .precio-badge {
+      background: var(--primary-light);
+      border-color: rgba(255,107,91,.25);
+      color: var(--primary);
+      font-size: .9rem;
+      font-weight: 800;
+    }
+
+    /* FORM CARD */
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
+    }
+    .form-card h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: .35rem;
+      letter-spacing: .02em;
+    }
+    .form-label .req { color: var(--primary); }
+    .form-label .opt { color: var(--gray-light); font-weight: 400; }
+    .form-input {
+      width: 100%;
+      padding: .7rem .9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: .875rem;
+      color: var(--dark);
+      background: var(--white);
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,107,91,.12);
+    }
+    .form-input::placeholder { color: var(--gray-light); }
+    select.form-input { cursor: pointer; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    @media(max-width:520px){ .form-row { grid-template-columns: 1fr; } }
+
+    /* PAGO */
+    .pago-tabs {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    .pago-tab {
+      flex: 1;
+      padding: .65rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      font-family: 'Poppins', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+      text-align: center;
+      color: var(--gray);
+    }
+    .pago-tab.activo {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .pago-panel { display: none; }
+    .pago-panel.activo { display: block; }
+
+    .mp-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      width: 100%;
+      padding: .85rem;
+      background: #009ee3;
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .18s, transform .15s;
+      text-decoration: none;
+      margin-top: .5rem;
+    }
+    .mp-btn:hover { background: #007dbf; transform: translateY(-1px); }
+
+    .transf-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      font-size: .85rem;
+      line-height: 2;
+      margin-bottom: .75rem;
+    }
+    .transf-box strong { color: var(--primary); }
+
+    .submit-btn {
+      width: 100%;
+      padding: .9rem;
+      background: var(--primary);
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .18s, transform .15s, box-shadow .15s;
+    }
+    .submit-btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,107,91,.35); }
+    .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .feedback {
+      text-align: center;
+      font-size: .85rem;
+      font-weight: 600;
+      min-height: 1.2rem;
+      margin-top: .75rem;
+    }
+
+    /* ÉXITO */
+    .success-card {
+      display: none;
+      background: var(--white);
+      border: 1px solid #86efac;
+      border-radius: var(--radius);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .success-card .icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .success-card h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .5rem; }
+    .success-card p { color: var(--gray); font-size: .9rem; line-height: 1.7; }
+
+    /* LOADING */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40vh;
+      flex-direction: column;
+      gap: .75rem;
+      color: var(--gray);
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .not-found {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--gray);
+    }
+    .not-found h2 { margin-bottom: .5rem; }
+    .not-found a {
+      display: inline-block;
+      margin-top: 1rem;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .78rem;
+      color: var(--gray-light);
+    }
+    footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo.png" alt="Mi Iglesia+">
+      <span class="nav-logo-text">Mi <span>Iglesia+</span></span>
+    </a>
+  </nav>
+
+  <div class="page-wrap">
+    <div id="app">
+      <div class="loading">
+        <div class="spinner"></div>
+        <span style="font-size:.85rem;color:#9ca3af">Cargando evento…</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Powered by <a href="index.html">Mi Iglesia+</a> · Conectados en un mismo lugar</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+    import {
+      getFirestore, doc, getDoc, collection, addDoc, serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOj5yJQ2kcU4_xrUY1sDPB3XU3lWupX-A",
+      authDomain: "miiglesia-plus.firebaseapp.com",
+      projectId: "miiglesia-plus",
+      storageBucket: "miiglesia-plus.firebasestorage.app",
+      messagingSenderId: "407699856167",
+      appId: "1:407699856167:web:5d421d407ab7c9789aa702"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    const params   = new URLSearchParams(window.location.search);
+    const adId     = params.get('ad');       // ID del documento en /ads
+    const appEl    = document.getElementById('app');
+
+    function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function fmtPrecio(n){ return n > 0 ? '$' + Number(n).toLocaleString('es-AR') : 'Gratis'; }
+
+    async function render() {
+      if (!adId) { showNotFound(); return; }
+
+      // Cargar el evento (ads doc)
+      let adDoc;
+      try { adDoc = await getDoc(doc(db, 'ads', adId)); } catch(e) { showNotFound(); return; }
+      if (!adDoc.exists()) { showNotFound(); return; }
+      const ad = adDoc.data();
+
+      // El evento debe tener entradas habilitadas
+      if (!ad.entradas?.activo) { showNotFound('Este evento no tiene venta de entradas habilitada.'); return; }
+
+      // Cargar iglesia
+      const iglesiaId = ad.iglesiaUid;
+      let iglesia = {};
+      try {
+        const igSnap = await getDoc(doc(db, 'iglesias', iglesiaId));
+        if (igSnap.exists()) iglesia = igSnap.data();
+      } catch(_) {}
+
+      // Verificar plan PRO
+      const plan = (iglesia?.subscription?.priceIdOrPlanId || 'free').toLowerCase();
+      if (plan !== 'pro') { showNotFound('Esta función requiere plan Pro.'); return; }
+
+      const ent = ad.entradas;
+      const campos = ent.campos || [ { id:'nombre', label:'Nombre completo', tipo:'text', requerido:true }, { id:'email', label:'Email', tipo:'email', requerido:true } ];
+      const precio = ent.precio || 0;
+      const tieneMp = !!(ent.mpLink || ent.mpAlias);
+      const tieneTransf = !!(ent.cbu || ent.alias);
+
+      appEl.innerHTML = `
+        <!-- HEADER DEL EVENTO -->
+        <div class="evento-header">
+          ${ad.imageUrl ? `<img class="evento-banner" src="${esc(ad.imageUrl)}" alt="${esc(ad.title||'Evento')}">` : ''}
+          <div class="evento-info">
+            <div class="evento-iglesia">
+              ${iglesia.logoUrl ? `<img src="${esc(iglesia.logoUrl)}" alt="${esc(iglesia.nombre||'')}">` : '<div style="width:36px;height:36px;border-radius:8px;background:#f3f3f3;display:flex;align-items:center;justify-content:center;font-size:1rem">⛪</div>'}
+              <span class="evento-iglesia-nombre">${esc(iglesia.nombre||'Iglesia')}</span>
+            </div>
+            <div class="evento-titulo">${esc(ad.title||'Evento')}</div>
+            ${ad.descripcion ? `<p style="color:#6b7280;font-size:.88rem;margin-top:.4rem;line-height:1.6">${esc(ad.descripcion)}</p>` : ''}
+            <div class="evento-meta">
+              ${ent.fecha ? `<span class="evento-badge">📅 ${esc(ent.fecha)}</span>` : ''}
+              ${ent.lugar ? `<span class="evento-badge">📍 ${esc(ent.lugar)}</span>` : ''}
+              ${ent.horario ? `<span class="evento-badge">🕐 ${esc(ent.horario)}</span>` : ''}
+              <span class="evento-badge precio-badge">🎟️ ${fmtPrecio(precio)}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMULARIO -->
+        <div class="form-card" id="formCard">
+          <h2>🎟️ Reservar mi entrada</h2>
+          ${ent.descripcionFormulario ? `<p style="color:#6b7280;font-size:.85rem;margin-bottom:1.1rem;line-height:1.6">${esc(ent.descripcionFormulario)}</p>` : ''}
+
+          <div id="camposDinamicos"></div>
+
+          ${precio > 0 ? `
+          <!-- PAGO -->
+          <div style="margin-top:1.25rem;border-top:1px solid #f3f4f6;padding-top:1.25rem">
+            <div style="font-size:.88rem;font-weight:700;margin-bottom:.75rem;color:var(--dark)">💳 Método de pago</div>
+            <div class="pago-tabs" id="pagoTabs">
+              ${tieneMp    ? `<button class="pago-tab ${!tieneTransf?'activo':''}" data-pago="mp"    onclick="selectPago('mp')">💳 Mercado Pago</button>` : ''}
+              ${tieneTransf? `<button class="pago-tab ${!tieneMp?'activo':''}"    data-pago="transf" onclick="selectPago('transf')">🏦 Transferencia</button>` : ''}
+            </div>
+
+            ${tieneMp ? `
+            <div class="pago-panel ${!tieneTransf?'activo':''}" id="panel-mp">
+              <p style="font-size:.82rem;color:#6b7280;margin-bottom:.5rem;line-height:1.6">Al hacer clic en "Pagar con Mercado Pago" serás redirigido para completar el pago. Luego completá el formulario y adjuntá el comprobante.</p>
+              ${ent.mpLink ? `<a href="${esc(ent.mpLink)}" target="_blank" rel="noopener" class="mp-btn" id="btnMpLink">
+                <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#fff"/><path d="M7 16c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9-9-4.03-9-9z" fill="#009ee3"/><path d="M16 10.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" fill="#fff"/></svg>
+                Pagar $${Number(precio).toLocaleString('es-AR')} con Mercado Pago
+              </a>` : `<p style="font-size:.82rem;color:#6b7280">Alias: <strong style="color:var(--primary)">${esc(ent.mpAlias||'')}</strong> — Enviá el comprobante al WhatsApp de la iglesia.</p>`}
+            </div>` : ''}
+
+            ${tieneTransf ? `
+            <div class="pago-panel ${!tieneMp?'activo':''}" id="panel-transf">
+              <div class="transf-box">
+                ${ent.alias ? `<div>📌 Alias: <strong>${esc(ent.alias)}</strong></div>` : ''}
+                ${ent.cbu   ? `<div>🏦 CBU: <strong>${esc(ent.cbu)}</strong></div>` : ''}
+                ${ent.titular? `<div>👤 Titular: <strong>${esc(ent.titular)}</strong></div>` : ''}
+              </div>
+              <p style="font-size:.8rem;color:#6b7280;line-height:1.6">Realizá la transferencia por <strong>$${Number(precio).toLocaleString('es-AR')}</strong> y luego completá el formulario indicando el número de comprobante.</p>
+            </div>` : ''}
+          </div>
+          ` : ''}
+
+          <button class="submit-btn" id="btnSubmit" style="margin-top:1.5rem">
+            ${precio > 0 ? '🎟️ Confirmar reserva' : '🎟️ Reservar entrada gratis'}
+          </button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="success-card" id="successCard">
+          <div class="icon">✅</div>
+          <h2>¡Reserva confirmada!</h2>
+          <p>Tu solicitud fue enviada correctamente. La iglesia te confirmará tu entrada a la brevedad.<br><br>
+          ${iglesia.nombre ? `<strong>${esc(iglesia.nombre)}</strong>` : 'La iglesia'} se pondrá en contacto con vos.</p>
+          <a href="iglesia.html?id=${esc(iglesiaId)}" style="display:inline-block;margin-top:1.25rem;background:var(--primary);color:#fff;padding:.65rem 1.5rem;border-radius:10px;font-weight:700;text-decoration:none;font-size:.9rem">Ver página de la iglesia</a>
+        </div>
+      `;
+
+      // Renderizar campos dinámicos
+      const contCampos = document.getElementById('camposDinamicos');
+      campos.forEach(campo => {
+        const req = campo.requerido ? '<span class="req">*</span>' : '<span class="opt">opcional</span>';
+        let inputHtml = '';
+        if (campo.tipo === 'select' && campo.opciones?.length) {
+          inputHtml = `<select id="campo_${campo.id}" class="form-input">
+            <option value="">— Seleccioná una opción —</option>
+            ${campo.opciones.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')}
+          </select>`;
+        } else if (campo.tipo === 'textarea') {
+          inputHtml = `<textarea id="campo_${campo.id}" class="form-input" rows="3" placeholder="${esc(campo.placeholder||'')}"></textarea>`;
+        } else {
+          inputHtml = `<input id="campo_${campo.id}" type="${campo.tipo||'text'}" class="form-input" placeholder="${esc(campo.placeholder||'')}">`;
+        }
+        contCampos.insertAdjacentHTML('beforeend', `
+          <div class="form-group">
+            <label class="form-label">${esc(campo.label)} ${req}</label>
+            ${inputHtml}
+          </div>
+        `);
+      });
+
+      // Si hay precio y MP + transf, activar tabs
+      if (precio > 0 && tieneMp && tieneTransf) selectPago('mp');
+
+      // Submit
+      document.getElementById('btnSubmit').addEventListener('click', async () => {
+        const btn = document.getElementById('btnSubmit');
+        const fb  = document.getElementById('feedback');
+        fb.style.color = '#dc3545'; fb.textContent = '';
+
+        // Validar campos requeridos
+        const respuestas = {};
+        let valido = true;
+        for (const campo of campos) {
+          const el = document.getElementById(`campo_${campo.id}`);
+          const val = (el?.value || '').trim();
+          if (campo.requerido && !val) {
+            fb.textContent = `❌ El campo "${campo.label}" es obligatorio.`;
+            el?.focus(); valido = false; break;
+          }
+          respuestas[campo.id] = { label: campo.label, valor: val };
+        }
+        if (!valido) return;
+
+        const metodoPago = precio > 0
+          ? (document.querySelector('.pago-tab.activo')?.dataset?.pago || 'mp')
+          : 'gratis';
+
+        btn.disabled = true; btn.textContent = 'Enviando…';
+
+        try {
+          await addDoc(collection(db, 'ads', adId, 'reservas'), {
+            iglesiaId,
+            respuestas,
+            metodoPago,
+            precio,
+            estado: 'pendiente',
+            creadoEn: serverTimestamp()
+          });
+          document.getElementById('formCard').style.display = 'none';
+          document.querySelector('.evento-header').style.display = 'none';
+          document.getElementById('successCard').style.display = 'block';
+        } catch(e) {
+          fb.textContent = '❌ Error: ' + e.message;
+          btn.disabled = false;
+          btn.textContent = precio > 0 ? '🎟️ Confirmar reserva' : '🎟️ Reservar entrada gratis';
+        }
+      });
+    }
+
+    window.selectPago = function(tipo) {
+      document.querySelectorAll('.pago-tab').forEach(t => t.classList.toggle('activo', t.dataset.pago === tipo));
+      document.querySelectorAll('.pago-panel').forEach(p => p.classList.toggle('activo', p.id === `panel-${tipo}`));
+    };
+
+    function showNotFound(msg = 'Este evento no existe o ya no está disponible.') {
+      appEl.innerHTML = `<div class="not-found"><h2>😕 Oops</h2><p>${msg}</p><a href="index.html">Volver al inicio</a></div>`;
+    }
+
+    render().catch(() => showNotFound());
+  </script>
+</body>
+</html>
