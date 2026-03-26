@@ -201,18 +201,162 @@
       opacity:1;
     }
 
-    /* EVENTOS DESTACADOS */
-    .ads-section{padding:3rem 2rem;background:#fff}
-    .ads-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1200px;margin:0 auto}
-    .ad-card{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s}
-    .ad-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
-    .ad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#f3f3f3}
-    .ad-body{padding:12px}
-    .ad-title{font-weight:700;margin-bottom:4px}
-    .ad-meta{color:var(--gray);font-size:.92rem}
-    .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;color:#fff}
-    .chip.starter{background:#6c757d}
-    .chip.pro{background:#28a745}
+    /* ══════════════════════════════════════════
+       SLIDER EVENTOS DESTACADOS
+    ══════════════════════════════════════════ */
+    .ads-section {
+      padding: 3rem 2rem;
+      background: #fff;
+    }
+    .ads-section .container {
+      max-width: 900px;
+    }
+
+    .ads-slider-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.1);
+      background: #f3f3f3;
+      aspect-ratio: 16/9;
+      max-height: 480px;
+    }
+
+    .ads-slider-track {
+      display: flex;
+      transition: transform .6s cubic-bezier(.77,0,.175,1);
+      height: 100%;
+      will-change: transform;
+    }
+
+    .ads-slide {
+      min-width: 100%;
+      height: 100%;
+      position: relative;
+      flex-shrink: 0;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+    }
+
+    .ads-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+    .ads-slide:hover img {
+      transform: scale(1.02);
+    }
+
+    .ads-slide-body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,0) 100%);
+      padding: 2rem 1.5rem 1.2rem;
+      color: #fff;
+    }
+    .ads-slide-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-bottom: .2rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+    .ads-slide-meta {
+      font-size: .85rem;
+      opacity: .8;
+    }
+
+    /* Flechas */
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.92);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      box-shadow: 0 4px 16px rgba(0,0,0,.18);
+      transition: background .2s, transform .2s;
+      font-size: 1.2rem;
+    }
+    .slider-btn:hover {
+      background: #fff;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .slider-btn-prev { left: .75rem; }
+    .slider-btn-next { right: .75rem; }
+
+    /* Dots */
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: .5rem;
+      margin-top: 1rem;
+    }
+    .slider-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ddd;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: all .3s;
+    }
+    .slider-dot.activo {
+      background: var(--primary);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* Barra de progreso */
+    .slider-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--primary);
+      width: 0%;
+      z-index: 10;
+      border-radius: 0 2px 0 0;
+      transition: width linear;
+    }
+
+    /* Estado vacío / loading */
+    .ads-slider-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 220px;
+      color: var(--gray);
+      font-size: .95rem;
+    }
+
+    /* EN VIVO */
+    #seccionEnVivo{display:none;padding:3rem 2rem;background:#111}
+    @keyframes pulseLive{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    .envivo-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;transition:transform .2s,background .2s}
+    .envivo-card:hover{background:rgba(255,255,255,.1);transform:translateY(-3px)}
+    .envivo-embed{width:100%;aspect-ratio:16/9;background:#000;border:0}
+    .envivo-body{padding:14px}
+    .envivo-badge{display:inline-flex;align-items:center;gap:5px;background:#ef4444;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:8px}
+    .envivo-badge-dot{width:7px;height:7px;background:#fff;border-radius:50%;animation:pulseLive 1.2s infinite}
+    .envivo-nombre{font-weight:800;font-size:1rem;color:#fff;margin:0 0 3px}
+    .envivo-titulo{font-size:.88rem;color:rgba(255,255,255,.7);margin:0 0 6px}
+    .envivo-ciudad{font-size:.8rem;color:rgba(255,255,255,.45)}
+    .envivo-logo{width:36px;height:36px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,.1)}
+    .envivo-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .btn-ver-envivo{display:inline-block;margin-top:10px;padding:8px 18px;background:#ef4444;color:#fff;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;transition:opacity .2s}
+    .btn-ver-envivo:hover{opacity:.85}
 
     /* TABS */
     .tabs-section{padding:3rem 1.5rem;background:var(--bg)}
@@ -275,13 +419,13 @@
       .footer-founder{flex-direction:column;text-align:center;gap:1rem}
       .founder-info{text-align:center}
       footer{padding:1.5rem 1rem;font-size:.82rem}
+
+      .ads-section{padding:2rem 1rem}
+      .slider-btn{width:36px;height:36px;font-size:1rem}
+      .ads-slide-title{font-size:1rem}
     }
 
-    /* ══════════════════════════════════════════
-       LUZ — ASISTENTE ESPIRITUAL IA
-    ══════════════════════════════════════════ */
-
-    /* Burbuja Luz */
+    /* LUZ — ASISTENTE ESPIRITUAL IA */
     #luz-bubble{
       display:flex;
       position:fixed;
@@ -303,8 +447,6 @@
       0%,100%{box-shadow:0 4px 18px rgba(124,58,237,.55)}
       50%{box-shadow:0 6px 32px rgba(168,85,247,.75)}
     }
-
-    /* Tooltip Luz */
     #luz-tooltip{
       position:fixed;
       bottom:5.6rem;right:5.2rem;
@@ -326,8 +468,6 @@
       80%{opacity:1}
       100%{opacity:0}
     }
-
-    /* Ventana de chat Luz */
     #luz-chat{
       display:none;
       position:fixed;
@@ -348,8 +488,6 @@
       from{opacity:0;transform:translateY(16px) scale(.97)}
       to{opacity:1;transform:translateY(0) scale(1)}
     }
-
-    /* Header del chat */
     #luz-header{
       background:linear-gradient(135deg,#7c3aed,#a855f7);
       padding:.85rem 1rem;
@@ -372,8 +510,6 @@
       line-height:1;transition:color .2s;
     }
     #luz-close:hover{color:#fff}
-
-    /* Mensajes */
     #luz-messages{
       flex:1;overflow-y:auto;
       padding:.8rem;
@@ -384,7 +520,6 @@
     #luz-messages::-webkit-scrollbar{width:4px}
     #luz-messages::-webkit-scrollbar-track{background:transparent}
     #luz-messages::-webkit-scrollbar-thumb{background:#d8b4fe;border-radius:4px}
-
     .luz-msg{
       max-width:82%;
       padding:.6rem .85rem;
@@ -422,8 +557,6 @@
       0%,80%,100%{transform:translateY(0)}
       40%{transform:translateY(-6px)}
     }
-
-    /* Sugerencias rápidas */
     #luz-suggestions{
       padding:.5rem .8rem;
       display:flex;gap:.4rem;flex-wrap:wrap;
@@ -439,8 +572,6 @@
       transition:all .15s;white-space:nowrap;
     }
     .luz-sug:hover{background:#7c3aed;color:#fff;border-color:#7c3aed}
-
-    /* Input del chat */
     #luz-input-area{
       display:flex;gap:.4rem;
       padding:.65rem .7rem;
@@ -468,8 +599,6 @@
     #luz-send:hover{transform:scale(1.08)}
     #luz-send:disabled{opacity:.45;cursor:not-allowed}
     #luz-send svg{fill:#fff}
-
-    /* Badge sobre la burbuja */
     #luz-badge{
       position:fixed;
       bottom:calc(5.5rem + 36px);right:1rem;
@@ -479,7 +608,6 @@
       display:none;
       z-index:502;
     }
-
     @media(max-width:480px){
       #luz-chat{
         width:calc(100vw - 1.6rem);
@@ -487,9 +615,7 @@
         bottom:5.2rem;
         max-height:460px;
       }
-      #luz-bubble{
-        bottom:5rem;right:.8rem;
-      }
+      #luz-bubble{bottom:5rem;right:.8rem;}
       #luz-badge{bottom:calc(5rem + 34px);right:.6rem}
       #luz-tooltip{right:4.8rem;bottom:5.1rem}
     }
@@ -575,11 +701,33 @@
     </div>
   </section>
 
-  <!-- EVENTOS DESTACADOS -->
+  <!-- ══════════════════════════════════════════
+       EVENTOS DESTACADOS — SLIDER
+  ══════════════════════════════════════════ -->
   <section class="ads-section" id="publicidad">
     <div class="container">
-      <h2 class="section-title" style="text-align:center">Eventos destacados</h2>
-      <div id="adsGrid" class="ads-grid"></div>
+      <h2 class="section-title">Eventos destacados</h2>
+
+      <!-- Wrapper del slider -->
+      <div class="ads-slider-wrapper" id="adsSliderWrapper">
+        <!-- Barra de progreso automática -->
+        <div class="slider-progress" id="sliderProgress"></div>
+
+        <!-- Track de slides (se llena dinámicamente) -->
+        <div class="ads-slider-track" id="adsSliderTrack">
+          <!-- Loading placeholder -->
+          <div class="ads-slide" style="background:#f3f3f3;display:flex;align-items:center;justify-content:center">
+            <span style="color:#aaa;font-size:.95rem">Cargando eventos…</span>
+          </div>
+        </div>
+
+        <!-- Flechas de navegación -->
+        <button class="slider-btn slider-btn-prev" id="sliderPrev" aria-label="Anterior">&#8592;</button>
+        <button class="slider-btn slider-btn-next" id="sliderNext" aria-label="Siguiente">&#8594;</button>
+      </div>
+
+      <!-- Dots -->
+      <div class="slider-dots" id="sliderDots"></div>
     </div>
   </section>
 
@@ -597,20 +745,6 @@
     </div>
   </section>
   <style>
-    @keyframes pulseLive{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-    .envivo-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;transition:transform .2s,background .2s}
-    .envivo-card:hover{background:rgba(255,255,255,.1);transform:translateY(-3px)}
-    .envivo-embed{width:100%;aspect-ratio:16/9;background:#000;border:0}
-    .envivo-body{padding:14px}
-    .envivo-badge{display:inline-flex;align-items:center;gap:5px;background:#ef4444;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:8px}
-    .envivo-badge-dot{width:7px;height:7px;background:#fff;border-radius:50%;animation:pulseLive 1.2s infinite}
-    .envivo-nombre{font-weight:800;font-size:1rem;color:#fff;margin:0 0 3px}
-    .envivo-titulo{font-size:.88rem;color:rgba(255,255,255,.7);margin:0 0 6px}
-    .envivo-ciudad{font-size:.8rem;color:rgba(255,255,255,.45)}
-    .envivo-logo{width:36px;height:36px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,.1)}
-    .envivo-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-    .btn-ver-envivo{display:inline-block;margin-top:10px;padding:8px 18px;background:#ef4444;color:#fff;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;transition:opacity .2s}
-    .btn-ver-envivo:hover{opacity:.85}
     @media(max-width:768px){
       #seccionEnVivo{padding:2rem 1rem}
       #enVivoGrid{grid-template-columns:1fr}
@@ -647,7 +781,6 @@
       <h2 class="section-title">Encontrá tu Iglesia</h2>
       <p style="text-align:center;color:var(--gray);margin-bottom:1rem;font-size:1.05rem;">Buscá por nombre, ciudad, pastor o palabra clave</p>
 
-      <!-- Tags de categoría -->
       <div id="tags-rapidos" style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:.7rem">
         <span class="tag-chip" onclick="buscarPorTag('jóvenes')">🔥 Jóvenes</span>
         <span class="tag-chip" onclick="buscarPorTag('familiar')">👨‍👩‍👧 Familiar</span>
@@ -661,17 +794,13 @@
         <button class="tag-chip tag-clear" id="btnLimpiarTag" onclick="limpiarBusqueda()" style="display:none">✕ Limpiar</button>
       </div>
 
-      <!-- Botón para mostrar/ocultar zonas -->
       <div style="text-align:center;margin-bottom:.8rem">
         <button id="btnToggleZonas" onclick="toggleZonas()">
           📍 Buscar por zona ▾
         </button>
       </div>
 
-      <!-- Panel de zonas colapsable -->
       <div id="zonasPanel">
-
-        <!-- Argentina -->
         <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
           <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🇦🇷 Argentina:</span>
           <span class="tag-chip tag-zona" onclick="buscarPorTag('Mendoza')">Mendoza</span>
@@ -687,8 +816,6 @@
           <span class="tag-chip tag-zona" onclick="buscarPorTag('Corrientes')">Corrientes</span>
           <span class="tag-chip tag-zona" onclick="buscarPorTag('Misiones')">Misiones</span>
         </div>
-
-        <!-- Latinoamérica -->
         <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.5rem">
           <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌎 Latinoamérica:</span>
           <span class="tag-chip tag-zona" onclick="buscarPorTag('Chile')">Chile</span>
@@ -710,8 +837,6 @@
           <span class="tag-chip tag-zona" onclick="buscarPorTag('República Dominicana')">Rep. Dominicana</span>
           <span class="tag-chip tag-zona" onclick="buscarPorTag('Puerto Rico')">Puerto Rico</span>
         </div>
-
-        <!-- Mundo -->
         <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.8rem">
           <span style="font-size:.8rem;font-weight:700;color:var(--gray);align-self:center;margin-right:.2rem">🌍 Mundo:</span>
           <span class="tag-chip tag-zona" onclick="buscarPorTag('España')">España</span>
@@ -723,7 +848,6 @@
           <span class="tag-chip tag-zona" onclick="buscarPorTag('Israel')">Israel</span>
           <span class="tag-chip tag-zona" onclick="buscarPorTag('Online')">🌐 Online</span>
         </div>
-
       </div>
 
       <div class="search-box">
@@ -767,22 +891,10 @@
     <p>&copy; 2026 Mi Iglesia+. Conectados en un mismo lugar.</p>
   </footer>
 
-  <!-- ══════════════════════════════════════════
-       LUZ — ASISTENTE ESPIRITUAL IA
-  ══════════════════════════════════════════ -->
-
-  <!-- Tooltip -->
+  <!-- LUZ — ASISTENTE -->
   <div id="luz-tooltip">✨ Hablá con Luz, tu asistente</div>
-
-  <!-- Burbuja -->
-  <button id="luz-bubble" onclick="toggleLuzChat()" title="Luz — Asistente" aria-label="Abrir asistente Luz">
-    ✨
-  </button>
-
-  <!-- Badge de nuevo mensaje -->
+  <button id="luz-bubble" onclick="toggleLuzChat()" title="Luz — Asistente" aria-label="Abrir asistente Luz">✨</button>
   <div id="luz-badge"></div>
-
-  <!-- Ventana de chat -->
   <div id="luz-chat" role="dialog" aria-label="Chat con Luz">
     <div id="luz-header">
       <div id="luz-avatar">✨</div>
@@ -792,15 +904,12 @@
       </div>
       <button id="luz-close" onclick="toggleLuzChat()" title="Cerrar">✕</button>
     </div>
-
     <div id="luz-messages"></div>
-
     <div id="luz-suggestions">
       <span class="luz-sug" onclick="luzSuggest(this)">📖 Versículo de aliento</span>
       <span class="luz-sug" onclick="luzSuggest(this)">🙏 Guíame en oración</span>
       <span class="luz-sug" onclick="luzSuggest(this)">❓ ¿Qué dice la Biblia sobre...?</span>
     </div>
-
     <div id="luz-input-area">
       <textarea id="luz-input" placeholder="Escribí tu pregunta…" rows="1" maxlength="500"></textarea>
       <button id="luz-send" onclick="luzEnviar()" title="Enviar">
@@ -822,7 +931,6 @@
       setTimeout(()=> document.getElementById('searchInput')?.focus(), 350);
     }
 
-    /* ── Zonas colapsables ── */
     window.toggleZonas = function() {
       const panel = document.getElementById('zonasPanel');
       const btn   = document.getElementById('btnToggleZonas');
@@ -965,34 +1073,147 @@
     document.addEventListener('DOMContentLoaded', async () => { await cargarIglesias(); });
   </script>
 
-  <!-- Eventos destacados -->
+  <!-- ══════════════════════════════════════════
+       SLIDER EVENTOS DESTACADOS — SCRIPT
+  ══════════════════════════════════════════ -->
   <script type="module">
     import { db } from './js/firebase-init.js';
     import { collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    async function cargarEventosDestacados(){
-      const grid = document.getElementById('adsGrid');
-      if (!grid) return;
-      grid.innerHTML = '<div class="ad-card" style="padding:14px"><strong>Cargando…</strong></div>';
-      try{
-        const q = query(collection(db,'ads'), where('status','==','approved'), limit(12));
+    const INTERVALO_MS = 10000; // 10 segundos
+
+    let slides = [];
+    let indice = 0;
+    let timer  = null;
+    let progressTimer = null;
+
+    const track    = document.getElementById('adsSliderTrack');
+    const dotsEl   = document.getElementById('sliderDots');
+    const progress = document.getElementById('sliderProgress');
+    const btnPrev  = document.getElementById('sliderPrev');
+    const btnNext  = document.getElementById('sliderNext');
+
+    function irA(i, reiniciarTimer = true) {
+      if (slides.length === 0) return;
+      indice = (i + slides.length) % slides.length;
+      track.style.transform = `translateX(-${indice * 100}%)`;
+
+      // Actualizar dots
+      dotsEl.querySelectorAll('.slider-dot').forEach((d, idx) => {
+        d.classList.toggle('activo', idx === indice);
+      });
+
+      if (reiniciarTimer) reiniciarAuto();
+    }
+
+    function reiniciarAuto() {
+      clearInterval(timer);
+      clearInterval(progressTimer);
+      if (slides.length <= 1) return;
+
+      // Reiniciar barra de progreso
+      progress.style.transition = 'none';
+      progress.style.width = '0%';
+      // Force reflow
+      progress.getBoundingClientRect();
+      progress.style.transition = `width ${INTERVALO_MS}ms linear`;
+      progress.style.width = '100%';
+
+      timer = setInterval(() => {
+        irA(indice + 1, false);
+        // Reiniciar barra sin volver a lanzar setInterval
+        clearInterval(progressTimer);
+        progress.style.transition = 'none';
+        progress.style.width = '0%';
+        progress.getBoundingClientRect();
+        progress.style.transition = `width ${INTERVALO_MS}ms linear`;
+        progress.style.width = '100%';
+      }, INTERVALO_MS);
+    }
+
+    function construirSlider(ads) {
+      slides = ads;
+      track.innerHTML = '';
+      dotsEl.innerHTML = '';
+
+      if (slides.length === 0) {
+        track.innerHTML = '<div class="ads-slide" style="background:#f9f9f9;display:flex;align-items:center;justify-content:center"><span style="color:#aaa">No hay eventos para mostrar.</span></div>';
+        btnPrev.style.display = 'none';
+        btnNext.style.display = 'none';
+        return;
+      }
+
+      slides.forEach((ad, idx) => {
+        const title = (ad.title || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const isLink = !!ad.href;
+        const tag = isLink ? 'a' : 'div';
+        const attrs = isLink ? `href="${ad.href}" target="_blank" rel="noopener"` : '';
+
+        const imgHtml = ad.imageUrl
+          ? `<img src="${ad.imageUrl}" alt="${title || 'Evento destacado'}" loading="${idx === 0 ? 'eager' : 'lazy'}">`
+          : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#FF6B5B22,#FF6B5B44);display:flex;align-items:center;justify-content:center;font-size:4rem">⛪</div>`;
+
+        track.insertAdjacentHTML('beforeend', `
+          <${tag} class="ads-slide" ${attrs}>
+            ${imgHtml}
+            <div class="ads-slide-body">
+              <div class="ads-slide-title">${title}</div>
+              <div class="ads-slide-meta">Evento destacado</div>
+            </div>
+          </${tag}>
+        `);
+
+        // Dot
+        const dot = document.createElement('button');
+        dot.className = 'slider-dot' + (idx === 0 ? ' activo' : '');
+        dot.setAttribute('aria-label', `Ir al evento ${idx + 1}`);
+        dot.addEventListener('click', () => irA(idx));
+        dotsEl.appendChild(dot);
+      });
+
+      // Ocultar flechas si hay 1 solo slide
+      btnPrev.style.display = slides.length > 1 ? '' : 'none';
+      btnNext.style.display = slides.length > 1 ? '' : 'none';
+
+      irA(0, false);
+      reiniciarAuto();
+    }
+
+    // Swipe táctil
+    let touchStartX = 0;
+    const wrapper = document.getElementById('adsSliderWrapper');
+    wrapper.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    wrapper.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) irA(indice + (diff > 0 ? 1 : -1));
+    }, { passive: true });
+
+    // Pausar al pasar el mouse
+    wrapper.addEventListener('mouseenter', () => {
+      clearInterval(timer);
+      clearInterval(progressTimer);
+      progress.style.transition = 'none';
+    });
+    wrapper.addEventListener('mouseleave', () => { reiniciarAuto(); });
+
+    btnPrev.addEventListener('click', () => irA(indice - 1));
+    btnNext.addEventListener('click', () => irA(indice + 1));
+
+    // Teclado
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft')  irA(indice - 1);
+      if (e.key === 'ArrowRight') irA(indice + 1);
+    });
+
+    async function cargarEventosDestacados() {
+      try {
+        const q = query(collection(db, 'ads'), where('status', '==', 'approved'), limit(12));
         const snap = await getDocs(q);
-        grid.innerHTML = '';
-        if (snap.empty){
-          grid.innerHTML = '<div class="ad-card" style="padding:14px;color:#666">No hay eventos para mostrar.</div>';
-          return;
-        }
-        snap.forEach(d => {
-          const ad = d.data();
-          const hrefOpen  = ad.href ? `<a class="ad-card" href="${ad.href}" target="_blank" rel="noopener">` : '<div class="ad-card">';
-          const hrefClose = ad.href ? '</a>' : '</div>';
-          const title = (ad.title||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-          const img   = ad.imageUrl ? `<img class="ad-img" loading="lazy" src="${ad.imageUrl}" alt="${title||'Evento destacado'}">` : '';
-          grid.insertAdjacentHTML('beforeend', `${hrefOpen}${img}<div class="ad-body"><div class="ad-title">${title}</div><div class="ad-meta">Evento destacado</div></div>${hrefClose}`);
-        });
-      }catch(e){
+        const ads = snap.docs.map(d => d.data());
+        construirSlider(ads);
+      } catch(e) {
         console.error('Eventos destacados:', e);
-        grid.innerHTML = `<div class="ad-card" style="padding:14px;color:#b91c1c">Error al cargar: ${e.message}</div>`;
+        track.innerHTML = `<div class="ads-slide" style="background:#fff;display:flex;align-items:center;justify-content:center"><span style="color:#b91c1c;font-size:.9rem">Error al cargar eventos: ${e.message}</span></div>`;
       }
     }
 
@@ -1243,23 +1464,15 @@
     });
   </script>
 
-  <!-- ── BURBUJA COMPARTIR (abajo a la izquierda) ── -->
+  <!-- Burbuja Compartir -->
   <style>
     #share-bubble{
-      display:flex;
-      position:fixed;
-      bottom:1.5rem;left:1.2rem;
-      width:52px;height:52px;
-      background:#FF6B5B;
-      border-radius:50%;
+      display:flex;position:fixed;bottom:1.5rem;left:1.2rem;
+      width:52px;height:52px;background:#FF6B5B;border-radius:50%;
       box-shadow:0 4px 16px rgba(255,107,91,.5);
-      align-items:center;justify-content:center;
-      z-index:500;
-      cursor:pointer;
-      border:0;
-      font-size:1.4rem;
-      animation:pulseShare 2.5s infinite;
-      transition:transform .2s;
+      align-items:center;justify-content:center;z-index:500;
+      cursor:pointer;border:0;font-size:1.4rem;
+      animation:pulseShare 2.5s infinite;transition:transform .2s;
     }
     #share-bubble:hover{transform:scale(1.1)}
     @keyframes pulseShare{
@@ -1267,52 +1480,35 @@
       50%{box-shadow:0 4px 28px rgba(255,107,91,.75)}
     }
     #share-popup{
-      display:none;
-      position:fixed;
-      bottom:5rem;left:1.2rem;
-      background:#fff;
-      border-radius:14px;
-      box-shadow:0 8px 32px rgba(0,0,0,.15);
-      padding:.8rem;
-      z-index:501;
-      min-width:200px;
-      border:1px solid #eee;
+      display:none;position:fixed;bottom:5rem;left:1.2rem;
+      background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);
+      padding:.8rem;z-index:501;min-width:200px;border:1px solid #eee;
       animation:fadeUp .2s ease;
     }
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     #share-popup .sp-title{font-size:.78rem;font-weight:700;color:#999;padding:.2rem .4rem .6rem;border-bottom:1px solid #f0f0f0;margin-bottom:.5rem}
     #share-popup a, #share-popup button{
-      display:flex;align-items:center;gap:.6rem;
-      width:100%;padding:.55rem .8rem;border-radius:8px;
-      font-size:.88rem;font-weight:600;
-      text-decoration:none;border:0;background:none;
-      cursor:pointer;font-family:'Poppins',sans-serif;color:#1a1a1a;
-      transition:background .15s;
+      display:flex;align-items:center;gap:.6rem;width:100%;padding:.55rem .8rem;border-radius:8px;
+      font-size:.88rem;font-weight:600;text-decoration:none;border:0;background:none;
+      cursor:pointer;font-family:'Poppins',sans-serif;color:#1a1a1a;transition:background .15s;
     }
     #share-popup a:hover, #share-popup button:hover{background:#f5f5f5}
     #share-popup .sp-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
   </style>
 
   <button id="share-bubble" onclick="toggleSharePopup()" title="Compartir">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0 0 18 8a3 3 0 1 0-3-3c0 .24.04.47.09.7L8.04 9.81A3 3 0 0 0 6 9a3 3 0 1 0 3 3c0-.24-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0 0 18 16.08z" fill="#fff"/>
-    </svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0 0 18 8a3 3 0 1 0-3-3c0 .24.04.47.09.7L8.04 9.81A3 3 0 0 0 6 9a3 3 0 1 0 3 3c0-.24-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0 0 18 16.08z" fill="#fff"/></svg>
   </button>
 
   <div id="share-popup">
     <div class="sp-title">📲 Compartir Mi Iglesia+</div>
-    <button onclick="shareNativo()">
-      <span class="sp-icon" style="background:#FF6B5B">🔗</span> Compartir
-    </button>
+    <button onclick="shareNativo()"><span class="sp-icon" style="background:#FF6B5B">🔗</span> Compartir</button>
     <a id="shareWaLink" href="" target="_blank" rel="noopener" onclick="cerrarSharePopup()">
       <span class="sp-icon" style="background:#25D366">
         <svg width="16" height="16" viewBox="0 0 32 32" fill="none"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.478.655 4.8 1.8 6.807L2 30l7.38-1.773A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z" fill="#fff"/><path d="M16 4.5c-6.351 0-11.5 5.149-11.5 11.5 0 2.14.588 4.143 1.613 5.858l.243.407-1.03 3.76 3.87-1.015.394.228A11.45 11.45 0 0 0 16 27.5c6.351 0 11.5-5.149 11.5-11.5S22.351 4.5 16 4.5z" fill="#25D366"/><path d="M21.003 18.77c-.307-.154-1.816-.896-2.097-.998-.281-.103-.486-.154-.69.154-.204.307-.791.998-.97 1.203-.178.204-.357.23-.664.077-.307-.154-1.295-.477-2.466-1.522-.911-.813-1.526-1.816-1.705-2.123-.178-.307-.019-.473.134-.626.137-.137.307-.358.46-.537.154-.178.205-.307.307-.511.103-.205.051-.384-.025-.537-.077-.154-.69-1.664-.945-2.277-.249-.597-.502-.516-.69-.526l-.588-.01c-.204 0-.537.077-.818.384-.281.307-1.073 1.049-1.073 2.558s1.099 2.967 1.252 3.171c.154.205 2.163 3.303 5.24 4.632.733.316 1.305.505 1.751.646.736.234 1.406.201 1.936.122.590-.088 1.816-.742 2.073-1.459.256-.716.256-1.33.179-1.459-.076-.128-.281-.205-.588-.358z" fill="#fff"/></svg>
       </span> WhatsApp
     </a>
-    <button onclick="copiarLinkBurbuja()">
-      <span class="sp-icon" style="background:#f0f0f0">📋</span>
-      <span id="shareCopyLabel">Copiar link</span>
-    </button>
+    <button onclick="copiarLinkBurbuja()"><span class="sp-icon" style="background:#f0f0f0">📋</span><span id="shareCopyLabel">Copiar link</span></button>
   </div>
 
   <script>
@@ -1323,21 +1519,15 @@
 
     document.getElementById('shareWaLink').href = 'https://wa.me/?text=' + encodeURIComponent(SHARE_TEXT + SHARE_URL);
 
-    if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-      document.querySelector('#share-popup a[id="shareWaLink"]') && (document.getElementById('shareWaLink').style.display = 'none');
-    }
-
     window.toggleSharePopup = function() {
       const popup = document.getElementById('share-popup');
       popupAbierto = !popupAbierto;
       popup.style.display = popupAbierto ? 'block' : 'none';
     };
-
     window.cerrarSharePopup = function() {
       document.getElementById('share-popup').style.display = 'none';
       popupAbierto = false;
     };
-
     window.shareNativo = function() {
       cerrarSharePopup();
       if (navigator.share) {
@@ -1346,7 +1536,6 @@
         navigator.clipboard.writeText(SHARE_URL).then(() => alert('¡Link copiado!'));
       }
     };
-
     window.copiarLinkBurbuja = function() {
       navigator.clipboard.writeText(SHARE_URL).then(() => {
         const lbl = document.getElementById('shareCopyLabel');
@@ -1354,25 +1543,18 @@
         setTimeout(() => { lbl.textContent = 'Copiar link'; cerrarSharePopup(); }, 1800);
       });
     };
-
     document.addEventListener('click', function(e) {
       const bubble = document.getElementById('share-bubble');
       const popup  = document.getElementById('share-popup');
-      if (!bubble.contains(e.target) && !popup.contains(e.target)) {
-        cerrarSharePopup();
-      }
+      if (!bubble.contains(e.target) && !popup.contains(e.target)) cerrarSharePopup();
     });
   })();
   </script>
 
- <!-- ══════════════════════════════════════════
-       LUZ — SCRIPT PRINCIPAL (powered by Google Gemini)
-  ══════════════════════════════════════════ -->
+  <!-- LUZ — SCRIPT PRINCIPAL -->
   <script>
   (function(){
-
-    const GEMINI_API_KEY = 'AIzaSyAk5Fr6ZT4YtzLXLJx9cw_qMRmBxT5e3Bk'; // ← tu key
-
+    const GEMINI_API_KEY = 'AIzaSyAk5Fr6ZT4YtzLXLJx9cw_qMRmBxT5e3Bk';
     const LUZ_HIST = 'luz_chat_history';
     let chatAbierto = false;
     let esperando   = false;
@@ -1428,7 +1610,6 @@
       autoResize();
       agregarMensajeUsuario(texto);
 
-      // ── Agregar al historial y limpiar antes de enviar ──
       historial.push({ role: 'user', content: texto });
       const contentsLimpios = limpiarHistorial(historial);
 
@@ -1444,20 +1625,17 @@
         try { sessionStorage.setItem(LUZ_HIST, JSON.stringify(historial.slice(-20))); } catch(e) {}
       } catch(err) {
         quitarTyping();
-        // Si falló, sacar el último mensaje user del historial para no dejarlo colgado
         if (historial[historial.length - 1]?.role === 'user') historial.pop();
-        console.error('[Luz] Error Gemini:', err.status, err.message);
-
         if (err.status === 403 || err.status === 401) {
-          agregarMensajeBotPuro('🔑 API Key inválida o sin permisos. Verificá que la key tenga habilitada la "Generative Language API" en Google AI Studio.');
+          agregarMensajeBotPuro('🔑 API Key inválida o sin permisos.');
         } else if (err.status === 400) {
-          agregarMensajeBotPuro('⚠️ Error en el formato de la solicitud (400). Borrando historial y volvé a intentar.');
+          agregarMensajeBotPuro('⚠️ Error en el formato (400). Borrando historial.');
           historial = [];
           sessionStorage.removeItem(LUZ_HIST);
         } else if (err.status === 429) {
-          agregarMensajeBotPuro('⏳ Demasiadas consultas. Esperá unos segundos y volvé a intentar 🙏');
+          agregarMensajeBotPuro('⏳ Demasiadas consultas. Esperá unos segundos 🙏');
         } else {
-          agregarMensajeBotPuro(`⚠️ Error ${err.status||'de red'}: ${err.message}. Revisá tu conexión o la consola del navegador 🙏`);
+          agregarMensajeBotPuro(`⚠️ Error ${err.status||'de red'}: ${err.message} 🙏`);
         }
       } finally {
         esperando = false;
@@ -1466,17 +1644,11 @@
       }
     };
 
-    // ── Limpia el historial para que Gemini lo acepte:
-    //    - Solo roles "user" y "model"
-    //    - No pueden haber dos del mismo rol seguidos
-    //    - Debe empezar con "user"
     function limpiarHistorial(mensajes) {
       const mapped = mensajes.map(m => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }]
       }));
-
-      // Combinar mensajes consecutivos del mismo rol
       const limpio = mapped.reduce((acc, m) => {
         if (acc.length > 0 && acc[acc.length - 1].role === m.role) {
           acc[acc.length - 1].parts[0].text += '\n' + m.parts[0].text;
@@ -1485,10 +1657,7 @@
         }
         return acc;
       }, []);
-
-      // Asegurarse de que empiece con "user"
       while (limpio.length > 0 && limpio[0].role !== 'user') limpio.shift();
-
       return limpio;
     }
 
@@ -1518,7 +1687,6 @@ Pautas:
           }
         );
       } catch(networkErr) {
-        // Error de red / CORS
         const e = new Error('Error de red: ' + networkErr.message);
         e.status = 0;
         throw e;
@@ -1544,7 +1712,6 @@ Pautas:
       msgs.appendChild(div);
       scrollAbajo();
     }
-
     function agregarMensajeBotPuro(texto) {
       const html = texto.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       const div = document.createElement('div');
@@ -1552,7 +1719,6 @@ Pautas:
       div.innerHTML = html;
       msgs.appendChild(div);
     }
-
     function agregarMensajeUsuario(texto) {
       const div = document.createElement('div');
       div.className = 'luz-msg user';
@@ -1560,14 +1726,12 @@ Pautas:
       msgs.appendChild(div);
       scrollAbajo();
     }
-
     function agregarMensajeUsuarioPuro(texto) {
       const div = document.createElement('div');
       div.className = 'luz-msg user';
       div.textContent = texto;
       msgs.appendChild(div);
     }
-
     function mostrarTyping() {
       const div = document.createElement('div');
       div.className = 'luz-msg typing';
@@ -1576,11 +1740,8 @@ Pautas:
       msgs.appendChild(div);
       scrollAbajo();
     }
-
     function quitarTyping() { document.getElementById('luz-typing')?.remove(); }
-
     function scrollAbajo() { setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50); }
-
     function autoResize() {
       input.style.height = 'auto';
       input.style.height = Math.min(input.scrollHeight, 90) + 'px';
@@ -1594,7 +1755,6 @@ Pautas:
     if (!sessionStorage.getItem('luz_opened')) {
       setTimeout(() => { badge.style.display = 'block'; }, 4000);
     }
-
   })();
   </script>
 
