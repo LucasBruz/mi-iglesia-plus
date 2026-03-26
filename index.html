@@ -215,85 +215,108 @@
     .ads-slider-wrapper {
       position: relative;
       overflow: hidden;
-      border-radius: 16px;
+      border-radius: 16px 16px 0 0;
       box-shadow: 0 8px 32px rgba(0,0,0,.1);
-      background: #f3f3f3;
-      aspect-ratio: 16/9;
-      max-height: 480px;
+      background: #f0f0f0;
+      /* altura fija para mostrar la imagen completa */
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
     }
 
     .ads-slider-track {
       display: flex;
-      transition: transform .6s cubic-bezier(.77,0,.175,1);
-      height: 100%;
+      transition: transform .55s cubic-bezier(.77,0,.175,1);
       will-change: transform;
     }
 
     .ads-slide {
       min-width: 100%;
-      height: 100%;
-      position: relative;
       flex-shrink: 0;
       display: block;
       text-decoration: none;
       color: inherit;
-      overflow: hidden;
+      cursor: grab;
+      user-select: none;
     }
+    .ads-slide:active { cursor: grabbing; }
 
+    /* La imagen se muestra COMPLETA, sin recorte */
     .ads-slide img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
       display: block;
-      transition: transform .4s ease;
-    }
-    .ads-slide:hover img {
-      transform: scale(1.02);
+      object-fit: contain;
+      background: #f0f0f0;
+      pointer-events: none;
     }
 
+    /* Título DEBAJO de la imagen, fuera del slide */
     .ads-slide-body {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,0) 100%);
-      padding: 2rem 1.5rem 1.2rem;
-      color: #fff;
-    }
-    .ads-slide-title {
-      font-weight: 700;
-      font-size: 1.15rem;
-      margin-bottom: .2rem;
-      text-shadow: 0 2px 8px rgba(0,0,0,.4);
-    }
-    .ads-slide-meta {
-      font-size: .85rem;
-      opacity: .8;
+      display: none; /* ocultamos el overlay interno */
     }
 
-    /* Flechas */
+    /* Caja de texto debajo del slider */
+    .ads-slide-caption {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      padding: .85rem 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,.07);
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .ads-slide-caption-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .ads-slide-caption-title {
+      font-weight: 700;
+      font-size: .98rem;
+      color: var(--dark);
+      line-height: 1.3;
+    }
+    .ads-slide-caption-meta {
+      font-size: .8rem;
+      color: var(--gray);
+      margin-top: .1rem;
+    }
+
+    /* Flechas — solo desktop, fuera de la imagen */
     .slider-btn {
+      display: none; /* ocultas por defecto, solo desktop */
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.95);
       border: none;
       cursor: pointer;
-      display: flex;
       align-items: center;
       justify-content: center;
       z-index: 10;
       box-shadow: 0 4px 16px rgba(0,0,0,.18);
       transition: background .2s, transform .2s;
-      font-size: 1.2rem;
+      font-size: 1rem;
     }
     .slider-btn:hover {
       background: #fff;
       transform: translateY(-50%) scale(1.1);
     }
-    .slider-btn-prev { left: .75rem; }
-    .slider-btn-next { right: .75rem; }
+    .slider-btn-prev { left: -52px; }
+    .slider-btn-next { right: -52px; }
+
+    @media(min-width: 860px) {
+      .slider-btn { display: flex; }
+      .ads-slider-outer { position: relative; }
+    }
 
     /* Dots */
     .slider-dots {
@@ -708,22 +731,31 @@
     <div class="container">
       <h2 class="section-title">Eventos destacados</h2>
 
-      <!-- Wrapper del slider -->
-      <div class="ads-slider-wrapper" id="adsSliderWrapper">
-        <!-- Barra de progreso automática -->
-        <div class="slider-progress" id="sliderProgress"></div>
-
-        <!-- Track de slides (se llena dinámicamente) -->
-        <div class="ads-slider-track" id="adsSliderTrack">
-          <!-- Loading placeholder -->
-          <div class="ads-slide" style="background:#f3f3f3;display:flex;align-items:center;justify-content:center">
-            <span style="color:#aaa;font-size:.95rem">Cargando eventos…</span>
+      <!-- Outer para posicionar flechas fuera en desktop -->
+      <div class="ads-slider-outer" id="adsSliderOuter">
+        <!-- Wrapper del slider -->
+        <div class="ads-slider-wrapper" id="adsSliderWrapper">
+          <!-- Barra de progreso -->
+          <div class="slider-progress" id="sliderProgress"></div>
+          <!-- Track de slides -->
+          <div class="ads-slider-track" id="adsSliderTrack">
+            <div class="ads-slide" style="background:#f3f3f3;min-height:200px;display:flex;align-items:center;justify-content:center">
+              <span style="color:#aaa;font-size:.95rem">Cargando eventos…</span>
+            </div>
           </div>
+          <!-- Flechas (solo desktop, fuera de la imagen) -->
+          <button class="slider-btn slider-btn-prev" id="sliderPrev" aria-label="Anterior">&#8592;</button>
+          <button class="slider-btn slider-btn-next" id="sliderNext" aria-label="Siguiente">&#8594;</button>
         </div>
 
-        <!-- Flechas de navegación -->
-        <button class="slider-btn slider-btn-prev" id="sliderPrev" aria-label="Anterior">&#8592;</button>
-        <button class="slider-btn slider-btn-next" id="sliderNext" aria-label="Siguiente">&#8594;</button>
+        <!-- Caption debajo de la imagen -->
+        <div class="ads-slide-caption" id="adsCaption" style="display:none">
+          <div class="ads-slide-caption-icon">📅</div>
+          <div>
+            <div class="ads-slide-caption-title" id="adsCaptionTitle"></div>
+            <div class="ads-slide-caption-meta">Evento destacado</div>
+          </div>
+        </div>
       </div>
 
       <!-- Dots -->
@@ -1085,13 +1117,26 @@
     let slides = [];
     let indice = 0;
     let timer  = null;
-    let progressTimer = null;
 
     const track    = document.getElementById('adsSliderTrack');
     const dotsEl   = document.getElementById('sliderDots');
     const progress = document.getElementById('sliderProgress');
     const btnPrev  = document.getElementById('sliderPrev');
     const btnNext  = document.getElementById('sliderNext');
+    const caption  = document.getElementById('adsCaption');
+    const captionTitle = document.getElementById('adsCaptionTitle');
+
+    function actualizarCaption() {
+      if (!slides.length) return;
+      const ad = slides[indice];
+      const title = (ad.title || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      if (title) {
+        captionTitle.innerHTML = title;
+        caption.style.display = 'flex';
+      } else {
+        caption.style.display = 'none';
+      }
+    }
 
     function irA(i, reiniciarTimer = true) {
       if (slides.length === 0) return;
@@ -1103,26 +1148,22 @@
         d.classList.toggle('activo', idx === indice);
       });
 
+      actualizarCaption();
       if (reiniciarTimer) reiniciarAuto();
     }
 
     function reiniciarAuto() {
       clearInterval(timer);
-      clearInterval(progressTimer);
       if (slides.length <= 1) return;
 
-      // Reiniciar barra de progreso
       progress.style.transition = 'none';
       progress.style.width = '0%';
-      // Force reflow
       progress.getBoundingClientRect();
       progress.style.transition = `width ${INTERVALO_MS}ms linear`;
       progress.style.width = '100%';
 
       timer = setInterval(() => {
         irA(indice + 1, false);
-        // Reiniciar barra sin volver a lanzar setInterval
-        clearInterval(progressTimer);
         progress.style.transition = 'none';
         progress.style.width = '0%';
         progress.getBoundingClientRect();
@@ -1137,9 +1178,10 @@
       dotsEl.innerHTML = '';
 
       if (slides.length === 0) {
-        track.innerHTML = '<div class="ads-slide" style="background:#f9f9f9;display:flex;align-items:center;justify-content:center"><span style="color:#aaa">No hay eventos para mostrar.</span></div>';
+        track.innerHTML = '<div class="ads-slide" style="background:#f9f9f9;min-height:180px;display:flex;align-items:center;justify-content:center"><span style="color:#aaa">No hay eventos para mostrar.</span></div>';
         btnPrev.style.display = 'none';
         btnNext.style.display = 'none';
+        caption.style.display = 'none';
         return;
       }
 
@@ -1150,17 +1192,11 @@
         const attrs = isLink ? `href="${ad.href}" target="_blank" rel="noopener"` : '';
 
         const imgHtml = ad.imageUrl
-          ? `<img src="${ad.imageUrl}" alt="${title || 'Evento destacado'}" loading="${idx === 0 ? 'eager' : 'lazy'}">`
-          : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#FF6B5B22,#FF6B5B44);display:flex;align-items:center;justify-content:center;font-size:4rem">⛪</div>`;
+          ? `<img src="${ad.imageUrl}" alt="${title || 'Evento destacado'}" loading="${idx === 0 ? 'eager' : 'lazy'}" draggable="false">`
+          : `<div style="min-height:180px;background:linear-gradient(135deg,#FF6B5B22,#FF6B5B44);display:flex;align-items:center;justify-content:center;font-size:3rem">⛪</div>`;
 
         track.insertAdjacentHTML('beforeend', `
-          <${tag} class="ads-slide" ${attrs}>
-            ${imgHtml}
-            <div class="ads-slide-body">
-              <div class="ads-slide-title">${title}</div>
-              <div class="ads-slide-meta">Evento destacado</div>
-            </div>
-          </${tag}>
+          <${tag} class="ads-slide" ${attrs}>${imgHtml}<div class="ads-slide-body"></div></${tag}>
         `);
 
         // Dot
@@ -1171,27 +1207,65 @@
         dotsEl.appendChild(dot);
       });
 
-      // Ocultar flechas si hay 1 solo slide
-      btnPrev.style.display = slides.length > 1 ? '' : 'none';
-      btnNext.style.display = slides.length > 1 ? '' : 'none';
+      btnPrev.style.display = '';
+      btnNext.style.display = '';
 
       irA(0, false);
       reiniciarAuto();
     }
 
-    // Swipe táctil
-    let touchStartX = 0;
+    // ── Swipe táctil mejorado ──
     const wrapper = document.getElementById('adsSliderWrapper');
-    wrapper.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragOffset = 0;
+
+    wrapper.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isDragging = false;
+    }, { passive: true });
+
+    wrapper.addEventListener('touchmove', e => {
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy)) isDragging = true;
+    }, { passive: true });
+
     wrapper.addEventListener('touchend', e => {
+      if (!isDragging) return;
       const diff = touchStartX - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 40) irA(indice + (diff > 0 ? 1 : -1));
     }, { passive: true });
 
+    // ── Drag con mouse ──
+    wrapper.addEventListener('mousedown', e => {
+      dragStartX = e.clientX;
+      isDragging = false;
+      wrapper.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mousemove', e => {
+      if (e.buttons !== 1) return;
+      if (Math.abs(e.clientX - dragStartX) > 5) isDragging = true;
+    });
+    window.addEventListener('mouseup', e => {
+      wrapper.style.cursor = '';
+      if (!isDragging) return;
+      const diff = dragStartX - e.clientX;
+      if (Math.abs(diff) > 40) irA(indice + (diff > 0 ? 1 : -1));
+      isDragging = false;
+    });
+
+    // Evitar que links se activen al arrastrar
+    wrapper.addEventListener('click', e => {
+      if (isDragging) e.preventDefault();
+    });
+
     // Pausar al pasar el mouse
     wrapper.addEventListener('mouseenter', () => {
       clearInterval(timer);
-      clearInterval(progressTimer);
       progress.style.transition = 'none';
     });
     wrapper.addEventListener('mouseleave', () => { reiniciarAuto(); });
@@ -1199,7 +1273,6 @@
     btnPrev.addEventListener('click', () => irA(indice - 1));
     btnNext.addEventListener('click', () => irA(indice + 1));
 
-    // Teclado
     document.addEventListener('keydown', e => {
       if (e.key === 'ArrowLeft')  irA(indice - 1);
       if (e.key === 'ArrowRight') irA(indice + 1);
