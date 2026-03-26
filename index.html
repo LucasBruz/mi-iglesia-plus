@@ -228,8 +228,6 @@
       width: 100%;
     }
 
-    /* ✅ FIX: el track ocupa el 100% del wrapper y no tiene altura explícita
-       — los slides se alinean uno al lado del otro sin desbordarse */
     .ads-slider-track {
       display: flex;
       height: 100%;
@@ -237,9 +235,6 @@
       will-change: transform;
     }
 
-    /* ✅ FIX: flex: 0 0 100% garantiza que cada slide ocupe exactamente
-       el ancho del wrapper (no del track completo).
-       Se eliminó min-width: 100% que causaba el desborde y el salto visual. */
     .ads-slide {
       flex: 0 0 100%;
       height: 100%;
@@ -591,6 +586,21 @@
       transition:all .15s;white-space:nowrap;
     }
     .luz-sug:hover{background:#7c3aed;color:#fff;border-color:#7c3aed}
+
+    /* ── CONTADOR DE MENSAJES LUZ ── */
+    #luz-counter{
+      padding:.35rem .8rem;
+      background:#faf9ff;
+      border-top:1px solid #f0eaff;
+      text-align:center;
+      font-size:.72rem;
+      font-weight:700;
+      font-family:'Poppins',sans-serif;
+      flex-shrink:0;
+      transition:color .3s;
+      letter-spacing:.01em;
+    }
+
     #luz-input-area{
       display:flex;gap:.4rem;
       padding:.65rem .7rem;
@@ -608,6 +618,12 @@
       line-height:1.4;
     }
     #luz-input:focus{border-color:#a855f7}
+    #luz-input:disabled{
+      background:#f5f0ff;
+      color:#9ca3af;
+      cursor:not-allowed;
+      border-color:#ede9fe;
+    }
     #luz-send{
       width:36px;height:36px;border-radius:50%;flex-shrink:0;
       background:linear-gradient(135deg,#7c3aed,#a855f7);
@@ -931,6 +947,8 @@
       <span class="luz-sug" onclick="luzSuggest(this)">🙏 Guíame en oración</span>
       <span class="luz-sug" onclick="luzSuggest(this)">❓ ¿Qué dice la Biblia sobre...?</span>
     </div>
+    <!-- CONTADOR DE MENSAJES DIARIOS -->
+    <div id="luz-counter"></div>
     <div id="luz-input-area">
       <textarea id="luz-input" placeholder="Escribí tu pregunta…" rows="1" maxlength="500"></textarea>
       <button id="luz-send" onclick="luzEnviar()" title="Enviar">
@@ -1116,8 +1134,6 @@
     const caption  = document.getElementById('adsCaption');
     const captionTitle = document.getElementById('adsCaptionTitle');
 
-    // ✅ FIX: función central que calcula el desplazamiento en píxeles
-    // usando el ancho real del wrapper, no un porcentaje del track.
     function getOffset(i) {
       return i * wrapper.clientWidth;
     }
@@ -1137,14 +1153,10 @@
     function irA(i, reiniciarTimer = true) {
       if (slides.length === 0) return;
       indice = (i + slides.length) % slides.length;
-
-      // ✅ FIX: translateX en píxeles — sin ambigüedad de porcentaje
       track.style.transform = `translateX(-${getOffset(indice)}px)`;
-
       dotsEl.querySelectorAll('.slider-dot').forEach((d, idx) => {
         d.classList.toggle('activo', idx === indice);
       });
-
       actualizarCaption();
       if (reiniciarTimer) reiniciarAuto();
     }
@@ -1169,12 +1181,9 @@
       }, INTERVALO_MS);
     }
 
-    // ✅ FIX: al cambiar el tamaño de ventana, recalcular la posición
-    // sin animación para que no se vea un salto visual
     window.addEventListener('resize', () => {
       track.style.transition = 'none';
       track.style.transform  = `translateX(-${getOffset(indice)}px)`;
-      // Restaurar la transición en el siguiente frame
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           track.style.transition = '';
@@ -1247,7 +1256,6 @@
       if (Math.abs(diff) > 40) irA(indice + (diff > 0 ? 1 : -1));
     }, { passive: true });
 
-    // ── Drag con mouse ──
     wrapper.addEventListener('mousedown', e => {
       dragStartX  = e.clientX;
       isDragging  = false;
@@ -1629,26 +1637,101 @@
   })();
   </script>
 
-  <!-- LUZ — SCRIPT PRINCIPAL -->
+  <!-- ══════════════════════════════════════════
+       LUZ — SCRIPT PRINCIPAL (con límite diario)
+  ══════════════════════════════════════════ -->
   <script>
   (function(){
-    const GEMINI_API_KEY = 'AIzaSyCRgk_blWUnK36z_v_C0JLG_EgMDbgbybk';
-    const LUZ_HIST = 'luz_chat_history';
+    const GEMINI_API_KEY  = 'AIzaSyCRgk_blWUnK36z_v_C0JLG_EgMDbgbybk';
+    const LUZ_HIST        = 'luz_chat_history';
+    const LUZ_LIMIT_KEY   = 'luz_daily_limit';
+    const MAX_MSGS        = 10;
+
     let chatAbierto = false;
     let esperando   = false;
     let historial   = [];
 
     const chat    = document.getElementById('luz-chat');
     const msgs    = document.getElementById('luz-messages');
-    const input   = document.getElementById('luz-input');
+    const inputEl = document.getElementById('luz-input');
     const sendBtn = document.getElementById('luz-send');
     const badge   = document.getElementById('luz-badge');
+    const counter = document.getElementById('luz-counter');
 
+    // ── Historial de sesión ──
     try {
       const saved = sessionStorage.getItem(LUZ_HIST);
       if (saved) historial = JSON.parse(saved);
     } catch(e) { historial = []; }
 
+    // ════════════════════════════════════════
+    //  LÍMITE DIARIO — localStorage
+    // ════════════════════════════════════════
+    function fechaHoy() {
+      // Formato YYYY-MM-DD en zona local
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function getLimitData() {
+      try {
+        const raw = localStorage.getItem(LUZ_LIMIT_KEY);
+        if (!raw) return { count: 0, date: fechaHoy() };
+        const data = JSON.parse(raw);
+        // Si es otro día, reiniciamos automáticamente
+        if (data.date !== fechaHoy()) return { count: 0, date: fechaHoy() };
+        return data;
+      } catch(e) {
+        return { count: 0, date: fechaHoy() };
+      }
+    }
+
+    function saveLimitData(data) {
+      try { localStorage.setItem(LUZ_LIMIT_KEY, JSON.stringify(data)); } catch(e) {}
+    }
+
+    function getMensajesRestantes() {
+      return Math.max(0, MAX_MSGS - getLimitData().count);
+    }
+
+    function incrementarUso() {
+      const data = getLimitData();
+      data.count = Math.min(data.count + 1, MAX_MSGS);
+      saveLimitData(data);
+    }
+
+    function actualizarContador() {
+      const restantes = getMensajesRestantes();
+      if (!counter) return;
+
+      if (restantes === 0) {
+        counter.textContent = '🚫 Mensajes agotados por hoy — volvé mañana 🙏';
+        counter.style.color = '#ef4444';
+      } else if (restantes <= 3) {
+        counter.textContent = `⚠️ Mensajes disponibles hoy: ${restantes}/${MAX_MSGS}`;
+        counter.style.color = '#f59e0b';
+      } else {
+        counter.textContent = `✨ Mensajes disponibles hoy: ${restantes}/${MAX_MSGS}`;
+        counter.style.color = '#7c3aed';
+      }
+    }
+
+    function aplicarEstadoInput() {
+      const restantes = getMensajesRestantes();
+      if (restantes <= 0) {
+        inputEl.disabled = true;
+        inputEl.placeholder = 'Límite diario alcanzado. ¡Volvé mañana! 🙏';
+        sendBtn.disabled = true;
+      } else {
+        inputEl.disabled = false;
+        inputEl.placeholder = 'Escribí tu pregunta…';
+        sendBtn.disabled = false;
+      }
+    }
+
+    // ════════════════════════════════════════
+    //  RENDERIZADO DEL CHAT
+    // ════════════════════════════════════════
     function renderHistorial() {
       msgs.innerHTML = '';
       if (historial.length === 0) {
@@ -1659,7 +1742,18 @@
           else agregarMensajeUsuarioPuro(m.content);
         });
       }
+
+      // Mostrar mensaje de límite alcanzado si corresponde
+      if (getMensajesRestantes() === 0 && msgs.querySelector('.luz-msg-limite') === null) {
+        const div = document.createElement('div');
+        div.className = 'luz-msg bot luz-msg-limite';
+        div.innerHTML = '🚫 Alcanzaste el límite de <strong>10 mensajes por día</strong>. Gracias por usar Luz. ¡Volvé mañana para seguir recibiendo orientación espiritual! 🙏';
+        msgs.appendChild(div);
+      }
+
       scrollAbajo();
+      actualizarContador();
+      aplicarEstadoInput();
     }
 
     window.toggleLuzChat = function() {
@@ -1669,24 +1763,37 @@
         badge.style.display = 'none';
         chat.classList.add('abierto');
         renderHistorial();
-        setTimeout(() => input.focus(), 200);
+        setTimeout(() => { if (!inputEl.disabled) inputEl.focus(); }, 200);
       } else {
         chat.classList.remove('abierto');
       }
     };
 
     window.luzSuggest = function(el) {
-      input.value = el.textContent.trim().replace(/^[^\s]+\s/, '');
+      if (getMensajesRestantes() <= 0) return;
+      inputEl.value = el.textContent.trim().replace(/^[^\s]+\s/, '');
       luzEnviar();
     };
 
     window.luzEnviar = async function() {
-      const texto = input.value.trim();
+      const texto = inputEl.value.trim();
       if (!texto || esperando) return;
 
-      input.value = '';
+      // ── Verificar límite ANTES de enviar ──
+      if (getMensajesRestantes() <= 0) {
+        aplicarEstadoInput();
+        actualizarContador();
+        return;
+      }
+
+      inputEl.value = '';
       autoResize();
       agregarMensajeUsuario(texto);
+
+      // Descontar INMEDIATAMENTE al enviar
+      incrementarUso();
+      actualizarContador();
+      aplicarEstadoInput();
 
       historial.push({ role: 'user', content: texto });
       const contentsLimpios = limpiarHistorial(historial);
@@ -1701,23 +1808,30 @@
         agregarMensajeBot(respuesta);
         historial.push({ role: 'assistant', content: respuesta });
         try { sessionStorage.setItem(LUZ_HIST, JSON.stringify(historial.slice(-20))); } catch(e) {}
+
+        // Si se agotaron los mensajes, agregar aviso amable
+        if (getMensajesRestantes() === 0) {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = 'luz-msg bot luz-msg-limite';
+            div.innerHTML = '🚫 Ese fue tu último mensaje de hoy. ¡Que la Palabra te acompañe! Volvé mañana para seguir conversando. 🙏';
+            msgs.appendChild(div);
+            scrollAbajo();
+          }, 600);
+        }
+
       } catch(err) {
         quitarTyping();
         if (historial[historial.length - 1]?.role === 'user') historial.pop();
-        if (err.status === 403 || err.status === 401) {
-          agregarMensajeBotPuro('🔑 API Key inválida o sin permisos.');
-        } else if (err.status === 400) {
-          agregarMensajeBotPuro('⚠️ Error en el formato (400). Borrando historial.');
-          historial = [];
-          sessionStorage.removeItem(LUZ_HIST);
-        } else if (err.status === 429) {
+        if (err.status === 429) {
           agregarMensajeBotPuro('⏳ Demasiadas consultas. Esperá unos segundos 🙏');
         } else {
-          agregarMensajeBotPuro(`⚠️ Error ${err.status||'de red'}: ${err.message} 🙏`);
+          agregarMensajeBotPuro(`⚠️ Ocurrió un error. Por favor intentá de nuevo más tarde. 🙏`);
         }
       } finally {
         esperando = false;
-        sendBtn.disabled = false;
+        // Reaplica estado del input (puede que se haya agotado el límite)
+        aplicarEstadoInput();
         scrollAbajo();
       }
     };
@@ -1821,12 +1935,12 @@ Pautas:
     function quitarTyping() { document.getElementById('luz-typing')?.remove(); }
     function scrollAbajo() { setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50); }
     function autoResize() {
-      input.style.height = 'auto';
-      input.style.height = Math.min(input.scrollHeight, 90) + 'px';
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 90) + 'px';
     }
 
-    input.addEventListener('input', autoResize);
-    input.addEventListener('keydown', e => {
+    inputEl.addEventListener('input', autoResize);
+    inputEl.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); luzEnviar(); }
     });
 
