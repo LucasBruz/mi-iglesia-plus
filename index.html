@@ -224,11 +224,12 @@
       border-radius: 16px 16px 0 0;
       box-shadow: 0 8px 32px rgba(0,0,0,.1);
       background: #111;
-      /* Relación 16:9 estándar — las imágenes de eventos suelen ser horizontales */
       aspect-ratio: 16 / 9;
       width: 100%;
     }
 
+    /* ✅ FIX: el track ocupa el 100% del wrapper y no tiene altura explícita
+       — los slides se alinean uno al lado del otro sin desbordarse */
     .ads-slider-track {
       display: flex;
       height: 100%;
@@ -236,10 +237,12 @@
       will-change: transform;
     }
 
+    /* ✅ FIX: flex: 0 0 100% garantiza que cada slide ocupe exactamente
+       el ancho del wrapper (no del track completo).
+       Se eliminó min-width: 100% que causaba el desborde y el salto visual. */
     .ads-slide {
-      min-width: 100%;
+      flex: 0 0 100%;
       height: 100%;
-      flex-shrink: 0;
       display: block;
       text-decoration: none;
       color: inherit;
@@ -249,7 +252,6 @@
     }
     .ads-slide:active { cursor: grabbing; }
 
-    /* Imagen siempre ocupa todo el espacio del slide, centrada */
     .ads-slide img {
       width: 100%;
       height: 100%;
@@ -259,10 +261,8 @@
       pointer-events: none;
     }
 
-    /* Overlay invisible — no tapa nada */
     .ads-slide-body { display: none; }
 
-    /* Caja de título DEBAJO, fuera de la imagen */
     .ads-slide-caption {
       background: #fff;
       border: 1px solid var(--border);
@@ -288,11 +288,10 @@
       margin-top: .1rem;
     }
 
-    /* Flechas — solo desktop, posicionadas FUERA del slider */
     .slider-btn {
       display: none;
       position: absolute;
-      top: calc(50% - 26px); /* mitad del wrapper sin contar caption */
+      top: calc(50% - 26px);
       transform: translateY(-50%);
       width: 40px; height: 40px;
       border-radius: 50%;
@@ -318,7 +317,6 @@
       .ads-slide-caption { border-radius: 0 0 12px 12px; }
     }
 
-    /* Dots */
     .slider-dots {
       display: flex;
       justify-content: center;
@@ -341,7 +339,6 @@
       border-radius: 4px;
     }
 
-    /* Barra de progreso */
     .slider-progress {
       position: absolute;
       bottom: 0;
@@ -354,7 +351,6 @@
       transition: width linear;
     }
 
-    /* Estado vacío / loading */
     .ads-slider-placeholder {
       display: flex;
       align-items: center;
@@ -731,24 +727,18 @@
     <div class="container">
       <h2 class="section-title">Eventos destacados</h2>
 
-      <!-- Outer para posicionar flechas fuera en desktop -->
       <div class="ads-slider-outer" id="adsSliderOuter">
-        <!-- Wrapper del slider -->
         <div class="ads-slider-wrapper" id="adsSliderWrapper">
-          <!-- Barra de progreso -->
           <div class="slider-progress" id="sliderProgress"></div>
-          <!-- Track de slides -->
           <div class="ads-slider-track" id="adsSliderTrack">
-            <div class="ads-slide" style="background:#f3f3f3;min-height:200px;display:flex;align-items:center;justify-content:center">
+            <div class="ads-slide" style="background:#f3f3f3;display:flex;align-items:center;justify-content:center">
               <span style="color:#aaa;font-size:.95rem">Cargando eventos…</span>
             </div>
           </div>
-          <!-- Flechas (solo desktop, fuera de la imagen) -->
           <button class="slider-btn slider-btn-prev" id="sliderPrev" aria-label="Anterior">&#8592;</button>
           <button class="slider-btn slider-btn-next" id="sliderNext" aria-label="Siguiente">&#8594;</button>
         </div>
 
-        <!-- Caption debajo de la imagen -->
         <div class="ads-slide-caption" id="adsCaption" style="display:none">
           <div class="ads-slide-caption-icon">📅</div>
           <div>
@@ -758,7 +748,6 @@
         </div>
       </div>
 
-      <!-- Dots -->
       <div class="slider-dots" id="sliderDots"></div>
     </div>
   </section>
@@ -1106,25 +1095,32 @@
   </script>
 
   <!-- ══════════════════════════════════════════
-       SLIDER EVENTOS DESTACADOS — SCRIPT
+       SLIDER EVENTOS DESTACADOS — SCRIPT CORREGIDO
   ══════════════════════════════════════════ -->
   <script type="module">
     import { db } from './js/firebase-init.js';
     import { collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
-    const INTERVALO_MS = 10000; // 10 segundos
+    const INTERVALO_MS = 10000;
 
-    let slides = [];
-    let indice = 0;
-    let timer  = null;
+    let slides  = [];
+    let indice  = 0;
+    let timer   = null;
 
     const track    = document.getElementById('adsSliderTrack');
+    const wrapper  = document.getElementById('adsSliderWrapper');
     const dotsEl   = document.getElementById('sliderDots');
     const progress = document.getElementById('sliderProgress');
     const btnPrev  = document.getElementById('sliderPrev');
     const btnNext  = document.getElementById('sliderNext');
     const caption  = document.getElementById('adsCaption');
     const captionTitle = document.getElementById('adsCaptionTitle');
+
+    // ✅ FIX: función central que calcula el desplazamiento en píxeles
+    // usando el ancho real del wrapper, no un porcentaje del track.
+    function getOffset(i) {
+      return i * wrapper.clientWidth;
+    }
 
     function actualizarCaption() {
       if (!slides.length) return;
@@ -1141,9 +1137,10 @@
     function irA(i, reiniciarTimer = true) {
       if (slides.length === 0) return;
       indice = (i + slides.length) % slides.length;
-      track.style.transform = `translateX(-${indice * 100}%)`;
 
-      // Actualizar dots
+      // ✅ FIX: translateX en píxeles — sin ambigüedad de porcentaje
+      track.style.transform = `translateX(-${getOffset(indice)}px)`;
+
       dotsEl.querySelectorAll('.slider-dot').forEach((d, idx) => {
         d.classList.toggle('activo', idx === indice);
       });
@@ -1172,13 +1169,26 @@
       }, INTERVALO_MS);
     }
 
+    // ✅ FIX: al cambiar el tamaño de ventana, recalcular la posición
+    // sin animación para que no se vea un salto visual
+    window.addEventListener('resize', () => {
+      track.style.transition = 'none';
+      track.style.transform  = `translateX(-${getOffset(indice)}px)`;
+      // Restaurar la transición en el siguiente frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          track.style.transition = '';
+        });
+      });
+    });
+
     function construirSlider(ads) {
       slides = ads;
       track.innerHTML = '';
       dotsEl.innerHTML = '';
 
       if (slides.length === 0) {
-        track.innerHTML = '<div class="ads-slide" style="background:#f9f9f9;min-height:180px;display:flex;align-items:center;justify-content:center"><span style="color:#aaa">No hay eventos para mostrar.</span></div>';
+        track.innerHTML = '<div class="ads-slide" style="background:#f9f9f9;display:flex;align-items:center;justify-content:center"><span style="color:#aaa">No hay eventos para mostrar.</span></div>';
         btnPrev.style.display = 'none';
         btnNext.style.display = 'none';
         caption.style.display = 'none';
@@ -1193,13 +1203,12 @@
 
         const imgHtml = ad.imageUrl
           ? `<img src="${ad.imageUrl}" alt="${title || 'Evento destacado'}" loading="${idx === 0 ? 'eager' : 'lazy'}" draggable="false">`
-          : `<div style="min-height:180px;background:linear-gradient(135deg,#FF6B5B22,#FF6B5B44);display:flex;align-items:center;justify-content:center;font-size:3rem">⛪</div>`;
+          : `<div style="height:100%;background:linear-gradient(135deg,#FF6B5B22,#FF6B5B44);display:flex;align-items:center;justify-content:center;font-size:3rem">⛪</div>`;
 
         track.insertAdjacentHTML('beforeend', `
           <${tag} class="ads-slide" ${attrs}>${imgHtml}<div class="ads-slide-body"></div></${tag}>
         `);
 
-        // Dot
         const dot = document.createElement('button');
         dot.className = 'slider-dot' + (idx === 0 ? ' activo' : '');
         dot.setAttribute('aria-label', `Ir al evento ${idx + 1}`);
@@ -1214,18 +1223,16 @@
       reiniciarAuto();
     }
 
-    // ── Swipe táctil mejorado ──
-    const wrapper = document.getElementById('adsSliderWrapper');
+    // ── Swipe táctil ──
     let touchStartX = 0;
     let touchStartY = 0;
-    let isDragging = false;
-    let dragStartX = 0;
-    let dragOffset = 0;
+    let isDragging  = false;
+    let dragStartX  = 0;
 
     wrapper.addEventListener('touchstart', e => {
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
-      isDragging = false;
+      isDragging  = false;
     }, { passive: true });
 
     wrapper.addEventListener('touchmove', e => {
@@ -1242,8 +1249,8 @@
 
     // ── Drag con mouse ──
     wrapper.addEventListener('mousedown', e => {
-      dragStartX = e.clientX;
-      isDragging = false;
+      dragStartX  = e.clientX;
+      isDragging  = false;
       wrapper.style.cursor = 'grabbing';
     });
     window.addEventListener('mousemove', e => {
@@ -1258,12 +1265,10 @@
       isDragging = false;
     });
 
-    // Evitar que links se activen al arrastrar
     wrapper.addEventListener('click', e => {
       if (isDragging) e.preventDefault();
     });
 
-    // Pausar al pasar el mouse
     wrapper.addEventListener('mouseenter', () => {
       clearInterval(timer);
       progress.style.transition = 'none';
